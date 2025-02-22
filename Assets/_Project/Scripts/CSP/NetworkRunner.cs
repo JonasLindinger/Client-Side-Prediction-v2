@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using _Project.Scripts.CSP.Connection.Approval;
+using _Project.Scripts.CSP.Connection.Data;
 using _Project.Scripts.Utility;
 using _Project.Scripts.Utility.SceneManagement;
 using Unity.Netcode;
@@ -16,6 +17,9 @@ namespace _Project.Scripts.CSP
         [Header("References")]
         [SerializeField] private NetworkSettings networkSettings;
         [SerializeField] private ConnectionApproval connectionApproval;
+        [Space(5)] 
+        [Header("Settings")] 
+        [SerializeField] private bool autoStartServer = true;
         
         // References
         private NetworkManager _networkManager;
@@ -31,6 +35,13 @@ namespace _Project.Scripts.CSP
             ConnectConnectionApproval();
             
             await LoadIntoMainMenu();
+            
+            #if Server
+            
+            if (autoStartServer)
+                Run();
+            
+            #endif
         }
 
         #region References
@@ -53,7 +64,7 @@ namespace _Project.Scripts.CSP
         /// </summary>
         private async Task LoadIntoMainMenu()
         {
-            await SceneLoader.GetInstance().LoadSceneGroup(0);
+            await SceneLoader.GetInstance().LoadSceneGroup(1);
         }
         
         #endregion
@@ -94,6 +105,42 @@ namespace _Project.Scripts.CSP
         private void ConnectConnectionApproval()
         {
             _networkManager.ConnectionApprovalCallback += connectionApproval.OnConnectionRequest;
+        }
+        
+        #endregion
+        
+        #region Run
+        
+        #if Server
+
+        private void Run()
+        {
+            SetConnectionData(networkSettings.defaultIp, networkSettings.defaultPort);
+
+            if (_networkManager.StartServer())
+                Debug.Log("Server started");
+            else
+                Debug.LogError("Couldn't start server");
+        }
+        
+        #elif Client
+        
+        public void Run(string ipAddress, ushort port, ConnectionPayload payload)
+        {
+            SetConnectionData(ipAddress, port);
+
+            if (_networkManager.StartClient())
+                Debug.Log("Client started");
+            else
+                Debug.LogError("Couldn't start client");
+        }
+        
+        #endif
+
+        private void SetConnectionData(string ipAddress, ushort port)
+        {
+            _unityTransport.ConnectionData.Address = ipAddress;
+            _unityTransport.ConnectionData.Port = port;
         }
         
         #endregion
