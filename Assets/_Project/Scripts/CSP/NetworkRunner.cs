@@ -134,7 +134,8 @@ namespace _Project.Scripts.CSP
         public void Run(string ipAddress, ushort port, ConnectionPayload payload)
         {
             SetConnectionData(ipAddress, port);
-
+            SendPayload(payload);
+            
             if (_networkManager.StartClient())
                 Debug.Log("Client started");
             else
@@ -152,6 +153,15 @@ namespace _Project.Scripts.CSP
         {
             _unityTransport.ConnectionData.Address = ipAddress;
             _unityTransport.ConnectionData.Port = port;
+        }
+
+        /// <summary>
+        /// Set's the connectionPayload of the NetworkManager to the payload you give the method
+        /// </summary>
+        /// <param name="payload"></param>
+        private void SendPayload(ConnectionPayload payload)
+        {
+            _networkManager.NetworkConfig.ConnectionData = payload.GetAsPayload();
         }
         
         #endregion
