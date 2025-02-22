@@ -254,6 +254,10 @@ GameObject:
   - component: {fileID: 357396308}
   - component: {fileID: 357396309}
   - component: {fileID: 357396310}
+  - component: {fileID: 357396314}
+  - component: {fileID: 357396313}
+  - component: {fileID: 357396312}
+  - component: {fileID: 357396311}
   m_Layer: 0
   m_Name: NetworkRunner
   m_TagString: Untagged
@@ -415,6 +419,57 @@ MultiplayerRolesData:
     m_RolesMask: 2
   - m_Object: {fileID: 357396307}
     m_RolesMask: 2
+--- !u!114 &357396311
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 357396302}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bc3bbfc72c94f6ab2ecca9f1f46cfd9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &357396312
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 357396302}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 562d800fe7004b9ab04fa9ec579968bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &357396313
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 357396302}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc275ec20203441d937b3de0137a63e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &357396314
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 357396302}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ff1f403948e4b73af6ff81829dc303c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  physicsTickSystem: {fileID: 357396313}
+  networkTickSystem: {fileID: 357396312}
+  tickAdjustmentTickSystem: {fileID: 357396311}
 --- !u!1 &387800522
 GameObject:
   m_ObjectHideFlags: 0

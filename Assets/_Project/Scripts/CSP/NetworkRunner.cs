@@ -1,6 +1,7 @@
 ﻿using _Project.Scripts.CSP.Connection.Approval;
 using _Project.Scripts.CSP.Connection.Data;
 using _Project.Scripts.CSP.Connection.Listener;
+using _Project.Scripts.CSP.Simulation;
 using _Project.Scripts.Utility;
 using _Project.Scripts.Utility.SceneManagement;
 using Unity.Netcode;
@@ -10,6 +11,7 @@ using NetworkSettings = _Project.Scripts.CSP.ScriptableObjects.NetworkSettings;
 
 namespace _Project.Scripts.CSP
 {
+    [RequireComponent(typeof(TickSystemManager))]
     [RequireComponent(typeof(NetworkManager))]
     [RequireComponent(typeof(UnityTransport))]
     public class NetworkRunner : MonoBehaviourSingleton<NetworkRunner>
@@ -18,11 +20,12 @@ namespace _Project.Scripts.CSP
         [SerializeField] private NetworkSettings networkSettings;
         [SerializeField] private ConnectionApproval connectionApproval;
         [SerializeField] private ConnectionListener connectionListener;
-        [Space(5)] 
+        [Space(5)]
         [Header("Settings")] 
         [SerializeField] private bool autoStartServer = true;
         
         // References
+        private TickSystemManager _tickSystemManager;
         private NetworkManager _networkManager;
         private UnityTransport _unityTransport;
         
@@ -102,13 +105,16 @@ namespace _Project.Scripts.CSP
         }
 
         /// <summary>
-        /// Subscribes a IConnectionApproval.cs Interface to the connection approval callback
+        /// Subscribes a ConnectionApproval.cs class to the connection approval callback
         /// </summary>
         private void ConnectConnectionApproval()
         {
             _networkManager.ConnectionApprovalCallback += connectionApproval.OnConnectionRequest;
         }
 
+        /// <summary>
+        /// Subscribes a ConnectionListener.cs class to the connection event callback
+        /// </summary>
         private void ConnectConnectionListener()
         {
             _networkManager.OnConnectionEvent += connectionListener.OnConnectionEvent;
@@ -129,8 +135,15 @@ namespace _Project.Scripts.CSP
 
             SetConnectionData("", 0);
 
-            if (_networkManager.StartServer())
+            if (_networkManager.StartServer()) 
+            {
                 Debug.Log("Server started");
+                _tickSystemManager.StartTickSystems(
+                    networkSettings.physicsTickRate, 
+                    networkSettings.networkTickRate,
+                    1
+                );
+            }
             else
                 Debug.LogError("Couldn't start server");
         }
