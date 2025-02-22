@@ -6,7 +6,7 @@ namespace _Project.Scripts.CSP.Simulation
     {
         public override void OnTick(uint tick)
         {
-            Debug.Log("OnNetworkTick");
+            // Todo: Do Network Stuff
         }
     }
 }
