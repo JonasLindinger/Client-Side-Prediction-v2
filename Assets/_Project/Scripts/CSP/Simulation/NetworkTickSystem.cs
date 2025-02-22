@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace _Project.Scripts.CSP.Simulation
+﻿namespace _Project.Scripts.CSP.Simulation
 {
     public class NetworkTickSystem : TickSystem
     {
