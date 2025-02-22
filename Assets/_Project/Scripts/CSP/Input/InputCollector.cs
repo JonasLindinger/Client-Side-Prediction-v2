@@ -1,11 +1,12 @@
 ﻿using _Project.Scripts.CSP.Data;
+using _Project.Scripts.Utility;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace _Project.Scripts.CSP.Input
 {
     [RequireComponent(typeof(PlayerInput))]
-    public class InputCollector : MonoBehaviour
+    public class InputCollector : MonoBehaviourSingleton<InputCollector>
     {
         [Header("Inputs")]
         [SerializeField] private string[] directionalInputs;

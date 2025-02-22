@@ -16,6 +16,8 @@ namespace _Project.Scripts.CSP
     [RequireComponent(typeof(UnityTransport))]
     public class NetworkRunner : MonoBehaviourSingleton<NetworkRunner>
     {
+        public static NetworkSettings NetworkSettings;
+        
         [Header("References")]
         [SerializeField] private NetworkSettings networkSettings;
         [SerializeField] private ConnectionApproval connectionApproval;
@@ -60,6 +62,7 @@ namespace _Project.Scripts.CSP
             _networkManager = GetComponent<NetworkManager>();
             _unityTransport = GetComponent<UnityTransport>();
             _tickSystemManager = GetComponent<TickSystemManager>();
+            NetworkSettings = networkSettings;
         }
 
         #endregion

@@ -9,6 +9,9 @@ namespace _Project.Scripts.CSP.ScriptableObjects
         public uint physicsTickRate = 64;
         public uint networkTickRate = 64;
         [Space(10)] 
+        [Header("Tick-System")] 
+        public int inputBufferSize;
+        [Space(10)] 
         [Header("Connection")]
         public string defaultIp = "127.0.0.1";
         public ushort defaultPort = 7777;
