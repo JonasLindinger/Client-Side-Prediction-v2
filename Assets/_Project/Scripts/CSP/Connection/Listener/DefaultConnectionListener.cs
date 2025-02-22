@@ -1,4 +1,5 @@
-﻿using Unity.Netcode;
+﻿using _Project.Scripts.CSP.Object;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace _Project.Scripts.CSP.Connection.Listener
@@ -9,6 +10,9 @@ namespace _Project.Scripts.CSP.Connection.Listener
         {
             #if Server
             Debug.Log("Client: " + eventData.ClientId + " connected");
+            
+            // Spawn Client object for this client
+            Spawner.GetInstance().SpawnClient(eventData.ClientId);
             #endif
         }
 
