@@ -89,7 +89,9 @@ namespace _Project.Scripts.CSP
         /// <returns></returns>
         private void LimitFPS()
         {
+            #if Server
             Application.targetFrameRate = (int) networkSettings.physicsTickRate;
+            #endif
         }
         
         /// <summary>
