@@ -1,0 +1,17 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace _Project.Scripts.Utility.SceneManagement
+{
+    [Serializable]
+    public class SceneGroup
+    {
+        public string groupName = "New Scene Group";
+        public List<SceneData> scenes;
+        public string FindSceneNameByType(SceneType sceneType)
+        {
+            return scenes.FirstOrDefault(scene => scene.sceneType == sceneType)?.reference.Name;
+        }
+    }
+}
