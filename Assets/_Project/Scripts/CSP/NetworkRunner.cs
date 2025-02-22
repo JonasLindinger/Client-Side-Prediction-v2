@@ -39,6 +39,7 @@ namespace _Project.Scripts.CSP
             #if Client
             await SceneLoader.GetInstance().LoadSceneGroup(0);
             #elif Server
+            LimitFPS();
             await SceneLoader.GetInstance().LoadSceneGroup(1);
             
             if (autoStartServer)
@@ -80,6 +81,15 @@ namespace _Project.Scripts.CSP
 
             // We want to handle connections ourselves for more control
             _networkManager.NetworkConfig.ConnectionApproval = true;
+        }
+
+        /// <summary>
+        /// Set's the target Frame Rate to the tick system
+        /// </summary>
+        /// <returns></returns>
+        private void LimitFPS()
+        {
+            Application.targetFrameRate = (int) networkSettings.physicsTickRate;
         }
         
         /// <summary>
