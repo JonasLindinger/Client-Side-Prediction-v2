@@ -10,6 +10,7 @@ namespace _Project.Scripts.CSP.Simulation
 
         private float _time;
         private int _ticksToSkip;
+        private bool _started;
         
         /// <summary>
         /// Starts the Tick System
@@ -24,12 +25,16 @@ namespace _Project.Scripts.CSP.Simulation
             
             // Setting the starting Tick (default 0)
             CurrentTick = startingTickOffset;
+            
+            _started = true;
         }
         
         public abstract void OnTick(uint tick);
 
         private protected void Update()
         {
+            if (!_started) return;
+            
             // Increase the Time between last Tick and now
             _time += Time.deltaTime;
 
