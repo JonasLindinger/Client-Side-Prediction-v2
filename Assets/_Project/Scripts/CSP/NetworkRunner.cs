@@ -59,6 +59,7 @@ namespace _Project.Scripts.CSP
         {
             _networkManager = GetComponent<NetworkManager>();
             _unityTransport = GetComponent<UnityTransport>();
+            _tickSystemManager = GetComponent<TickSystemManager>();
         }
 
         #endregion

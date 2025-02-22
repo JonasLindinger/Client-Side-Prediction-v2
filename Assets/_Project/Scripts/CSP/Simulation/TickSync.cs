@@ -1,4 +1,5 @@
 ﻿using Unity.Netcode;
+using UnityEngine;
 
 namespace _Project.Scripts.CSP.Simulation
 {
@@ -18,6 +19,7 @@ namespace _Project.Scripts.CSP.Simulation
         private void OnTickSystemInfoRPC(uint physicsTickRate, uint networkTickRate, uint tickOffset)
         {
             #if Client
+            Debug.Log("Received: PTS: " + physicsTickRate + ", NTS: " + networkTickRate + ", TO: " + tickOffset);
             TickSystemManager.GetInstance().StartTickSystems(physicsTickRate, networkTickRate, 1, tickOffset);
             NetworkManager.Singleton.NetworkConfig.TickRate = networkTickRate;
             #endif
