@@ -1,4 +1,4 @@
-﻿using _Project.Scripts.CSP.Connection.Data;
+﻿using _Project.Scripts.CSP.Data;
 using Unity.Netcode;
 
 namespace _Project.Scripts.CSP.Connection.Approval

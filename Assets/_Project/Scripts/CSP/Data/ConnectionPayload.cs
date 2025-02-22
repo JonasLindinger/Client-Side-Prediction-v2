@@ -2,7 +2,7 @@
 using Unity.Collections;
 using UnityEngine;
 
-namespace _Project.Scripts.CSP.Connection.Data
+namespace _Project.Scripts.CSP.Data
 {
     public struct ConnectionPayload
     {

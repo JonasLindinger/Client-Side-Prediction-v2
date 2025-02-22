@@ -1,6 +1,6 @@
 ﻿using _Project.Scripts.CSP.Connection.Approval;
-using _Project.Scripts.CSP.Connection.Data;
 using _Project.Scripts.CSP.Connection.Listener;
+using _Project.Scripts.CSP.Data;
 using _Project.Scripts.CSP.Simulation;
 using _Project.Scripts.Utility;
 using _Project.Scripts.Utility.SceneManagement;
