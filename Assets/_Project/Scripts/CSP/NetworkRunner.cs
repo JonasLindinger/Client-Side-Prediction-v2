@@ -40,8 +40,7 @@ namespace _Project.Scripts.CSP
             await SceneLoader.GetInstance().LoadSceneGroup(0);
             #elif Server
             LimitFPS();
-            await SceneLoader.GetInstance().LoadSceneGroup(1);
-            
+
             if (autoStartServer)
                 Run();
             
@@ -124,8 +123,10 @@ namespace _Project.Scripts.CSP
         /// <summary>
         /// Start's the Server and set's connection data
         /// </summary>
-        private void Run()
+        private async void Run()
         {
+            await SceneLoader.GetInstance().LoadSceneGroup(1);
+
             SetConnectionData("", 0);
 
             if (_networkManager.StartServer())
@@ -139,8 +140,10 @@ namespace _Project.Scripts.CSP
         /// <summary>
         /// Start's the Client, set's connection data and send's payload
         /// </summary>
-        public void Run(string ipAddress, ushort port, ConnectionPayload payload)
+        public async void Run(string ipAddress, ushort port, ConnectionPayload payload)
         {
+            await SceneLoader.GetInstance().LoadSceneGroup(1);
+            
             SetConnectionData(ipAddress, port);
             SendPayload(payload);
             
