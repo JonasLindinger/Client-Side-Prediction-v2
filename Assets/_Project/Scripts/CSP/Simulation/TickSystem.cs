@@ -19,7 +19,6 @@ namespace _Project.Scripts.CSP.Simulation
         /// <param name="startingTickOffset"></param>
         public void Run(uint tickRate, uint startingTickOffset = 0)
         {
-            Debug.Log("Starting tick system");
             // Setting the TickRate and calculating the Time Between Ticks.
             TickRate = (int) tickRate;
             TimeBetweenTicks = 1f / tickRate;
