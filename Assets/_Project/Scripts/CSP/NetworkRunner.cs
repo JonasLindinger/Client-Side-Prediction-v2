@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using _Project.Scripts.CSP.Connection.Approval;
 using _Project.Scripts.CSP.Connection.Data;
+using _Project.Scripts.CSP.Connection.Listener;
 using _Project.Scripts.Utility;
 using _Project.Scripts.Utility.SceneManagement;
 using Unity.Netcode;
@@ -17,6 +18,7 @@ namespace _Project.Scripts.CSP
         [Header("References")]
         [SerializeField] private NetworkSettings networkSettings;
         [SerializeField] private ConnectionApproval connectionApproval;
+        [SerializeField] private ConnectionListener connectionListener;
         [Space(5)] 
         [Header("Settings")] 
         [SerializeField] private bool autoStartServer = true;
@@ -105,6 +107,11 @@ namespace _Project.Scripts.CSP
         private void ConnectConnectionApproval()
         {
             _networkManager.ConnectionApprovalCallback += connectionApproval.OnConnectionRequest;
+        }
+
+        private void ConnectConnectionListener()
+        {
+            _networkManager.OnConnectionEvent += connectionListener.OnConnectionEvent;
         }
         
         #endregion
