@@ -17,6 +17,8 @@ namespace _Project.Scripts.CSP.Connection.Approval
                 response.Approved = false;
             }
             
+            // Todo: Check Reconnect
+            
             response.Approved = true;
         }
 
