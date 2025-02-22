@@ -113,6 +113,9 @@ namespace _Project.Scripts.CSP
         
         #if Server
 
+        /// <summary>
+        /// Start's the Server and set's connection data
+        /// </summary>
         private void Run()
         {
             SetConnectionData(networkSettings.defaultIp, networkSettings.defaultPort);
@@ -125,6 +128,9 @@ namespace _Project.Scripts.CSP
         
         #elif Client
         
+        /// <summary>
+        /// Start's the Client, set's connection data and send's payload
+        /// </summary>
         public void Run(string ipAddress, ushort port, ConnectionPayload payload)
         {
             SetConnectionData(ipAddress, port);
@@ -137,6 +143,11 @@ namespace _Project.Scripts.CSP
         
         #endif
 
+        /// <summary>
+        /// Set's connection data on the unity transport
+        /// </summary>
+        /// <param name="ipAddress"></param>
+        /// <param name="port"></param>
         private void SetConnectionData(string ipAddress, ushort port)
         {
             _unityTransport.ConnectionData.Address = ipAddress;
