@@ -33,12 +33,12 @@ namespace _Project.Scripts.CSP
             // Setting up Network Components
             SetUpNetworkManager();
             LinkTransport();
-            ConnectConnectionApproval();
             ConnectConnectionListener();
             
             #if Client
             await SceneLoader.GetInstance().LoadSceneGroup(0);
             #elif Server
+            ConnectConnectionApproval();
             LimitFPS();
 
             if (autoStartServer)

@@ -253,6 +253,7 @@ GameObject:
   - component: {fileID: 357396307}
   - component: {fileID: 357396308}
   - component: {fileID: 357396309}
+  - component: {fileID: 357396310}
   m_Layer: 0
   m_Name: NetworkRunner
   m_TagString: Untagged
@@ -401,6 +402,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   networkClientPrefab: {fileID: 3952338591786523395, guid: 13bbecce7d66a8d439069d3454e83940, type: 3}
   networkPlayerPrefab: {fileID: 8031337787668230734, guid: decbfebfe6b160f41b2e586fa885b70e, type: 3}
+--- !u!1652712579 &357396310
+MultiplayerRolesData:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 357396302}
+  m_GameObjectRolesMask: 3
+  m_ComponentsRolesMasks:
+  - m_Object: {fileID: 357396309}
+    m_RolesMask: 2
+  - m_Object: {fileID: 357396307}
+    m_RolesMask: 2
 --- !u!1 &387800522
 GameObject:
   m_ObjectHideFlags: 0
