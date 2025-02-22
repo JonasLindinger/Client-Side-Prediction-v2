@@ -118,7 +118,7 @@ namespace _Project.Scripts.CSP
         /// </summary>
         private void Run()
         {
-            SetConnectionData(networkSettings.defaultIp, networkSettings.defaultPort);
+            SetConnectionData("", 0);
 
             if (_networkManager.StartServer())
                 Debug.Log("Server started");
@@ -151,8 +151,8 @@ namespace _Project.Scripts.CSP
         /// <param name="port"></param>
         private void SetConnectionData(string ipAddress, ushort port)
         {
-            _unityTransport.ConnectionData.Address = ipAddress;
-            _unityTransport.ConnectionData.Port = port;
+            _unityTransport.ConnectionData.Address = string.IsNullOrEmpty(ipAddress) ? networkSettings.defaultIp : ipAddress;
+            _unityTransport.ConnectionData.Port = port == 0 ? networkSettings.defaultPort : port;
         }
 
         /// <summary>
