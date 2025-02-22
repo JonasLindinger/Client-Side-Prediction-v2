@@ -821,8 +821,8 @@ PlayerSettings:
   platformArchitecture: {}
   scriptingBackend:
     Android: 1
-    Server: 1
-    Standalone: 1
+    Server: 0
+    Standalone: 0
   il2cppCompilerConfiguration: {}
   il2cppCodeGeneration: {}
   il2cppStacktraceInformation: {}
@@ -839,8 +839,8 @@ PlayerSettings:
   editorAssembliesCompatibilityLevel: 1
   m_RenderingPath: 1
   m_MobileRenderingPath: 1
-  metroPackageName: Client-Side Prediction
-  metroPackageVersion: 
+  metroPackageName: Client-SidePrediction
+  metroPackageVersion: 1.0.0.0
   metroCertificatePath: 
   metroCertificatePassword: 
   metroCertificateSubject: 
@@ -848,7 +848,7 @@ PlayerSettings:
   metroCertificateNotAfter: 0000000000000000
   metroApplicationDescription: Client-Side Prediction
   wsaImages: {}
-  metroTileShortName: 
+  metroTileShortName: Client-Side Prediction
   metroTileShowName: 0
   metroMediumTileShowName: 0
   metroLargeTileShowName: 0

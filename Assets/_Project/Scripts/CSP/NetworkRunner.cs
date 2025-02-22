@@ -35,10 +35,12 @@ namespace _Project.Scripts.CSP
             SetUpNetworkManager();
             LinkTransport();
             ConnectConnectionApproval();
+            ConnectConnectionListener();
             
-            await LoadIntoMainMenu();
-            
-            #if Server
+            #if Client
+            await SceneLoader.GetInstance().LoadSceneGroup(0);
+            #elif Server
+            await SceneLoader.GetInstance().LoadSceneGroup(1);
             
             if (autoStartServer)
                 Run();
@@ -57,18 +59,6 @@ namespace _Project.Scripts.CSP
             _unityTransport = GetComponent<UnityTransport>();
         }
 
-        #endregion
-        
-        #region SceneLoader
-
-        /// <summary>
-        /// Loads the scene Group of MainMenu
-        /// </summary>
-        private async Task LoadIntoMainMenu()
-        {
-            await SceneLoader.GetInstance().LoadSceneGroup(1);
-        }
-        
         #endregion
         
         #region Network
