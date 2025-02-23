@@ -11,7 +11,7 @@ namespace _Project.Scripts.Player
         #if Server
         public override void OnNetworkSpawn()
         {
-            Spawner.SpawnObjectPublicWithOwnerPermanent(networkPlayerPrefab, OwnerClientId);
+            Spawner.SpawnObjectPublicWithOwnerPermanent(networkPlayerPrefab.gameObject, OwnerClientId);
         }
         #endif
     }

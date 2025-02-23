@@ -57,18 +57,18 @@ namespace _Project.Scripts.CSP.Input
         public ClientInputState GetClientInputState(uint tick)
         {
             // Update boolean's
-            foreach (var kvp in _inputFlags)
+            foreach (var inputFlag in _inputFlags.Keys.ToArray())
             {
-                _inputFlags[kvp.Key] = _playerInput.actions[kvp.Key].ReadValue<float>() >= 0.4f;
+                _inputFlags[inputFlag] = _playerInput.actions[inputFlag].ReadValue<float>() >= 0.4f;
             }
             
             // Update Vector2's
-            foreach (var kvp in _directionalInputs)
+            foreach (var directionalInput in _directionalInputs.Keys.ToArray())
             {
-                Vector2 input = _playerInput.actions[kvp.Key].ReadValue<Vector2>();
+                Vector2 input = _playerInput.actions[directionalInput].ReadValue<Vector2>();
                 input.x = ClampValue(input.x);
                 input.y = ClampValue(input.y);
-                _directionalInputs[kvp.Key] = input;
+                _directionalInputs[directionalInput] = input;
             }
 
             ClientInputState clientInputState = new ClientInputState()

@@ -411,7 +411,7 @@ MultiplayerRolesData:
     m_RolesMask: 2
   - m_Object: {fileID: 357396311}
     m_RolesMask: 1
-  - m_Object: {fileID: 357396317}
+  - m_Object: {fileID: 0}
     m_RolesMask: 2
   - m_Object: {fileID: 357396315}
     m_RolesMask: 3
@@ -507,7 +507,7 @@ MonoBehaviour:
   m_ActionEvents: []
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: Keyboard&Mouse
-  m_DefaultActionMap: 617a5764-6496-4dc6-9542-d738f3f58c03
+  m_DefaultActionMap: Networked
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
 --- !u!114 &357396317

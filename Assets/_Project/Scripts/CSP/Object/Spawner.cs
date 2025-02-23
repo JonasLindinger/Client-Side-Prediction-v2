@@ -6,9 +6,10 @@ namespace _Project.Scripts.CSP.Object
 {
     public class Spawner : MonoBehaviourSingleton<Spawner>
     {
-        #if Server
         [Header("References")]
         [SerializeField] private NetworkClient networkClientPrefab;
+        
+        #if Server
 
         private void Start()
         {
@@ -17,14 +18,14 @@ namespace _Project.Scripts.CSP.Object
             NetworkManager.Singleton.OnConnectionEvent += (manager, eventData) =>
             {
                 if (eventData.EventType == ConnectionEvent.ClientConnected)
-                    SpawnObjectAnonymousWithOwner(networkClientPrefab.NetworkObject, eventData.ClientId);
+                    SpawnObjectAnonymousWithOwner(networkClientPrefab.gameObject, eventData.ClientId);
             };
             #endif
         }
-
-        public static void SpawnObjectAnonymousWithOwner(NetworkObject networkObject, ulong clientId)
+        
+        public static void _SpawnObjectAnonymousWithOwner(GameObject networkObject, ulong clientId)
         {
-            var newObject = Instantiate(networkObject);
+            var newObject = Instantiate(networkObject.gameObject).GetComponent<NetworkObject>();
             newObject.AlwaysReplicateAsRoot = false;
             newObject.SynchronizeTransform = false;
             newObject.ActiveSceneSynchronization = false;
@@ -42,9 +43,10 @@ namespace _Project.Scripts.CSP.Object
             newObject.SpawnWithOwnership(clientId);
             newObject.NetworkShow(clientId);
         }
-        public static void SpawnObjectAnonymousWithOwnerPermanent(NetworkObject networkObject, ulong clientId)
+        
+        public static void _SpawnObjectAnonymousWithOwnerPermanent(GameObject networkObject, ulong clientId)
         {
-            var newObject = Instantiate(networkObject);
+            var newObject = Instantiate(networkObject.gameObject).GetComponent<NetworkObject>();
             newObject.AlwaysReplicateAsRoot = false;
             newObject.SynchronizeTransform = false;
             newObject.ActiveSceneSynchronization = false;
@@ -62,9 +64,10 @@ namespace _Project.Scripts.CSP.Object
             newObject.SpawnWithOwnership(clientId);
             newObject.NetworkShow(clientId);
         }
-        public static void SpawnObjectPublicWithOwner(NetworkObject networkObject, ulong clientId)
+        
+        public static void _SpawnObjectPublicWithOwner(GameObject networkObject, ulong clientId)
         {
-            var newObject = Instantiate(networkObject);
+            var newObject = Instantiate(networkObject.gameObject).GetComponent<NetworkObject>();
             newObject.AlwaysReplicateAsRoot = false;
             newObject.SynchronizeTransform = false;
             newObject.ActiveSceneSynchronization = false;
@@ -81,9 +84,10 @@ namespace _Project.Scripts.CSP.Object
             
             newObject.SpawnWithOwnership(clientId);
         }
-        public static void SpawnObjectPublicWithOwnerPermanent(NetworkObject networkObject, ulong clientId)
+        
+        public static void _SpawnObjectPublicWithOwnerPermanent(GameObject networkObject, ulong clientId)
         {
-            var newObject = Instantiate(networkObject);
+            var newObject = Instantiate(networkObject.gameObject).GetComponent<NetworkObject>();
             newObject.AlwaysReplicateAsRoot = false;
             newObject.SynchronizeTransform = false;
             newObject.ActiveSceneSynchronization = false;
