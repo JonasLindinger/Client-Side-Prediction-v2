@@ -9,10 +9,14 @@ namespace _Project.Scripts.CSP.Simulation
 
         public override void OnTick(uint tick)
         {
+            #if Client
             ClientInputState clientInputState = GetInputState(tick);
+            #elif Server
             
+            #endif
         }
-
+        
+        #if Client
         private ClientInputState GetInputState(uint tick)
         {
             if (!_inputCollector)
@@ -23,5 +27,8 @@ namespace _Project.Scripts.CSP.Simulation
 
             return clientInputState;
         }
+        #elif Server
+        
+        #endif
     }
 }
