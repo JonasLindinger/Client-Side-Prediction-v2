@@ -57,6 +57,7 @@ namespace _Project.Scripts.CSP.Object
             #endif
         }
         
+        #if Server
         public ClientInputState GetInputState(uint tick)
         {
             if (_inputStates == null)
@@ -99,5 +100,6 @@ namespace _Project.Scripts.CSP.Object
                 return emptyInputForThisTick;
             }
         }
+        #endif
     }
 }

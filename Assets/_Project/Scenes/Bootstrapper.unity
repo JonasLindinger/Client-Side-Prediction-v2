@@ -396,7 +396,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92f4a2135d9b438c84337a897125c33a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  networkPlayerPrefab: {fileID: 7936571346395074715, guid: decbfebfe6b160f41b2e586fa885b70e, type: 3}
 --- !u!1652712579 &357396310
 MultiplayerRolesData:
   m_ObjectHideFlags: 2
@@ -508,7 +507,7 @@ MonoBehaviour:
   m_ActionEvents: []
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: Keyboard&Mouse
-  m_DefaultActionMap: Player
+  m_DefaultActionMap: 617a5764-6496-4dc6-9542-d738f3f58c03
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
 --- !u!114 &357396317

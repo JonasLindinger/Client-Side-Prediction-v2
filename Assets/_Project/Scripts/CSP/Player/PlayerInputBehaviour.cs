@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using _Project.Scripts.CSP.Data;
+using _Project.Scripts.CSP.Simulation;
 using Unity.Netcode;
 using NetworkClient = _Project.Scripts.CSP.Object.NetworkClient;
 
@@ -37,7 +38,11 @@ namespace _Project.Scripts.CSP.Player
         {
             foreach (PlayerInputBehaviour player in _playersWithAuthority)
             {
+                #if Client
+                player.OnTick(SnapshotManager.GetInputState(tick));
+                #elif Server
                 player.OnTick(player._networkClient.GetInputState(tick));
+                #endif
             }
         }
 

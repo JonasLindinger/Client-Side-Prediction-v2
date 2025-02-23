@@ -30,19 +30,21 @@ namespace _Project.Scripts.CSP.Input
         {
             _directionalInputs = new Dictionary<string, Vector2>();
             _inputFlags = new Dictionary<string, bool>();
-            foreach (var action in _playerInput.actions)
+            foreach (var action in _playerInput.currentActionMap.actions)
             {
                 switch (action.type)
                 {
                     case InputActionType.Button:
                         _inputFlags.Add(action.name, false);
                         InputFlagNames.Add(action.name);
+                        Debug.Log("Add: " + action.name);
                         break;
                     case InputActionType.Value:
                         if (action.expectedControlType == "Vector2")
                         {
                             _directionalInputs.Add(action.name, Vector2.zero);
                             DirectionalInputNames.Add(action.name);
+                            Debug.Log("Add: " + action.name);
                         }
                         break;
                     case InputActionType.PassThrough:
@@ -55,25 +57,18 @@ namespace _Project.Scripts.CSP.Input
         public ClientInputState GetClientInputState(uint tick)
         {
             // Update boolean's
-            foreach (var action in _playerInput.actions)
+            foreach (var kvp in _inputFlags)
             {
-                switch (action.type)
-                {
-                    case InputActionType.Button:
-                        _inputFlags[action.name] = _playerInput.actions[action.name].ReadValue<float>() >= 0.4f;
-                        break;
-                    case InputActionType.Value:
-                        if (action.expectedControlType == "Vector2")
-                        {
-                            Vector2 input = _playerInput.actions[action.name].ReadValue<Vector2>();
-                            input.x = ClampValue(input.x);
-                            input.y = ClampValue(input.y);
-                            _directionalInputs[action.name] = input;
-                        }
-                        break;
-                    case InputActionType.PassThrough:
-                        break;
-                }
+                _inputFlags[kvp.Key] = _playerInput.actions[kvp.Key].ReadValue<float>() >= 0.4f;
+            }
+            
+            // Update Vector2's
+            foreach (var kvp in _directionalInputs)
+            {
+                Vector2 input = _playerInput.actions[kvp.Key].ReadValue<Vector2>();
+                input.x = ClampValue(input.x);
+                input.y = ClampValue(input.y);
+                _directionalInputs[kvp.Key] = input;
             }
 
             ClientInputState clientInputState = new ClientInputState()

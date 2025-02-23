@@ -2,7 +2,7 @@
     "name": "Player",
     "maps": [
         {
-            "name": "Player",
+            "name": "Networked",
             "id": "617a5764-6496-4dc6-9542-d738f3f58c03",
             "actions": [
                 {
@@ -172,6 +172,34 @@
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
                     "action": "Crouch",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "Local",
+            "id": "095fc621-7bf1-4b69-9243-55e28bedc1ce",
+            "actions": [
+                {
+                    "name": "Look",
+                    "type": "Value",
+                    "id": "6e25b598-7e96-4ef8-bc04-1d21dbd47cff",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "401fab74-f0eb-4838-82f0-b2de77ffa5dd",
+                    "path": "<Mouse>/delta",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "Look",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
