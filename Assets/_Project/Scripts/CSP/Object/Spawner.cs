@@ -1,56 +1,105 @@
 ﻿using _Project.Scripts.Utility;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace _Project.Scripts.CSP.Object
 {
     public class Spawner : MonoBehaviourSingleton<Spawner>
     {
+        #if Server
         [Header("References")]
         [SerializeField] private NetworkClient networkClientPrefab;
-        [SerializeField] private NetworkPlayer networkPlayerPrefab;
 
-        #if Server
-        public void SpawnClient(ulong clientId)
+        private void Start()
         {
-            var client = Instantiate(networkClientPrefab);
-            client.NetworkObject.AlwaysReplicateAsRoot = false;
-            client.NetworkObject.SynchronizeTransform = false;
-            client.NetworkObject.ActiveSceneSynchronization = false;
-            client.NetworkObject.SceneMigrationSynchronization = false;
-            client.NetworkObject.AutoObjectParentSync = false;
-            client.NetworkObject.SyncOwnerTransformWhenParented = false;
-            client.NetworkObject.AllowOwnerToParent = false;
+            #if Server
+            // Auto spawn Client object for communication
+            NetworkManager.Singleton.OnConnectionEvent += (manager, eventData) =>
+            {
+                if (eventData.EventType == ConnectionEvent.ClientConnected)
+                    SpawnObjectAnonymousWithOwner(networkClientPrefab.NetworkObject, eventData.ClientId);
+            };
+            #endif
+        }
+
+        public static void SpawnObjectAnonymousWithOwner(NetworkObject networkObject, ulong clientId)
+        {
+            var newObject = Instantiate(networkObject);
+            newObject.AlwaysReplicateAsRoot = false;
+            newObject.SynchronizeTransform = false;
+            newObject.ActiveSceneSynchronization = false;
+            newObject.SceneMigrationSynchronization = false;
+            newObject.AutoObjectParentSync = false;
+            newObject.SyncOwnerTransformWhenParented = false;
+            newObject.AllowOwnerToParent = false;
             
             // Only the client and we as the server should see the object
-            client.NetworkObject.SpawnWithObservers = false;
+            newObject.SpawnWithObservers = false;
             
             // This object should be destroyed when the owner leaves
-            client.NetworkObject.DontDestroyWithOwner = false;
+            newObject.DontDestroyWithOwner = false;
             
-            client.NetworkObject.SpawnWithOwnership(clientId);
-            client.NetworkObject.NetworkShow(clientId);
+            newObject.SpawnWithOwnership(clientId);
+            newObject.NetworkShow(clientId);
         }
-        
-        public void SpawnPlayer(ulong clientId)
+        public static void SpawnObjectAnonymousWithOwnerPermanent(NetworkObject networkObject, ulong clientId)
         {
-            var player = Instantiate(networkPlayerPrefab);
-            player.NetworkObject.AlwaysReplicateAsRoot = false;
-            player.NetworkObject.SynchronizeTransform = false;
-            player.NetworkObject.ActiveSceneSynchronization = false;
-            player.NetworkObject.SceneMigrationSynchronization = false;
-            player.NetworkObject.AutoObjectParentSync = false;
-            player.NetworkObject.SyncOwnerTransformWhenParented = false;
-            player.NetworkObject.AllowOwnerToParent = false;
+            var newObject = Instantiate(networkObject);
+            newObject.AlwaysReplicateAsRoot = false;
+            newObject.SynchronizeTransform = false;
+            newObject.ActiveSceneSynchronization = false;
+            newObject.SceneMigrationSynchronization = false;
+            newObject.AutoObjectParentSync = false;
+            newObject.SyncOwnerTransformWhenParented = false;
+            newObject.AllowOwnerToParent = false;
+            
+            // Only the client and we as the server should see the object
+            newObject.SpawnWithObservers = false;
+            
+            // This object should not be destroyed when the owner leaves
+            newObject.DontDestroyWithOwner = true;
+            
+            newObject.SpawnWithOwnership(clientId);
+            newObject.NetworkShow(clientId);
+        }
+        public static void SpawnObjectPublicWithOwner(NetworkObject networkObject, ulong clientId)
+        {
+            var newObject = Instantiate(networkObject);
+            newObject.AlwaysReplicateAsRoot = false;
+            newObject.SynchronizeTransform = false;
+            newObject.ActiveSceneSynchronization = false;
+            newObject.SceneMigrationSynchronization = false;
+            newObject.AutoObjectParentSync = false;
+            newObject.SyncOwnerTransformWhenParented = false;
+            newObject.AllowOwnerToParent = false;
             
             // This object should be seen by everyone
-            player.NetworkObject.SpawnWithObservers = true;
+            newObject.SpawnWithObservers = true;
+            
+            // This object should be destroyed when the owner leaves
+            newObject.DontDestroyWithOwner = false;
+            
+            newObject.SpawnWithOwnership(clientId);
+        }
+        public static void SpawnObjectPublicWithOwnerPermanent(NetworkObject networkObject, ulong clientId)
+        {
+            var newObject = Instantiate(networkObject);
+            newObject.AlwaysReplicateAsRoot = false;
+            newObject.SynchronizeTransform = false;
+            newObject.ActiveSceneSynchronization = false;
+            newObject.SceneMigrationSynchronization = false;
+            newObject.AutoObjectParentSync = false;
+            newObject.SyncOwnerTransformWhenParented = false;
+            newObject.AllowOwnerToParent = false;
+            
+            // This object should be seen by everyone
+            newObject.SpawnWithObservers = true;
             
             // This object should NOT be destroyed when the owner leaves
-            player.NetworkObject.DontDestroyWithOwner = true;
+            newObject.DontDestroyWithOwner = true;
             
-            player.NetworkObject.SpawnWithOwnership(clientId);
+            newObject.SpawnWithOwnership(clientId);
         }
-        
         #endif
     }
 }

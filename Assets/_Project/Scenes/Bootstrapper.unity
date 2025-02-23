@@ -396,6 +396,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92f4a2135d9b438c84337a897125c33a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  networkPlayerPrefab: {fileID: 7936571346395074715, guid: decbfebfe6b160f41b2e586fa885b70e, type: 3}
 --- !u!1652712579 &357396310
 MultiplayerRolesData:
   m_ObjectHideFlags: 2
@@ -411,6 +412,10 @@ MultiplayerRolesData:
     m_RolesMask: 2
   - m_Object: {fileID: 357396311}
     m_RolesMask: 1
+  - m_Object: {fileID: 357396317}
+    m_RolesMask: 2
+  - m_Object: {fileID: 357396315}
+    m_RolesMask: 3
 --- !u!114 &357396311
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -520,7 +525,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dontDestroy: 0
   networkClientPrefab: {fileID: 3952338591786523395, guid: 13bbecce7d66a8d439069d3454e83940, type: 3}
-  networkPlayerPrefab: {fileID: 8031337787668230734, guid: decbfebfe6b160f41b2e586fa885b70e, type: 3}
 --- !u!1 &387800522
 GameObject:
   m_ObjectHideFlags: 0

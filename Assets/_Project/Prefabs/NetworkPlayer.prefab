@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7745943635381155271}
   - component: {fileID: 7936571346395074715}
-  - component: {fileID: 8031337787668230734}
+  - component: {fileID: 4427454220359260473}
   m_Layer: 0
   m_Name: NetworkPlayer
   m_TagString: Untagged
@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2719911060
+  GlobalObjectIdHash: 3107406136
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -58,7 +58,7 @@ MonoBehaviour:
   AutoObjectParentSync: 1
   SyncOwnerTransformWhenParented: 1
   AllowOwnerToParent: 0
---- !u!114 &8031337787668230734
+--- !u!114 &4427454220359260473
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -67,7 +67,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7537445062675534531}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b321d89071ab4193939ab524eb8ff2e3, type: 3}
+  m_Script: {fileID: 11500000, guid: 7010713fc6f24e62b3416f6e85eef820, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
