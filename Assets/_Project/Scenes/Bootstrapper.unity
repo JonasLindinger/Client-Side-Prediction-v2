@@ -295,7 +295,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2bdc9d27557846b5b065d7254e982366, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dontDestroy: 1
+  dontDestroy: 0
   networkSettings: {fileID: 11400000, guid: bf748b631a950794d85225fa201879a1, type: 2}
   connectionApproval: {fileID: 357396307}
   connectionListener: {fileID: 357396308}
@@ -464,7 +464,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ff1f403948e4b73af6ff81829dc303c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dontDestroy: 1
+  dontDestroy: 0
   physicsTickSystem: {fileID: 357396313}
   networkTickSystem: {fileID: 357396312}
   tickAdjustmentTickSystem: {fileID: 357396311}

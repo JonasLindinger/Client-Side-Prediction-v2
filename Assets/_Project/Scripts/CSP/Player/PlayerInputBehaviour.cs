@@ -1,19 +1,27 @@
 ﻿using System.Collections.Generic;
 using _Project.Scripts.CSP.Data;
-using _Project.Scripts.CSP.Simulation;
 using Unity.Netcode;
+using NetworkClient = _Project.Scripts.CSP.Object.NetworkClient;
 
 namespace _Project.Scripts.CSP.Player
 {
     public abstract class PlayerInputBehaviour : NetworkBehaviour
     {
-        private static List<PlayerInputBehaviour> _playersWithAuthority;
+        private static List<PlayerInputBehaviour> _playersWithAuthority = new List<PlayerInputBehaviour>();
 
+        private NetworkClient _networkClient;
+        
         public override void OnNetworkSpawn()
         {
             if (IsOwner || IsServer)
                 _playersWithAuthority.Add(this);
 
+            #if Client
+            _networkClient = NetworkClient.LocalClient;
+            #elif Server
+            _networkClient = NetworkClient.ClientsByOwnerId[OwnerClientId];
+            #endif
+            
             OnSpawn();
         }
 
@@ -29,7 +37,7 @@ namespace _Project.Scripts.CSP.Player
         {
             foreach (PlayerInputBehaviour player in _playersWithAuthority)
             {
-                player.OnTick(SnapshotManager.GetInputState(tick));
+                player.OnTick(player._networkClient.GetInputState(tick));
             }
         }
 

@@ -7,14 +7,10 @@ namespace _Project.Scripts.Connection
 {
     public class DefaultConnectionListener : ConnectionListener
     {
-        [Header("References")]
-        [SerializeField] private NetworkObject networkPlayerPrefab;
-        
         public override void OnClientConnected(ConnectionEventData eventData)
         {
             #if Server
             Debug.Log("Client: " + eventData.ClientId + " connected");
-            Spawner.SpawnObjectPublicWithOwnerPermanent(networkPlayerPrefab, eventData.ClientId);
             #endif
         }
 
