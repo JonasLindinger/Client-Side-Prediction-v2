@@ -130,6 +130,7 @@ namespace _Project.Scripts.CSP.Data
                 float y = DecodeVectorComponent(packedValue & 0b11);
 
                 vectors[i] = new Vector2(x, y);
+                vectors[i].Normalize();
             }
 
             _directionalInputs = vectors;
