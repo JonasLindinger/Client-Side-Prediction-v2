@@ -1,4 +1,5 @@
-﻿using _Project.Scripts.CSP.Data;
+﻿using System.Collections.Generic;
+using _Project.Scripts.CSP.Data;
 using _Project.Scripts.Utility;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -11,6 +12,8 @@ namespace _Project.Scripts.CSP.Input
         [Header("Inputs")]
         [SerializeField] private string[] directionalInputs;
         [SerializeField] private string[] inputFlags;
+        
+        private Queue<ClientInputState> _lastInputStates = new Queue<ClientInputState>();
         
         private PlayerInput _playerInput;
         
@@ -44,6 +47,21 @@ namespace _Project.Scripts.CSP.Input
                 tick);
             
             return clientInputState;
+        }
+
+        public void AddInputState(ClientInputState clientInputState)
+        {
+            _lastInputStates.Enqueue(clientInputState);
+        }
+        
+        public ClientInputState[] GetLastInputStates(int amount)
+        {
+            // Remove inputs if we have too much
+            if (_lastInputStates.Count > amount)
+                for (int i = 0; i < _lastInputStates.Count - amount; ++i)
+                    _lastInputStates.Dequeue();
+            
+            return _lastInputStates.ToArray();
         }
     }
 }
