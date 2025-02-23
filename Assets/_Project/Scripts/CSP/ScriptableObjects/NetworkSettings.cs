@@ -10,7 +10,7 @@ namespace _Project.Scripts.CSP.ScriptableObjects
         public uint networkTickRate = 64;
         [Space(10)] 
         [Header("Tick-System")] 
-        public int inputBufferSize;
+        public int inputBufferSize = 1024;
         [Space(10)] 
         [Header("Connection")]
         public string defaultIp = "127.0.0.1";

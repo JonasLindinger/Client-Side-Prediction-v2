@@ -14,3 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   physicsTickRate: 64
   networkTickRate: 64
+  inputBufferSize: 1024
+  defaultIp: 127.0.0.1
+  defaultPort: 7777
