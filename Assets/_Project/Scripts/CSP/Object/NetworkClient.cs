@@ -18,7 +18,7 @@ namespace _Project.Scripts.CSP.Object
             #endif
         }
 
-        [Rpc(SendTo.Server, Delivery = RpcDelivery.Reliable)]
+        [Rpc(SendTo.Server, Delivery = RpcDelivery.Unreliable)]
         public void OnInputRPC(ClientInputState[] clientInputStates)
         {
             #if Server
