@@ -21,7 +21,16 @@ namespace _Project.Scripts.CSP.Object
         [Rpc(SendTo.Server, Delivery = RpcDelivery.Reliable)]
         public void OnInputRPC(ClientInputState[] clientInputStates)
         {
-            
+            #if Server
+            Debug.Log("Got Input Package");
+            foreach (var input in clientInputStates)
+            {
+                // If this is an "old" input we skip
+                if (input.Tick <= TickSystemManager.CurrentTick) continue;
+                SnapshotManager.RegisterInputState(input);
+                Debug.Log("Got Input");
+            }
+            #endif
         }
     }
 }

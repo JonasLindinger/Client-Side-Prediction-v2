@@ -16,7 +16,7 @@ namespace _Project.Scripts.CSP.Simulation
         
         public void StartTickSystems(uint physicsTickRate, uint networkTickRate, uint tickAdjustmentTickRate, uint startingPhysicsTickSystem = 0)
         {
-            physicsTickSystem.Run(physicsTickRate, startingPhysicsTickSystem);
+            physicsTickSystem.Run(physicsTickRate, startingPhysicsTickSystem + NetworkRunner.NetworkSettings.physicsTickClientOffset);
             networkTickSystem.Run(networkTickRate);
             
             #if Server

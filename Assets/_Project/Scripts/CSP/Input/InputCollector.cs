@@ -40,11 +40,13 @@ namespace _Project.Scripts.CSP.Input
             i = 0;
             foreach (string input in inputFlags)
                 booleanInputs[i] = _playerInput.actions[input].ReadValue<float>() >= 0.4f;
-            
-            ClientInputState clientInputState = new ClientInputState(
-                vector2Inputs,
-                booleanInputs,
-                tick);
+
+            ClientInputState clientInputState = new ClientInputState()
+            {
+                DirectionalInputs = vector2Inputs,
+                InputFlags = booleanInputs,
+                Tick = tick,
+            };
             
             return clientInputState;
         }

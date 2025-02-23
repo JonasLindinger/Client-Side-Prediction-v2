@@ -24,6 +24,7 @@ namespace _Project.Scripts.CSP.Simulation
             
             ClientInputState clientInputState = _inputCollector.GetClientInputState(tick);
             SnapshotManager.RegisterInputState(clientInputState);
+            _inputCollector.AddInputState(clientInputState);
 
             return clientInputState;
         }

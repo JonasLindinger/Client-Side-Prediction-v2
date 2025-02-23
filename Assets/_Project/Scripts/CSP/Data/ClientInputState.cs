@@ -10,16 +10,12 @@ namespace _Project.Scripts.CSP.Data
         public bool[] InputFlags;
         
         private byte[] _data;
-        
-        public ClientInputState(Vector2[] directionalInputs, bool[] inputFlags, uint tick)
+
+        private void Serialize()
         {
-            DirectionalInputs = directionalInputs;
-            InputFlags = inputFlags;
-            Tick = tick;
-            
             // Calculate how many bytes are needed for the Vector2 array and bool array
-            int movementCount = directionalInputs.Length;
-            int boolCount = inputFlags.Length;
+            int movementCount = DirectionalInputs.Length;
+            int boolCount = InputFlags.Length;
 
             // Calculate the number of bytes required for the Vector2s
             int vector2Bytes = Mathf.CeilToInt(movementCount * 2 * 2f / 8);  // 2 bits for each axis per Vector2
@@ -34,7 +30,7 @@ namespace _Project.Scripts.CSP.Data
             // Serialize Vector2s (each using 2 bits for x and y, 4 bits total per Vector2)
             for (int i = 0; i < movementCount; i++)
             {
-                Vector2 input = directionalInputs[i];
+                Vector2 input = DirectionalInputs[i];
                 byte x = (byte)(input.x == 1 ? 2 : (input.x == -1 ? 1 : 0));
                 byte y = (byte)(input.y == 1 ? 2 : (input.y == -1 ? 1 : 0));
     
@@ -58,15 +54,14 @@ namespace _Project.Scripts.CSP.Data
             for (int i = 0; i < boolCount; i++)
             {
                 int byteIndex = boolByteIndex + (i / 8);
-                _data[byteIndex] |= (byte)((inputFlags[i] ? 1 : 0) << (i % 8));
+                _data[byteIndex] |= (byte)((InputFlags[i] ? 1 : 0) << (i % 8));
             }
 
             // Serialize the tick (4 bytes)
-            byte[] tickBytes = System.BitConverter.GetBytes(tick);
+            byte[] tickBytes = System.BitConverter.GetBytes(Tick);
             System.Array.Copy(tickBytes, 0, _data, dataIndex, tickBytes.Length);
         }
-
-        public void Deserialize()
+        private void Deserialize()
         {
             int movementCount = (_data.Length - 4) / 2 / 2;  // 2 bits for each axis per Vector2
             int boolCount = (_data.Length - 4) / 8;  // 1 byte for up to 8 bools
@@ -102,9 +97,11 @@ namespace _Project.Scripts.CSP.Data
             // Serialize the entire byte array directly (including tick)
             int dataSize = _data.Length;
             serializer.SerializeValue(ref dataSize);
-
+            
             if (serializer.IsWriter)
             {
+                Serialize();
+
                 // Write the byte array to the serializer
                 for (int i = 0; i < dataSize; i++)
                 {
@@ -119,6 +116,8 @@ namespace _Project.Scripts.CSP.Data
                 {
                     serializer.SerializeValue(ref _data[i]);
                 }
+                
+                Deserialize();
             }
         }
     }

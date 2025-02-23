@@ -1,6 +1,7 @@
 ﻿using _Project.Scripts.CSP.Data;
 using _Project.Scripts.CSP.Input;
 using _Project.Scripts.CSP.Object;
+using UnityEngine;
 
 namespace _Project.Scripts.CSP.Simulation
 {
@@ -24,6 +25,7 @@ namespace _Project.Scripts.CSP.Simulation
             // Todo: Replace the 15 with a dynamic amount (Add in Settings?)
             ClientInputState[] inputsToSend = _inputCollector.GetLastInputStates(15);
 
+            Debug.Log("Send");
             // Actually send the inputs
             NetworkClient.LocalClient.OnInputRPC(inputsToSend);
         }
