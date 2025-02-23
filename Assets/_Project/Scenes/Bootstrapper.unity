@@ -408,7 +408,7 @@ MultiplayerRolesData:
   - m_Object: {fileID: 0}
     m_RolesMask: 2
   - m_Object: {fileID: 357396307}
-    m_RolesMask: 2
+    m_RolesMask: 3
   - m_Object: {fileID: 357396311}
     m_RolesMask: 3
   - m_Object: {fileID: 0}
@@ -416,7 +416,7 @@ MultiplayerRolesData:
   - m_Object: {fileID: 357396315}
     m_RolesMask: 3
   - m_Object: {fileID: 357396317}
-    m_RolesMask: 2
+    m_RolesMask: 3
 --- !u!114 &357396311
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -111,4 +111,4 @@ MultiplayerRolesData:
   m_GameObjectRolesMask: 3
   m_ComponentsRolesMasks:
   - m_Object: {fileID: 2315219989352886949}
-    m_RolesMask: 2
+    m_RolesMask: 3
