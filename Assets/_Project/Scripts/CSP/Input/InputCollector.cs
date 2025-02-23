@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using _Project.Scripts.CSP.Data;
 using _Project.Scripts.Utility;
 using UnityEngine;
@@ -9,8 +10,10 @@ namespace _Project.Scripts.CSP.Input
     [RequireComponent(typeof(PlayerInput))]
     public class InputCollector : MonoBehaviourSingleton<InputCollector>
     {
-        private string[] _directionalInputs;
-        private string[] _inputFlags;
+        public static Dictionary<string, Vector2> DirectionalInputs = new Dictionary<string, Vector2>();
+        public static Dictionary<string, bool> InputFlags = new Dictionary<string, bool>();
+        public static List<string> DirectionalInputsNames = new List<string>();
+        public static List<string> InputFlagsNames = new List<string>();
         
         private Queue<ClientInputState> _lastInputStates = new Queue<ClientInputState>();
         
@@ -25,52 +28,58 @@ namespace _Project.Scripts.CSP.Input
 
         private void GetInputsByName()
         {
-            List<string> directionalInputs = new List<string>();
-            List<string> inputFlags = new List<string>();
+            DirectionalInputs = new Dictionary<string, Vector2>();
+            InputFlags = new Dictionary<string, bool>();
             foreach (var action in _playerInput.actions)
             {
                 switch (action.type)
                 {
                     case InputActionType.Button:
-                        inputFlags.Add(action.name);
+                        InputFlags.Add(action.name, false);
+                        InputFlagsNames.Add(action.name);
                         break;
                     case InputActionType.Value:
                         if (action.expectedControlType == "Vector2")
-                            directionalInputs.Add(action.name);
+                        {
+                            DirectionalInputs.Add(action.name, Vector2.zero);
+                            DirectionalInputsNames.Add(action.name);
+                        }
                         break;
                     case InputActionType.PassThrough:
                         Debug.LogWarning("Can't handle this input: " + action.name);
                         break;
                 }
             }
-            
-            _directionalInputs = directionalInputs.ToArray();
-            _inputFlags = inputFlags.ToArray();
         }
 
         public ClientInputState GetClientInputState(uint tick)
         {
-            Vector2[] vector2Inputs = new Vector2[_directionalInputs.Length];
-            bool[] booleanInputs = new bool[_inputFlags.Length];
-            
-            // Check Vector2's
-            int i = 0;
-            foreach (string input in _directionalInputs)
+            // Update boolean's
+            foreach (var action in _playerInput.actions)
             {
-                Vector2 inputVector = _playerInput.actions[input].ReadValue<Vector2>();
-                inputVector = Vector2.ClampMagnitude(inputVector, 1f); // Limit to -1 and 1
-                vector2Inputs[i] = inputVector;
+                switch (action.type)
+                {
+                    case InputActionType.Button:
+                        InputFlags[action.name] = _playerInput.actions[action.name].ReadValue<float>() >= 0.4f;
+                        break;
+                    case InputActionType.Value:
+                        if (action.expectedControlType == "Vector2")
+                        {
+                            Vector2 input = _playerInput.actions[action.name].ReadValue<Vector2>();
+                            input.x = ClampValue(input.x);
+                            input.y = ClampValue(input.y);
+                            DirectionalInputs[action.name] = input;
+                        }
+                        break;
+                    case InputActionType.PassThrough:
+                        break;
+                }
             }
-            
-            // Check boolean's
-            i = 0;
-            foreach (string input in _inputFlags)
-                booleanInputs[i] = _playerInput.actions[input].ReadValue<float>() >= 0.4f;
 
             ClientInputState clientInputState = new ClientInputState()
             {
-                DirectionalInputs = vector2Inputs,
-                InputFlags = booleanInputs,
+                InputFlags = InputFlags,
+                DirectionalInputs = DirectionalInputs,
                 Tick = tick,
             };
             
@@ -90,6 +99,16 @@ namespace _Project.Scripts.CSP.Input
                     _lastInputStates.Dequeue();
             
             return _lastInputStates.ToArray();
+        }
+        
+        private static float ClampValue(float value)
+        {
+            if (value < -0.5f)
+                return -1f;
+            else if (value > 0.5f)
+                return 1f;
+            else
+                return 0f;
         }
     }
 }

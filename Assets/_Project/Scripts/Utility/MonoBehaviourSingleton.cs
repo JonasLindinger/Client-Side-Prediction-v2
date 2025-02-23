@@ -6,7 +6,7 @@ namespace _Project.Scripts.Utility
     {
         private static T _instance;
 
-        private protected bool DontDestroy = true;
+        [SerializeField] private bool dontDestroy = true;
         
         private static bool _applicationIsQuitting;
 
@@ -41,7 +41,7 @@ namespace _Project.Scripts.Utility
             if (_instance == null)
             {
                 _instance = this as T;
-                if (DontDestroy)
+                if (dontDestroy)
                 {
                     transform.parent = null;
                     DontDestroyOnLoad(gameObject);
@@ -51,7 +51,7 @@ namespace _Project.Scripts.Utility
             {
                 Destroy(gameObject);
             }
-            else if (DontDestroy)
+            else if (dontDestroy)
             {
                 transform.parent = null;
                 DontDestroyOnLoad(gameObject);
