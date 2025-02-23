@@ -1,8 +1,9 @@
-﻿using _Project.Scripts.CSP.Object;
+﻿using _Project.Scripts.CSP.Connection.Listener;
+using _Project.Scripts.CSP.Object;
 using Unity.Netcode;
 using UnityEngine;
 
-namespace _Project.Scripts.CSP.Connection.Listener
+namespace _Project.Scripts.Connection
 {
     public class DefaultConnectionListener : ConnectionListener
     {

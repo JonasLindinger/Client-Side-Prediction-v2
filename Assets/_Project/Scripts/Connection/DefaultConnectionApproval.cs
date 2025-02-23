@@ -1,7 +1,8 @@
-﻿using _Project.Scripts.CSP.Data;
+﻿using _Project.Scripts.CSP.Connection.Approval;
+using _Project.Scripts.CSP.Data;
 using Unity.Netcode;
 
-namespace _Project.Scripts.CSP.Connection.Approval
+namespace _Project.Scripts.Connection
 {
     public class DefaultConnectionApproval : ConnectionApproval
     {
