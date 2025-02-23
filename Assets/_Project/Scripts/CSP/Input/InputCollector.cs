@@ -9,9 +9,8 @@ namespace _Project.Scripts.CSP.Input
     [RequireComponent(typeof(PlayerInput))]
     public class InputCollector : MonoBehaviourSingleton<InputCollector>
     {
-        [Header("Inputs")]
-        [SerializeField] private string[] directionalInputs;
-        [SerializeField] private string[] inputFlags;
+        private string[] _directionalInputs;
+        private string[] _inputFlags;
         
         private Queue<ClientInputState> _lastInputStates = new Queue<ClientInputState>();
         
@@ -20,16 +19,43 @@ namespace _Project.Scripts.CSP.Input
         private void Start()
         {
             _playerInput = GetComponent<PlayerInput>();
+
+            GetInputsByName();
+        }
+
+        private void GetInputsByName()
+        {
+            List<string> directionalInputs = new List<string>();
+            List<string> inputFlags = new List<string>();
+            foreach (var action in _playerInput.actions)
+            {
+                switch (action.type)
+                {
+                    case InputActionType.Button:
+                        inputFlags.Add(action.name);
+                        break;
+                    case InputActionType.Value:
+                        if (action.expectedControlType == "Vector2")
+                            directionalInputs.Add(action.name);
+                        break;
+                    case InputActionType.PassThrough:
+                        Debug.LogWarning("Can't handle this input: " + action.name);
+                        break;
+                }
+            }
+            
+            _directionalInputs = directionalInputs.ToArray();
+            _inputFlags = inputFlags.ToArray();
         }
 
         public ClientInputState GetClientInputState(uint tick)
         {
-            Vector2[] vector2Inputs = new Vector2[directionalInputs.Length];
-            bool[] booleanInputs = new bool[inputFlags.Length];
+            Vector2[] vector2Inputs = new Vector2[_directionalInputs.Length];
+            bool[] booleanInputs = new bool[_inputFlags.Length];
             
             // Check Vector2's
             int i = 0;
-            foreach (string input in directionalInputs)
+            foreach (string input in _directionalInputs)
             {
                 Vector2 inputVector = _playerInput.actions[input].ReadValue<Vector2>();
                 inputVector = Vector2.ClampMagnitude(inputVector, 1f); // Limit to -1 and 1
@@ -38,7 +64,7 @@ namespace _Project.Scripts.CSP.Input
             
             // Check boolean's
             i = 0;
-            foreach (string input in inputFlags)
+            foreach (string input in _inputFlags)
                 booleanInputs[i] = _playerInput.actions[input].ReadValue<float>() >= 0.4f;
 
             ClientInputState clientInputState = new ClientInputState()
