@@ -9,7 +9,7 @@ namespace _Project.Scripts.CSP.ScriptableObjects
         public uint physicsTickRate = 64;
         public uint networkTickRate = 64;
         [Space(10)] 
-        [Header("Tick-System")] 
+        [Header("Buffer")] 
         public int inputBufferSize = 1024;
         [Space(10)] 
         [Header("Connection")]
