@@ -66,7 +66,7 @@ namespace _Project.Scripts.CSP.Data
         }
         private void DeserializeFlags()
         {
-            int boolCount = InputCollector.InputFlags.Count;
+            int boolCount = InputCollector.InputFlagNames.Count;
             
             bool[] boolArray = new bool[boolCount];
 
@@ -81,7 +81,7 @@ namespace _Project.Scripts.CSP.Data
             i = 0;
             foreach (var input in _inputFlags)
             {
-                InputFlags.Add(InputCollector.InputFlagsNames[i], input);
+                InputFlags.Add(InputCollector.InputFlagNames[i], input);
                 i++;
             }
         }
@@ -116,7 +116,7 @@ namespace _Project.Scripts.CSP.Data
         }
         private void DeserializeDirectionals()
         {
-            int vectorCount = InputCollector.DirectionalInputs.Count;
+            int vectorCount = InputCollector.DirectionalInputNames.Count;
             
             Vector2[] vectors = new Vector2[vectorCount];
             
@@ -138,7 +138,7 @@ namespace _Project.Scripts.CSP.Data
             i = 0;
             foreach (var input in _directionalInputs)
             {
-                DirectionalInputs.Add(InputCollector.DirectionalInputsNames[i], input);
+                DirectionalInputs.Add(InputCollector.DirectionalInputNames[i], input);
                 i++;
             }
         }

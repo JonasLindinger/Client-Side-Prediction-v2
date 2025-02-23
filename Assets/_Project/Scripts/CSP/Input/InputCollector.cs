@@ -10,10 +10,10 @@ namespace _Project.Scripts.CSP.Input
     [RequireComponent(typeof(PlayerInput))]
     public class InputCollector : MonoBehaviourSingleton<InputCollector>
     {
-        public static Dictionary<string, Vector2> DirectionalInputs = new Dictionary<string, Vector2>();
-        public static Dictionary<string, bool> InputFlags = new Dictionary<string, bool>();
-        public static List<string> DirectionalInputsNames = new List<string>();
-        public static List<string> InputFlagsNames = new List<string>();
+        private static Dictionary<string, Vector2> _directionalInputs = new Dictionary<string, Vector2>();
+        private static Dictionary<string, bool> _inputFlags = new Dictionary<string, bool>();
+        public static List<string> DirectionalInputNames = new List<string>();
+        public static List<string> InputFlagNames = new List<string>();
         
         private Queue<ClientInputState> _lastInputStates = new Queue<ClientInputState>();
         
@@ -28,21 +28,21 @@ namespace _Project.Scripts.CSP.Input
 
         private void GetInputsByName()
         {
-            DirectionalInputs = new Dictionary<string, Vector2>();
-            InputFlags = new Dictionary<string, bool>();
+            _directionalInputs = new Dictionary<string, Vector2>();
+            _inputFlags = new Dictionary<string, bool>();
             foreach (var action in _playerInput.actions)
             {
                 switch (action.type)
                 {
                     case InputActionType.Button:
-                        InputFlags.Add(action.name, false);
-                        InputFlagsNames.Add(action.name);
+                        _inputFlags.Add(action.name, false);
+                        InputFlagNames.Add(action.name);
                         break;
                     case InputActionType.Value:
                         if (action.expectedControlType == "Vector2")
                         {
-                            DirectionalInputs.Add(action.name, Vector2.zero);
-                            DirectionalInputsNames.Add(action.name);
+                            _directionalInputs.Add(action.name, Vector2.zero);
+                            DirectionalInputNames.Add(action.name);
                         }
                         break;
                     case InputActionType.PassThrough:
@@ -60,7 +60,7 @@ namespace _Project.Scripts.CSP.Input
                 switch (action.type)
                 {
                     case InputActionType.Button:
-                        InputFlags[action.name] = _playerInput.actions[action.name].ReadValue<float>() >= 0.4f;
+                        _inputFlags[action.name] = _playerInput.actions[action.name].ReadValue<float>() >= 0.4f;
                         break;
                     case InputActionType.Value:
                         if (action.expectedControlType == "Vector2")
@@ -68,7 +68,7 @@ namespace _Project.Scripts.CSP.Input
                             Vector2 input = _playerInput.actions[action.name].ReadValue<Vector2>();
                             input.x = ClampValue(input.x);
                             input.y = ClampValue(input.y);
-                            DirectionalInputs[action.name] = input;
+                            _directionalInputs[action.name] = input;
                         }
                         break;
                     case InputActionType.PassThrough:
@@ -78,8 +78,8 @@ namespace _Project.Scripts.CSP.Input
 
             ClientInputState clientInputState = new ClientInputState()
             {
-                InputFlags = InputFlags,
-                DirectionalInputs = DirectionalInputs,
+                InputFlags = _inputFlags,
+                DirectionalInputs = _directionalInputs,
                 Tick = tick,
             };
             
