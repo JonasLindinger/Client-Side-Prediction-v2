@@ -23,7 +23,7 @@ namespace _Project.Scripts.CSP.Object
             #endif
         }
         
-        public static void _SpawnObjectAnonymousWithOwner(GameObject networkObject, ulong clientId)
+        public static void SpawnObjectAnonymousWithOwner(GameObject networkObject, ulong clientId)
         {
             var newObject = Instantiate(networkObject.gameObject).GetComponent<NetworkObject>();
             newObject.AlwaysReplicateAsRoot = false;
@@ -44,7 +44,7 @@ namespace _Project.Scripts.CSP.Object
             newObject.NetworkShow(clientId);
         }
         
-        public static void _SpawnObjectAnonymousWithOwnerPermanent(GameObject networkObject, ulong clientId)
+        public static void SpawnObjectAnonymousWithOwnerPermanent(GameObject networkObject, ulong clientId)
         {
             var newObject = Instantiate(networkObject.gameObject).GetComponent<NetworkObject>();
             newObject.AlwaysReplicateAsRoot = false;
@@ -65,7 +65,7 @@ namespace _Project.Scripts.CSP.Object
             newObject.NetworkShow(clientId);
         }
         
-        public static void _SpawnObjectPublicWithOwner(GameObject networkObject, ulong clientId)
+        public static void SpawnObjectPublicWithOwner(GameObject networkObject, ulong clientId)
         {
             var newObject = Instantiate(networkObject.gameObject).GetComponent<NetworkObject>();
             newObject.AlwaysReplicateAsRoot = false;
@@ -85,7 +85,7 @@ namespace _Project.Scripts.CSP.Object
             newObject.SpawnWithOwnership(clientId);
         }
         
-        public static void _SpawnObjectPublicWithOwnerPermanent(GameObject networkObject, ulong clientId)
+        public static void SpawnObjectPublicWithOwnerPermanent(GameObject networkObject, ulong clientId)
         {
             var newObject = Instantiate(networkObject.gameObject).GetComponent<NetworkObject>();
             newObject.AlwaysReplicateAsRoot = false;
