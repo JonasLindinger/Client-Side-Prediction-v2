@@ -1,5 +1,6 @@
 ﻿using _Project.Scripts.CSP.Data;
 using _Project.Scripts.CSP.Input;
+using _Project.Scripts.CSP.Player;
 
 namespace _Project.Scripts.CSP.Simulation
 {
@@ -11,9 +12,10 @@ namespace _Project.Scripts.CSP.Simulation
         {
             #if Client
             ClientInputState clientInputState = GetInputState(tick);
-            #elif Server
-            
             #endif
+            
+            // Update all Players (Server moves everyone, Client predicts his own player)
+            PlayerInputBehaviour.UpdatePlayersWithAuthority(tick);
         }
         
         #if Client
