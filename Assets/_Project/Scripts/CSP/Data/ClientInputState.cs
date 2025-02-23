@@ -94,14 +94,13 @@ namespace _Project.Scripts.CSP.Data
         
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
-            // Serialize the entire byte array directly (including tick)
-            int dataSize = _data.Length;
-            serializer.SerializeValue(ref dataSize);
-            
             if (serializer.IsWriter)
             {
                 Serialize();
 
+                int dataSize = _data.Length;
+                serializer.SerializeValue(ref dataSize);
+                
                 // Write the byte array to the serializer
                 for (int i = 0; i < dataSize; i++)
                 {
@@ -110,6 +109,9 @@ namespace _Project.Scripts.CSP.Data
             }
             else
             {
+                int dataSize = 0;
+                serializer.SerializeValue(ref dataSize);
+                
                 // Read the byte array from the serializer
                 _data = new byte[dataSize];
                 for (int i = 0; i < dataSize; i++)

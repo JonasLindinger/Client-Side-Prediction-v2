@@ -22,7 +22,6 @@ namespace _Project.Scripts.CSP.Object
         public void OnInputRPC(ClientInputState[] clientInputStates)
         {
             #if Server
-            Debug.Log("Got Input Package");
             foreach (var input in clientInputStates)
             {
                 // If this is an "old" input we skip
