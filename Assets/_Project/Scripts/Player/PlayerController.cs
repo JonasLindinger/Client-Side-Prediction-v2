@@ -33,11 +33,14 @@ namespace _Project.Scripts.Player
         public override void OnSpawn()
         {
             _rb = GetComponent<Rigidbody>();
-            _rb.freezeRotation = true;
+            _rb.freezeRotation = true; 
+            _rb.isKinematic = true;
         }
 
         public override void OnTick(ClientInputState input)
         {
+            transform.position += new Vector3(input.DirectionalInputs["Move"].x, 0, input.DirectionalInputs["Move"].y) * 0.1f;
+            return;
             // Applying movement
             // Setting the drag
             _grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.2f, whatIsGround);
