@@ -1,4 +1,4 @@
-﻿namespace _Project.Scripts.CSP.Simulation
+﻿namespace CSP.Simulation
 {
     public class TickAdjustmentTickSystem : TickSystem
     {

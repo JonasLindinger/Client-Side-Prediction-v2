@@ -1,8 +1,8 @@
-﻿using _Project.Scripts.CSP.Data;
-using _Project.Scripts.CSP.Input;
-using _Project.Scripts.CSP.Player;
+﻿using CSP.Data;
+using CSP.Input;
+using CSP.Player;
 
-namespace _Project.Scripts.CSP.Simulation
+namespace CSP.Simulation
 {
     public class PhysicsTickSystem : TickSystem
     {

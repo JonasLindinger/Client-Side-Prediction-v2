@@ -1,7 +1,7 @@
 ﻿using _Project.Scripts.Utility;
 using UnityEngine;
 
-namespace _Project.Scripts.CSP.Simulation
+namespace CSP.Simulation
 {
     public class TickSystemManager : MonoBehaviourSingleton<TickSystemManager>
     {

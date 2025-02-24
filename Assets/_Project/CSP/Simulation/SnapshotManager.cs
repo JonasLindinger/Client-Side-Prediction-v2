@@ -1,6 +1,6 @@
-﻿using _Project.Scripts.CSP.Data;
+﻿using CSP.Data;
 
-namespace _Project.Scripts.CSP.Simulation
+namespace CSP.Simulation
 {
     public static class SnapshotManager
     {

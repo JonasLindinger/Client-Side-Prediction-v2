@@ -1,7 +1,7 @@
 ﻿using Unity.Netcode;
 using UnityEngine;
 
-namespace _Project.Scripts.CSP.Simulation
+namespace CSP.Simulation
 {
     public class TickSync : NetworkBehaviour
     {

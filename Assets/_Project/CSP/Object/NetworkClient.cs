@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
-using _Project.Scripts.CSP.Data;
-using _Project.Scripts.CSP.Input;
-using _Project.Scripts.CSP.Simulation;
+using CSP.Data;
+using CSP.Input;
+using CSP.Simulation;
 using Unity.Netcode;
 using UnityEngine;
 
-namespace _Project.Scripts.CSP.Object
+namespace CSP.Object
 {
     [RequireComponent(typeof(TickSync))]
     public class NetworkClient : NetworkBehaviour

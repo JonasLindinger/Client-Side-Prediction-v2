@@ -1,5 +1,5 @@
-﻿using _Project.Scripts.CSP.Connection.Listener;
-using _Project.Scripts.CSP.Object;
+﻿using CSP.Connection.Listener;
+using CSP.Object;
 using Unity.Netcode;
 using UnityEngine;
 

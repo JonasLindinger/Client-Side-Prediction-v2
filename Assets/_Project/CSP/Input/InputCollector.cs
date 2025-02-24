@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using _Project.Scripts.CSP.Data;
+using CSP.Data;
 using _Project.Scripts.Utility;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace _Project.Scripts.CSP.Input
+namespace CSP.Input
 {
     [RequireComponent(typeof(PlayerInput))]
     public class InputCollector : MonoBehaviourSingleton<InputCollector>

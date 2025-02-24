@@ -1,5 +1,5 @@
-﻿using _Project.Scripts.CSP.Data;
-using _Project.Scripts.CSP.Player;
+﻿using CSP.Data;
+using CSP.Player;
 using UnityEngine;
 
 namespace _Project.Scripts.Player

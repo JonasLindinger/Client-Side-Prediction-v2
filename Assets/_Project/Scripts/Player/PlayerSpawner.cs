@@ -1,4 +1,4 @@
-﻿using _Project.Scripts.CSP.Object;
+﻿using CSP.Object;
 using Unity.Netcode;
 using UnityEngine;
 

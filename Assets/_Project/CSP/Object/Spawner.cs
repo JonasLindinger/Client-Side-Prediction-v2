@@ -2,7 +2,7 @@
 using Unity.Netcode;
 using UnityEngine;
 
-namespace _Project.Scripts.CSP.Object
+namespace CSP.Object
 {
     public class Spawner : MonoBehaviourSingleton<Spawner>
     {

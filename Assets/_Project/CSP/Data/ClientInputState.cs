@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using _Project.Scripts.CSP.Input;
+using CSP.Input;
 using Unity.Netcode;
 using UnityEngine;
 
-namespace _Project.Scripts.CSP.Data
+namespace CSP.Data
 {
     public class ClientInputState : INetworkSerializable
     {

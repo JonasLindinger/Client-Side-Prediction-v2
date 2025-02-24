@@ -1,9 +1,9 @@
-﻿using _Project.Scripts.CSP.Data;
-using _Project.Scripts.CSP.Input;
-using _Project.Scripts.CSP.Object;
+﻿using CSP.Data;
+using CSP.Input;
+using CSP.Object;
 using UnityEngine;
 
-namespace _Project.Scripts.CSP.Simulation
+namespace CSP.Simulation
 {
     public class NetworkTickSystem : TickSystem
     {

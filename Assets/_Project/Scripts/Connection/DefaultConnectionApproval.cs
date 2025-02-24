@@ -1,5 +1,5 @@
-﻿using _Project.Scripts.CSP.Connection.Approval;
-using _Project.Scripts.CSP.Data;
+﻿using CSP.Connection.Approval;
+using CSP.Data;
 using Unity.Netcode;
 
 namespace _Project.Scripts.Connection

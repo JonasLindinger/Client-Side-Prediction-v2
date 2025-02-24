@@ -1,15 +1,15 @@
-﻿using _Project.Scripts.CSP.Connection.Approval;
-using _Project.Scripts.CSP.Connection.Listener;
-using _Project.Scripts.CSP.Data;
-using _Project.Scripts.CSP.Simulation;
+﻿using CSP.Connection.Approval;
+using CSP.Connection.Listener;
+using CSP.Data;
+using CSP.Simulation;
 using _Project.Scripts.Utility;
 using _Project.Scripts.Utility.SceneManagement;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using UnityEngine;
-using NetworkSettings = _Project.Scripts.CSP.ScriptableObjects.NetworkSettings;
+using NetworkSettings = CSP.ScriptableObjects.NetworkSettings;
 
-namespace _Project.Scripts.CSP
+namespace CSP
 {
     [RequireComponent(typeof(TickSystemManager))]
     [RequireComponent(typeof(NetworkManager))]

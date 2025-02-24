@@ -1,5 +1,5 @@
-﻿using _Project.Scripts.CSP;
-using _Project.Scripts.CSP.Data;
+﻿using CSP;
+using CSP.Data;
 using UnityEngine;
 
 namespace _Project.Scripts.UI.Menu

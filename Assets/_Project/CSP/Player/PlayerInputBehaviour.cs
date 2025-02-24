@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
-using _Project.Scripts.CSP.Data;
-using _Project.Scripts.CSP.Simulation;
+using CSP.Data;
+using CSP.Simulation;
 using Unity.Netcode;
-using NetworkClient = _Project.Scripts.CSP.Object.NetworkClient;
+using NetworkClient = CSP.Object.NetworkClient;
 
-namespace _Project.Scripts.CSP.Player
+namespace CSP.Player
 {
     public abstract class PlayerInputBehaviour : NetworkBehaviour
     {

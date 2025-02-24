@@ -1,7 +1,7 @@
 ﻿using Unity.Netcode;
 using UnityEngine;
 
-namespace _Project.Scripts.CSP.Connection.Listener
+namespace CSP.Connection.Listener
 {
     public abstract class ConnectionListener : MonoBehaviour
     {

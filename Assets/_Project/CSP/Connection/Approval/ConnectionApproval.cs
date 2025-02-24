@@ -1,7 +1,7 @@
 ﻿using Unity.Netcode;
 using UnityEngine;
 
-namespace _Project.Scripts.CSP.Connection.Approval
+namespace CSP.Connection.Approval
 {
     public abstract class ConnectionApproval : MonoBehaviour
     {

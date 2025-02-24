@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace _Project.Scripts.CSP.Simulation
+namespace CSP.Simulation
 {
     public abstract class TickSystem : MonoBehaviour
     {
