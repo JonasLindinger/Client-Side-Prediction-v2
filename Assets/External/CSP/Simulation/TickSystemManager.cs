@@ -8,7 +8,7 @@ namespace CSP.Simulation
     {
         public static uint CurrentTick => GetInstance().physicsTickSystem.CurrentTick;
         public static uint PhysicsTickRate => (uint) GetInstance().physicsTickSystem.TickRate;
-        public static uint PhysicsTimeBetweenTicks => (uint) GetInstance().physicsTickSystem.TimeBetweenTicks;
+        public static float PhysicsTimeBetweenTicks => GetInstance().physicsTickSystem.TimeBetweenTicks;
         public static uint NetworkTickRate => (uint) GetInstance().networkTickSystem.TickRate;
         
         [Header("Tick Systems")]
@@ -25,5 +25,18 @@ namespace CSP.Simulation
             tickAdjustmentTickSystem.Run(tickAdjustmentTickRate);
             #endif
         }
+
+        #if Client
+        public void CalculateExtraTicks(int amount)
+        {
+            physicsTickSystem.CalculateExtraTicks(amount);
+            networkTickSystem.CalculateExtraTicks(1);
+        }
+
+        public void SkipTicks(int amount)
+        {
+            physicsTickSystem.SkipTick(amount);
+        }
+        #endif
     }
 }

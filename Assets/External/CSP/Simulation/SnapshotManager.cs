@@ -116,7 +116,7 @@ namespace CSP.Simulation
         /// </summary>
         public static GameState GetLatestGameState()
         {
-            return _gameStates[(int)_latestGameStateTick % GameStateBufferSize];
+            return _gameStates[(int)_latestGameStateTick % _gameStates.Length];
         }
         #endif
         #endregion

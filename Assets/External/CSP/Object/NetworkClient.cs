@@ -7,11 +7,12 @@ using UnityEngine;
 
 namespace CSP.Object
 {
-    [RequireComponent(typeof(TickSync))]
     public class NetworkClient : NetworkBehaviour
     {
         #if Client
         public static NetworkClient LocalClient;
+        public static uint WantedBufferSize = 4;
+        public static uint WantedBufferSizePositiveTollerance = 3;
         #elif Server
         /// <summary>
         /// OwnerClientId - NetworkClient
@@ -23,7 +24,6 @@ namespace CSP.Object
         private ClientInputState _emptyInputState;
         #endif
         
-
         public override void OnNetworkSpawn()
         {
             #if Client
@@ -34,6 +34,11 @@ namespace CSP.Object
                 _inputStates = new ClientInputState[NetworkRunner.NetworkSettings.inputBufferSize];
             
             ClientsByOwnerId.Add(OwnerClientId, this);
+            
+            OnTickSystemInfoRPC(
+                TickSystemManager.PhysicsTickRate,
+                TickSystemManager.NetworkTickRate,
+                TickSystemManager.CurrentTick);
             #endif
         }
 
@@ -54,6 +59,39 @@ namespace CSP.Object
                 if (input.Tick <= TickSystemManager.CurrentTick) continue;
                 _inputStates[input.Tick % _inputStates.Length] = input;
             }
+            #endif
+        }
+
+        [Rpc(SendTo.Owner, Delivery = RpcDelivery.Reliable)]
+        public void OnServerTickRPC(uint tick)
+        {
+            #if Client
+            int rawTickDifference = (int) (TickSystemManager.CurrentTick - tick);
+            int tickDifference = Mathf.RoundToInt(rawTickDifference / 2f);
+
+            if (WantedBufferSize > tickDifference)
+            {
+                // Calculate extra ticks
+                int amount = (int) (WantedBufferSize - tickDifference);
+                Debug.Log("Extra: " + amount);
+                TickSystemManager.GetInstance().CalculateExtraTicks(amount);
+            }
+            else if (tickDifference > WantedBufferSize + WantedBufferSizePositiveTollerance)
+            {
+                // Skip some ticks
+                int amount = (int) (tickDifference - WantedBufferSize + Mathf.RoundToInt(WantedBufferSizePositiveTollerance / 2f));
+                Debug.Log("Skipping: " + amount);
+                TickSystemManager.GetInstance().SkipTicks(amount);
+            }
+            #endif
+        }
+        
+        [Rpc(SendTo.Owner, Delivery = RpcDelivery.Reliable)]
+        private void OnTickSystemInfoRPC(uint physicsTickRate, uint networkTickRate, uint tickOffset)
+        {
+            #if Client
+            TickSystemManager.GetInstance().StartTickSystems(physicsTickRate, networkTickRate, 1, tickOffset);
+            NetworkManager.Singleton.NetworkConfig.TickRate = networkTickRate;
             #endif
         }
         
