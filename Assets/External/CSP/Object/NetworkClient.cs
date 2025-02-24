@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using _Project.Scripts.Network.States;
 using CSP.Data;
 using CSP.Input;
 using CSP.Simulation;
@@ -71,7 +72,8 @@ namespace CSP.Object
             #if Client
             if (latestGameState.Tick <= _latestReceivedGameStateTick)
                 _latestReceivedGameStateTick = latestGameState.Tick;
-            
+            PlayerState playerState = (PlayerState)latestGameState.States[0];
+            Debug.Log(playerState.Position);
             // Todo: Reconcile
             #endif
         }

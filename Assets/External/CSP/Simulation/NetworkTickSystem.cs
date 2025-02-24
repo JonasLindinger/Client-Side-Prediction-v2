@@ -15,6 +15,8 @@ namespace CSP.Simulation
             #if Client
             // Send inputs to server
             SendLocalInputs();
+            #elif Server
+            SendGameState();
             #endif
         }
 
