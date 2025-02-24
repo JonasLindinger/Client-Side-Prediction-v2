@@ -12,6 +12,7 @@ namespace CSP.ScriptableObjects
         [Space(10)] 
         [Header("Buffer")] 
         public int inputBufferSize = 1024;
+        public int stateBufferSize = 1024;
         [Space(10)] 
         [Header("Connection")]
         public string defaultIp = "127.0.0.1";

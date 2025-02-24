@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using CSP.Data;
 using CSP.Simulation;
+using CSP.Simulation.State;
 using Unity.Netcode;
 using NetworkClient = CSP.Object.NetworkClient;
 
 namespace CSP.Player
 {
-    public abstract class PlayerInputBehaviour : NetworkBehaviour
+    public abstract class PlayerInputBehaviour : NetworkedObject
     {
         private static List<PlayerInputBehaviour> _playersWithAuthority = new List<PlayerInputBehaviour>();
 

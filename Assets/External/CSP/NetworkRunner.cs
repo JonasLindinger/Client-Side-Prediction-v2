@@ -18,7 +18,6 @@ namespace CSP
     public class NetworkRunner : MonoBehaviourSingleton<NetworkRunner>
     {
         public static NetworkSettings NetworkSettings;
-        
         [Header("References")]
         [SerializeField] private NetworkSettings networkSettings;
         [SerializeField] private ConnectionApproval connectionApproval;
@@ -137,7 +136,7 @@ namespace CSP
         private async void Run()
         {
             await SceneLoader.GetInstance().LoadSceneGroup(1);
-
+            SnapshotManager.Initialize();
             SetConnectionData("", 0);
 
             if (_networkManager.StartServer()) 
@@ -162,6 +161,8 @@ namespace CSP
         {
             await SceneLoader.GetInstance().LoadSceneGroup(1);
             
+            SnapshotManager.Initialize();
+
             SetConnectionData(ipAddress, port);
             SendPayload(payload);
             
