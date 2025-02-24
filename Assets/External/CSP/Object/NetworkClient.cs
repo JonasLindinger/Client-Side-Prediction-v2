@@ -2,6 +2,7 @@
 using CSP.Data;
 using CSP.Input;
 using CSP.Simulation;
+using LindoNoxStudio.Network.Simulation;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -62,6 +63,12 @@ namespace CSP.Object
             #endif
         }
 
+        [Rpc(SendTo.Owner, Delivery = RpcDelivery.Unreliable)]
+        public void OnServerStateRPC(GameState latestGameState)
+        {
+            
+        }
+        
         [Rpc(SendTo.Owner, Delivery = RpcDelivery.Reliable)]
         public void OnServerTickRPC(uint tick)
         {

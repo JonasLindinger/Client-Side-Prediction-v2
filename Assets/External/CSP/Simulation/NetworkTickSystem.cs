@@ -1,6 +1,7 @@
 ﻿using CSP.Data;
 using CSP.Input;
 using CSP.Object;
+using LindoNoxStudio.Network.Simulation;
 using UnityEngine;
 
 namespace CSP.Simulation
@@ -29,6 +30,17 @@ namespace CSP.Simulation
 
             // Actually send the inputs
             NetworkClient.LocalClient.OnInputRPC(inputsToSend);
+        }
+        #elif Server
+        private void SendGameState()
+        {
+            GameState latestGameState = SnapshotManager.GetLatestGameState();
+            
+            foreach (var kvp in NetworkClient.ClientsByOwnerId)
+            {
+                NetworkClient client = kvp.Value;
+                client.OnServerStateRPC(latestGameState);
+            }
         }
         #endif
     }
