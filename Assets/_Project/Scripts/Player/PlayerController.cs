@@ -34,12 +34,12 @@ namespace _Project.Scripts.Player
         {
             _rb = GetComponent<Rigidbody>();
             _rb.freezeRotation = true; 
-            _rb.isKinematic = true;
+            _rb.useGravity = true;
         }
 
         public override void OnTick(ClientInputState input)
         {
-            transform.position += new Vector3(input.DirectionalInputs["Move"].x, 0, input.DirectionalInputs["Move"].y) * 0.1f;
+            transform.position += new Vector3(input.DirectionalInputs["Move"].x, 0, input.DirectionalInputs["Move"].y) * 0.5f;
             return;
             // Applying movement
             // Setting the drag
