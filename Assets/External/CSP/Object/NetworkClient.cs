@@ -102,14 +102,12 @@ namespace CSP.Object
             {
                 // Calculate extra ticks
                 int amount = (int) (WantedBufferSize - tickDifference);
-                Debug.Log("Extra: " + amount);
                 TickSystemManager.GetInstance().CalculateExtraTicks(amount);
             }
             else if (tickDifference > WantedBufferSize + WantedBufferSizePositiveTollerance)
             {
                 // Skip some ticks
                 int amount = (int) (tickDifference - WantedBufferSize + Mathf.RoundToInt(WantedBufferSizePositiveTollerance / 2f));
-                Debug.Log("Skipping: " + amount);
                 TickSystemManager.GetInstance().SkipTicks(amount);
             }
             #endif
@@ -216,8 +214,6 @@ namespace CSP.Object
                 serverClientState
             );
             
-            Debug.Log("We Need to reconcile: " + weNeedToReconcile);
-
             if (!weNeedToReconcile)
             {
                 ApplyNonLocalPlayersState(serverGameState, true);
