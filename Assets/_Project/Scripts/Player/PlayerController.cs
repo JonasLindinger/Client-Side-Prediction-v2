@@ -34,7 +34,6 @@ namespace _Project.Scripts.Player
         {
             _rb = GetComponent<Rigidbody>();
             _rb.freezeRotation = true; 
-            _rb.useGravity = true;
         }
 
         public override void OnTick(ClientInputState input)

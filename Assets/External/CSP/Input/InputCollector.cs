@@ -67,8 +67,7 @@ namespace CSP.Input
             foreach (var directionalInput in _directionalInputs.Keys.ToArray())
             {
                 Vector2 input = _playerInput.actions[directionalInput].ReadValue<Vector2>();
-                input.x = ClampValue(input.x);
-                input.y = ClampValue(input.y);
+                input.Normalize();
                 _directionalInputs[directionalInput] = input;
             }
 
@@ -95,16 +94,6 @@ namespace CSP.Input
                     _lastInputStates.Dequeue();
             
             return _lastInputStates.ToArray();
-        }
-        
-        private static float ClampValue(float value)
-        {
-            if (value < -0.5f)
-                return -1f;
-            else if (value > 0.5f)
-                return 1f;
-            else
-                return 0f;
         }
     }
 }

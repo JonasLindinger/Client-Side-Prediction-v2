@@ -93,6 +93,8 @@ namespace CSP.Data
             foreach (var kvp in DirectionalInputs)
             {
                 vectors[i] = kvp.Value;
+                vectors[i].x = ClampValue(vectors[i].x);
+                vectors[i].y = ClampValue(vectors[i].y);
                 i++;
             }
             
@@ -159,6 +161,16 @@ namespace CSP.Data
                 0b10 => 1f,
                 _ => throw new ArgumentException("Invalid encoded bits in byte array.")
             };
+        }
+        
+        private static float ClampValue(float value)
+        {
+            if (value < -0.5f)
+                return -1f;
+            else if (value > 0.5f)
+                return 1f;
+            else
+                return 0f;
         }
     }
 }

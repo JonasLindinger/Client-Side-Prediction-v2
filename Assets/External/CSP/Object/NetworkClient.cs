@@ -202,10 +202,14 @@ namespace CSP.Object
                 canComparePredictedState = false;
             }
 
+            if (!canComparePredictedState) return;
+            Debug.Log(predictedClientState.Position + " - " + serverClientState.Position);
+            return;
+
             if (!canComparePredictedState)
             {
                 // Apply game state, even if our local player isn't in the game state
-                ApplyNonLocalPlayersState(serverGameState, true);
+                //ApplyNonLocalPlayersState(serverGameState, true);
                 return;
             }
 
@@ -216,7 +220,6 @@ namespace CSP.Object
                 // Get the local client state from serverGameState
                 serverClientState
             );
-            
             if (!weNeedToReconcile)
             {
                 ApplyNonLocalPlayersState(serverGameState, true);
