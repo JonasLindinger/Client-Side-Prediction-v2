@@ -37,6 +37,8 @@ namespace CSP.Player
 
         public static void UpdatePlayersWithAuthority(uint tick)
         {
+            SnapshotManager.TakeSnapshot(tick);
+            
             foreach (PlayerInputBehaviour player in _playersWithAuthority)
             {
                 #if Client
