@@ -1,6 +1,8 @@
-﻿using CSP.Data;
+﻿using System;
+using CSP.Data;
 using CSP.Input;
 using CSP.Player;
+using UnityEngine;
 
 namespace CSP.Simulation
 {
@@ -8,13 +10,23 @@ namespace CSP.Simulation
     {
         private InputCollector _inputCollector;
 
+        private void Start()
+        {
+            // Force simulationMode to be script
+            Physics.simulationMode = SimulationMode.Script;
+        }
+
         public override void OnTick(uint tick)
         {
+            // 1. Simulate Physics
+            Physics.Simulate(TickSystemManager.PhysicsTimeBetweenTicks);
+            
             #if Client
+            // 1.5 Collect Client Input
             ClientInputState clientInputState = GetInputState(tick);
             #endif
             
-            // Update all Players (Server moves everyone, Client predicts his own player)
+            // 2. Update all Players (Server moves everyone, Client predicts his own player)
             PlayerInputBehaviour.UpdatePlayersWithAuthority(tick);
         }
         

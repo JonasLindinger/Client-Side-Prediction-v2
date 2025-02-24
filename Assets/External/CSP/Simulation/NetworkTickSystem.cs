@@ -12,6 +12,7 @@ namespace CSP.Simulation
         public override void OnTick(uint tick)
         {
             #if Client
+            // Send inputs to server
             SendLocalInputs();
             #endif
         }
