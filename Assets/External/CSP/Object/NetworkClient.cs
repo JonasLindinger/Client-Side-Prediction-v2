@@ -230,6 +230,9 @@ namespace CSP.Object
             // Saving state for reconciliation in the future
             SnapshotManager.TakeSnapshot(serverGameState.Tick);
             
+            // Collect Input
+            PlayerInputBehaviour.UpdatePlayersWithAuthority(serverGameState.Tick);
+            
             // Recalculate every tick
             for (uint tick = serverGameState.Tick + 1; tick <= TickSystemManager.CurrentTick; tick++)
                 TickSystemManager.RecalculatePhysicsTick(tick);
