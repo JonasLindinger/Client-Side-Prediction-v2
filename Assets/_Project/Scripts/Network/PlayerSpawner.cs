@@ -1,8 +1,7 @@
-﻿using CSP.Object;
-using Unity.Netcode;
+﻿using Unity.Netcode;
 using UnityEngine;
 
-namespace _Project.Scripts.Player
+namespace _Project.Scripts.Network
 {
     public class PlayerSpawner : NetworkBehaviour
     {
