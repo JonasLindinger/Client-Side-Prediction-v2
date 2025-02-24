@@ -14,6 +14,8 @@ namespace CSP.Object
         public static NetworkClient LocalClient;
         public static uint WantedBufferSize = 4;
         public static uint WantedBufferSizePositiveTollerance = 3;
+
+        private uint _latestReceivedGameStateTick;
         #elif Server
         /// <summary>
         /// OwnerClientId - NetworkClient
@@ -66,7 +68,10 @@ namespace CSP.Object
         [Rpc(SendTo.Owner, Delivery = RpcDelivery.Unreliable)]
         public void OnServerStateRPC(GameState latestGameState)
         {
+            if (latestGameState.Tick <= _latestReceivedGameStateTick)
+                _latestReceivedGameStateTick = latestGameState.Tick;
             
+            // Todo: Reconcile
         }
         
         [Rpc(SendTo.Owner, Delivery = RpcDelivery.Reliable)]
