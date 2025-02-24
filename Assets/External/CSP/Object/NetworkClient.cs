@@ -68,10 +68,12 @@ namespace CSP.Object
         [Rpc(SendTo.Owner, Delivery = RpcDelivery.Unreliable)]
         public void OnServerStateRPC(GameState latestGameState)
         {
+            #if Client
             if (latestGameState.Tick <= _latestReceivedGameStateTick)
                 _latestReceivedGameStateTick = latestGameState.Tick;
             
             // Todo: Reconcile
+            #endif
         }
         
         [Rpc(SendTo.Owner, Delivery = RpcDelivery.Reliable)]
