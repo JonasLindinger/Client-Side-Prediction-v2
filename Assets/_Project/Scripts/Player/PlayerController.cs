@@ -6,7 +6,6 @@ using UnityEngine;
 
 namespace _Project.Scripts.Player
 {
-    [RequireComponent(typeof(Rigidbody))]
     public class PlayerController : PlayerInputBehaviour
     {
         [Header("Settings")]
@@ -27,22 +26,26 @@ namespace _Project.Scripts.Player
 
         private bool _grounded;
         private bool _readyToJump = true;
+
+        //private Vector3 _virualPosition;
         
-        private Rigidbody _rb;
+        //private Rigidbody _rb;
         
         public override void OnSpawn()
         {
-            _rb = GetComponent<Rigidbody>();
-            _rb.freezeRotation = true;
+            //_rb = GetComponent<Rigidbody>();
+            //_rb.freezeRotation = true;
             
-            _rb.useGravity = false;
+            //_rb.useGravity = false;
         }
 
         public override void OnTick(ClientInputState input)
         {
             Debug.Log("Add: " + new Vector3(input.DirectionalInputs["Move"].x, 0, input.DirectionalInputs["Move"].y) * 0.5f);
+            //_virualPosition += new Vector3(input.DirectionalInputs["Move"].x, 0, input.DirectionalInputs["Move"].y) * 0.5f;
             transform.position += new Vector3(input.DirectionalInputs["Move"].x, 0, input.DirectionalInputs["Move"].y) * 0.5f;
             return;
+            /*
             // Applying movement
             // Setting the drag
             _grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.2f, whatIsGround);
@@ -90,6 +93,7 @@ namespace _Project.Scripts.Player
                 _readyToJump = false;
                 Invoke(nameof(ResetJump), jumpCooldown);
             }
+            */
         }
 
         private void ResetJump()
@@ -108,8 +112,8 @@ namespace _Project.Scripts.Player
             {
                 Position = transform.position,
                 Rotation = transform.eulerAngles,
-                Velocity = _rb.linearVelocity,
-                AngularVelocity = _rb.angularVelocity,
+                //Velocity = _rb.linearVelocity,
+                //AngularVelocity = _rb.angularVelocity,
             };
         }
 
@@ -122,8 +126,8 @@ namespace _Project.Scripts.Player
 
             transform.position = playerState.Position;
             transform.eulerAngles = playerState.Rotation;
-            _rb.linearVelocity = playerState.Velocity;
-            _rb.angularVelocity = playerState.AngularVelocity;
+            //_rb.linearVelocity = playerState.Velocity;
+            //_rb.angularVelocity = playerState.AngularVelocity;
         }
 
         public override bool DoWeNeedToReconcile(IState predictedStateData, IState serverStateData)

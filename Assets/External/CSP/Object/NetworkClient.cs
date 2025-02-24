@@ -202,9 +202,9 @@ namespace CSP.Object
                 canComparePredictedState = false;
             }
 
-            if (!canComparePredictedState) return;
-            Debug.LogWarning(predictedClientState.Position + " - " + serverClientState.Position);
-            return;
+            //if (!canComparePredictedState) return;
+            //Debug.LogWarning(predictedClientState.Position + " - " + serverClientState.Position);
+            //return;
 
             if (!canComparePredictedState)
             {
