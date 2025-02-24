@@ -2,6 +2,7 @@
 using System.Linq;
 using CSP.Data;
 using _Project.Scripts.Utility;
+using Singletons;
 using UnityEngine;
 using UnityEngine.InputSystem;
 

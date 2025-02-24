@@ -1,4 +1,4 @@
-namespace _Project.Scripts.Utility.SceneManagement
+namespace SceneManagement
 {
     public enum SceneType
     {

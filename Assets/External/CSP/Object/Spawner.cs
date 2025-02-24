@@ -1,4 +1,5 @@
 ﻿using _Project.Scripts.Utility;
+using Singletons;
 using Unity.Netcode;
 using UnityEngine;
 

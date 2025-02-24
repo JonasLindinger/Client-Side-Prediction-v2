@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace _Project.Scripts.Utility.SceneManagement
+namespace SceneManagement
 {
     public class SceneGroupManager
     {

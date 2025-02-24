@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace _Project.Scripts.Utility.SceneManagement
+namespace SceneManagement
 {
     [Serializable]
     public class SceneGroup

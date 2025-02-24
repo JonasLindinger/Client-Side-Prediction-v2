@@ -1,6 +1,6 @@
 using System;
 
-namespace _Project.Scripts.Utility.SceneManagement
+namespace SceneManagement
 {
     public class LoadingProgress : IProgress<float>
     {

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Singletons;
+using UnityEngine;
 
 namespace _Project.Scripts.Utility
 {

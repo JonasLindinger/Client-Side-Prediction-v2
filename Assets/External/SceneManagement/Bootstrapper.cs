@@ -1,7 +1,8 @@
+using Singletons;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace _Project.Scripts.Utility.SceneManagement
+namespace SceneManagement
 {
     public class Bootstrapper : MonoBehaviourSingleton<Bootstrapper>
     {

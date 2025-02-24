@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace _Project.Scripts.Utility.SceneManagement
+namespace SceneManagement
 {
     public readonly struct AsyncOperationGroup
     {

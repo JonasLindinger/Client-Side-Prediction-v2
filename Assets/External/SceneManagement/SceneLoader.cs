@@ -1,8 +1,9 @@
 using System.Threading.Tasks;
+using Singletons;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace _Project.Scripts.Utility.SceneManagement
+namespace SceneManagement
 {
     public class SceneLoader : MonoBehaviourSingleton<SceneLoader>
     {

@@ -1,7 +1,7 @@
 using System;
 using Eflatun.SceneReference;
 
-namespace _Project.Scripts.Utility.SceneManagement
+namespace SceneManagement
 {
     [Serializable]
     public class SceneData
