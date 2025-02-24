@@ -216,8 +216,6 @@ namespace CSP.Object
                 serverClientState
             );
             
-            Debug.Log("We Need to reconcile: " + weNeedToReconcile);
-
             if (!weNeedToReconcile)
             {
                 ApplyNonLocalPlayersState(serverGameState, true);

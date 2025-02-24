@@ -18,7 +18,7 @@ namespace _Project.Scripts.Player
 
         public override void OnTick(ClientInputState input)
         {
-            Debug.Log(input.DirectionalInputs["Move"].ToString());
+            
         }
 
         public override void OnDespawn()
