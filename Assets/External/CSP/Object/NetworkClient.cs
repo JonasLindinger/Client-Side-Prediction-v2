@@ -132,7 +132,10 @@ namespace CSP.Object
             
             ClientInputState input = _inputStates[tick % _inputStates.Length];
             if (input != null)
-                if (input.Tick == tick) return input;
+                if (input.Tick == tick)
+                {
+                    return input;
+                }
 
             // Check if last tick's input null is. If it isn't reuse it and save it for this tick
             if (_inputStates[(tick - 1) % _inputStates.Length] != null)
