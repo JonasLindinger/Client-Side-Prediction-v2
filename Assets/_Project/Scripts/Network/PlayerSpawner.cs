@@ -1,5 +1,6 @@
 ﻿using Unity.Netcode;
 using UnityEngine;
+using CSP.Object;
 
 namespace _Project.Scripts.Network
 {
