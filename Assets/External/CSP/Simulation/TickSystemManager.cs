@@ -31,7 +31,7 @@ namespace CSP.Simulation
         public static void RecalculatePhysicsTick(uint tick)
         {
             // 1. Simulate Physics
-            Physics.Simulate(TickSystemManager.PhysicsTimeBetweenTicks);
+            Physics.Simulate(PhysicsTimeBetweenTicks);
             
             // 2. Update all Players (Server moves everyone, Client predicts his own player)
             PlayerInputBehaviour.UpdatePlayersWithAuthority(tick);
