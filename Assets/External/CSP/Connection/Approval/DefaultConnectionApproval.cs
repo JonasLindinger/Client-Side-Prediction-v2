@@ -2,7 +2,7 @@
 using CSP.Data;
 using Unity.Netcode;
 
-namespace _Project.Scripts.Connection
+namespace CSP.Connection
 {
     public class DefaultConnectionApproval : ConnectionApproval
     {
