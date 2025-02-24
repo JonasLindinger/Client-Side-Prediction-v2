@@ -72,8 +72,7 @@ namespace CSP.Object
             #if Client
             if (latestGameState.Tick <= _latestReceivedGameStateTick)
                 _latestReceivedGameStateTick = latestGameState.Tick;
-            PlayerState playerState = (PlayerState)latestGameState.States[0];
-            Debug.Log(playerState.Position);
+
             // Todo: Reconcile
             #endif
         }
