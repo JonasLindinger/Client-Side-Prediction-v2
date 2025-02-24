@@ -22,9 +22,10 @@ namespace CSP.Simulation
         {
             if (!_inputCollector)
                 _inputCollector = InputCollector.GetInstance();
-
-            // Todo: Replace the 15 with a dynamic amount (Add in Settings?)
-            ClientInputState[] inputsToSend = _inputCollector.GetLastInputStates(15);
+            
+            ClientInputState[] inputsToSend = _inputCollector.GetLastInputStates(
+                (int) (NetworkClient.WantedBufferSize + NetworkClient.WantedBufferSizePositiveTollerance)
+                );
 
             // Actually send the inputs
             NetworkClient.LocalClient.OnInputRPC(inputsToSend);

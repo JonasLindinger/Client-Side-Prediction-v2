@@ -68,7 +68,7 @@ namespace CSP.Object
             #if Client
             int rawTickDifference = (int) (TickSystemManager.CurrentTick - tick);
             int tickDifference = Mathf.RoundToInt(rawTickDifference / 2f);
-
+            
             if (WantedBufferSize > tickDifference)
             {
                 // Calculate extra ticks
