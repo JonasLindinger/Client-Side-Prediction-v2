@@ -203,7 +203,7 @@ namespace CSP.Object
             }
 
             if (!canComparePredictedState) return;
-            Debug.Log(predictedClientState.Position + " - " + serverClientState.Position);
+            Debug.LogWarning(predictedClientState.Position + " - " + serverClientState.Position);
             return;
 
             if (!canComparePredictedState)

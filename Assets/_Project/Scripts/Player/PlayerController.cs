@@ -33,11 +33,14 @@ namespace _Project.Scripts.Player
         public override void OnSpawn()
         {
             _rb = GetComponent<Rigidbody>();
-            _rb.freezeRotation = true; 
+            _rb.freezeRotation = true;
+            
+            _rb.useGravity = false;
         }
 
         public override void OnTick(ClientInputState input)
         {
+            Debug.Log("Add: " + new Vector3(input.DirectionalInputs["Move"].x, 0, input.DirectionalInputs["Move"].y) * 0.5f);
             transform.position += new Vector3(input.DirectionalInputs["Move"].x, 0, input.DirectionalInputs["Move"].y) * 0.5f;
             return;
             // Applying movement
@@ -112,6 +115,7 @@ namespace _Project.Scripts.Player
 
         public override void ApplyState(IState state)
         {
+            Debug.LogWarning("Apply State");
             // Return early if state is not PlayerState
             if (!(state is PlayerState playerState))
                 return;
