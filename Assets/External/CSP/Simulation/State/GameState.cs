@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using CSP.Simulation.State;
 using Unity.Netcode;
+using UnityEngine;
 
 namespace LindoNoxStudio.Network.Simulation
 {
@@ -52,6 +53,7 @@ namespace LindoNoxStudio.Network.Simulation
 
                     // Create an instance using a factory/registry
                     IState state = StateFactory.Create(stateType);
+                    if (state == null) continue;
                     state.NetworkSerialize(serializer);
                     States[networkId] = state;
                 }

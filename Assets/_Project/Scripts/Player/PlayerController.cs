@@ -48,5 +48,28 @@ namespace _Project.Scripts.Player
             _rb.linearVelocity = playerState.Velocity;
             _rb.angularVelocity = playerState.AngularVelocity;
         }
+
+        public override bool DoWeNeedToReconcile(IState predictedStateData, IState serverStateData)
+        {
+            PlayerState predictedState = (PlayerState) predictedStateData;
+            PlayerState serverState = (PlayerState) serverStateData;
+            
+            // If our position is of, we reconcile
+            if (Vector3.Distance(predictedState.Position, serverState.Position) >= 0.001f)
+                return true;
+            // If our rotation is off, we reconcile
+            /* We don't do that (at least for now)
+            else if (Vector3.Distance(clientState.Rotation, serverState.Rotation) >= 0.001f)
+                return true;
+            */
+            // If our Velocity is of, we reconcile
+            else if (Vector3.Distance(predictedState.Velocity, serverState.Velocity) >= 0.01f)
+                return true;
+            // If our AngularVelocity is of, we reconcile
+            else if (Vector3.Distance(predictedState.AngularVelocity, serverState.AngularVelocity) >= 0.01f)
+                return true;
+
+            return false;
+        }
     }
 }

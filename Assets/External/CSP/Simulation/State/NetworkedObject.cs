@@ -1,5 +1,4 @@
 ﻿using Unity.Netcode;
-using UnityEngine;
 
 namespace CSP.Simulation.State
 {
@@ -17,5 +16,6 @@ namespace CSP.Simulation.State
 
         public abstract IState GetCurrentState();
         public abstract void ApplyState(IState state);
+        public abstract bool DoWeNeedToReconcile(IState predictedStateData, IState serverStateData);
     }
 }

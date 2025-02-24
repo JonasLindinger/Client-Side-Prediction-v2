@@ -42,8 +42,6 @@ namespace CSP.Simulation
 
             return clientInputState;
         }
-        #elif Server
-        
         #endif
     }
 }

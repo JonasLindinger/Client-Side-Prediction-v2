@@ -9,6 +9,10 @@ namespace CSP.Player
 {
     public abstract class PlayerInputBehaviour : NetworkedObject
     {
+        #if Client
+        public static PlayerInputBehaviour LocalPlayer;
+        #endif
+            
         private static List<PlayerInputBehaviour> _playersWithAuthority = new List<PlayerInputBehaviour>();
 
         private NetworkClient _networkClient;
@@ -20,6 +24,7 @@ namespace CSP.Player
 
             #if Client
             _networkClient = NetworkClient.LocalClient;
+            LocalPlayer = this;
             #elif Server
             _networkClient = NetworkClient.ClientsByOwnerId[OwnerClientId];
             #endif

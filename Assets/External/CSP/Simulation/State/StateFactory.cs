@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace CSP.Simulation.State
 {
@@ -16,7 +17,7 @@ namespace CSP.Simulation.State
         {
             if (Registry.TryGetValue(type, out var creator))
                 return creator();
-            throw new ArgumentException($"No IState registered for type {type}");
+            return null;
         }
     }
 }

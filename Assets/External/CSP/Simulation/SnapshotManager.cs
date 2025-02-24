@@ -82,6 +82,16 @@ namespace CSP.Simulation
             
             return currentGameState;
         }
+
+        public static GameState GetGameState(uint tick)
+        {
+            return _gameStates[(int)tick % _gameStates.Length];
+        }
+
+        public static void SaveGameState(GameState gameState)
+        {
+            _gameStates[(int) gameState.Tick % _gameStates.Length] = gameState;
+        }
         
         #endregion
         
@@ -91,12 +101,10 @@ namespace CSP.Simulation
         /// <summary>
         /// Applys the state on the object with the corresponding network Id
         /// </summary>
-        /// <param name="tick"></param>
         /// <param name="networkId"></param>
         /// <param name="state"></param>
-        /// <param name="isLocal"></param>
         /// <returns>Return's if the prediction was wrong</returns>
-        public static void ApplyState(uint tick, ulong networkId, IState state)
+        public static void ApplyState(ulong networkId, IState state)
         {
             NetworkedObject networkedObject = _networkedObjects[networkId];
 

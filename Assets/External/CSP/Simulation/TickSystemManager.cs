@@ -1,4 +1,5 @@
 ﻿using _Project.Scripts.Utility;
+using CSP.Player;
 using Singletons;
 using UnityEngine;
 
@@ -27,6 +28,15 @@ namespace CSP.Simulation
         }
 
         #if Client
+        public static void RecalculatePhysicsTick(uint tick)
+        {
+            // 1. Simulate Physics
+            Physics.Simulate(TickSystemManager.PhysicsTimeBetweenTicks);
+            
+            // 2. Update all Players (Server moves everyone, Client predicts his own player)
+            PlayerInputBehaviour.UpdatePlayersWithAuthority(tick);
+        }
+        
         public void CalculateExtraTicks(int amount)
         {
             physicsTickSystem.CalculateExtraTicks(amount);
