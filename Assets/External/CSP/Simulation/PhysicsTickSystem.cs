@@ -2,6 +2,7 @@
 using CSP.Data;
 using CSP.Input;
 using CSP.Player;
+using CSP.TextDebug;
 using UnityEngine;
 
 namespace CSP.Simulation
@@ -27,7 +28,7 @@ namespace CSP.Simulation
             #endif
             
             // 2. Update all Players (Server moves everyone, Client predicts his own player)
-            PlayerInputBehaviour.UpdatePlayersWithAuthority(tick);
+            PlayerInputBehaviour.UpdatePlayersWithAuthority(tick, false);
         }
         
         #if Client

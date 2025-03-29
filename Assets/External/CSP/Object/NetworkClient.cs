@@ -5,6 +5,7 @@ using CSP.Data;
 using CSP.Input;
 using CSP.Player;
 using CSP.Simulation;
+using CSP.TextDebug;
 using LindoNoxStudio.Network.Simulation;
 using Unity.Netcode;
 using Unity.VisualScripting;
@@ -62,6 +63,7 @@ namespace CSP.Object
         public void OnInputRPC(ClientInputState[] clientInputStates)
         {
             #if Server
+            TextWriter.Update(OwnerClientId, clientInputStates[0].Tick, clientInputStates[0].DirectionalInputs["Move"]);
             foreach (var input in clientInputStates)
             {
                 // If this is an "old" input we skip
@@ -132,15 +134,17 @@ namespace CSP.Object
             if (input != null)
                 if (input.Tick == tick)
                 {
-                    return input;
+                    TextWriter.Update(1, input.Tick, input.DirectionalInputs["Move"]);
+                    return input;   
                 }
-
+            
             // Check if last tick's input null is. If it isn't reuse it and save it for this tick
             if (_inputStates[(tick - 1) % _inputStates.Length] != null)
             {
                 input = _inputStates[(tick - 1) % _inputStates.Length];
                 input.Tick = tick;
                 _inputStates[(tick) % _inputStates.Length] = input;
+                Debug.Log("USING WRONG (Last) INPUT STATE!!!!!!!!!!!!!");
                 return input;
             }
             else
@@ -234,7 +238,7 @@ namespace CSP.Object
             SnapshotManager.TakeSnapshot(serverGameState.Tick);
             
             // Collect Input
-            PlayerInputBehaviour.UpdatePlayersWithAuthority(serverGameState.Tick);
+            PlayerInputBehaviour.UpdatePlayersWithAuthority(serverGameState.Tick, true);
             
             // Recalculate every tick
             for (uint tick = serverGameState.Tick + 1; tick <= TickSystemManager.CurrentTick; tick++)

@@ -2,6 +2,7 @@
 using CSP.Data;
 using CSP.Player;
 using CSP.Simulation.State;
+using CSP.TextDebug;
 using UnityEngine;
 
 namespace _Project.Scripts.Player
@@ -39,9 +40,15 @@ namespace _Project.Scripts.Player
             //_rb.useGravity = false;
         }
 
-        public override void OnTick(ClientInputState input)
+        public override void OnTick(uint tick, ClientInputState input, bool isReconciliation)
         {
-            Debug.Log("Add: " + new Vector3(input.DirectionalInputs["Move"].x, 0, input.DirectionalInputs["Move"].y) * 0.5f);
+            return;
+            if (!isReconciliation)
+            {
+                //TextWriter.Update(OwnerClientId, tick, input.DirectionalInputs["Move"]);    
+            }
+            return;
+            Debug.Log(tick + " - " + isReconciliation + " - Add: " + new Vector3(input.DirectionalInputs["Move"].x, 0, input.DirectionalInputs["Move"].y) * 0.5f);
             //_virualPosition += new Vector3(input.DirectionalInputs["Move"].x, 0, input.DirectionalInputs["Move"].y) * 0.5f;
             transform.position += new Vector3(input.DirectionalInputs["Move"].x, 0, input.DirectionalInputs["Move"].y) * 0.5f;
             return;
@@ -119,7 +126,7 @@ namespace _Project.Scripts.Player
 
         public override void ApplyState(IState state)
         {
-            Debug.LogWarning("Apply State");
+            Debug.LogWarning("Apply State: " + IsOwner);
             // Return early if state is not PlayerState
             if (!(state is PlayerState playerState))
                 return;

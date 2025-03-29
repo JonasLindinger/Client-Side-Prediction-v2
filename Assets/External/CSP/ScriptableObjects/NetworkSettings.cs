@@ -8,7 +8,7 @@ namespace CSP.ScriptableObjects
         [Header("Tick-System")] 
         public uint physicsTickRate = 64;
         public uint networkTickRate = 64;
-        public uint physicsTickClientOffset = 5;
+        public uint physicsTickClientOffset = 10;
         [Space(10)] 
         [Header("Buffer")] 
         public int inputBufferSize = 1024;

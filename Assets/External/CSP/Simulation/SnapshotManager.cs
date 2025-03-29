@@ -140,6 +140,10 @@ namespace CSP.Simulation
 
         public static ClientInputState GetInputState(uint tick)
         {
+            if (_inputStates[tick % _inputStates.Length].Tick != tick)
+            {
+                Debug.LogError("USING WRONG INPUT STATE!!!!!!!!!!!");
+            }
             return _inputStates[tick % _inputStates.Length];
         }
         #endif

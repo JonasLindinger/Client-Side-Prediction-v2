@@ -34,18 +34,20 @@ namespace CSP.Simulation
             Physics.Simulate(PhysicsTimeBetweenTicks);
             
             // 2. Update all Players (Server moves everyone, Client predicts his own player)
-            PlayerInputBehaviour.UpdatePlayersWithAuthority(tick);
+            PlayerInputBehaviour.UpdatePlayersWithAuthority(tick, true);
         }
         
         public void CalculateExtraTicks(int amount)
         {
-            physicsTickSystem.CalculateExtraTicks(amount);
-            networkTickSystem.CalculateExtraTicks(1);
+            // Todo: Uncomment
+            //physicsTickSystem.CalculateExtraTicks(amount);
+            //networkTickSystem.CalculateExtraTicks(1);
         }
 
         public void SkipTicks(int amount)
         {
-            physicsTickSystem.SkipTick(amount);
+            // Todo: Uncomment
+            //physicsTickSystem.SkipTick(amount);
         }
         #endif
     }

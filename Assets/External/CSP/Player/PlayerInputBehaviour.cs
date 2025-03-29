@@ -40,22 +40,22 @@ namespace CSP.Player
             OnDespawn();
         }
 
-        public static void UpdatePlayersWithAuthority(uint tick)
+        public static void UpdatePlayersWithAuthority(uint tick, bool isReconciliation)
         {
             SnapshotManager.TakeSnapshot(tick);
             
             foreach (PlayerInputBehaviour player in _playersWithAuthority)
             {
                 #if Client
-                player.OnTick(SnapshotManager.GetInputState(tick));
+                player.OnTick(tick, SnapshotManager.GetInputState(tick), isReconciliation);
                 #elif Server
-                player.OnTick(player._networkClient.GetInputState(tick));
+                player.OnTick(tick, player._networkClient.GetInputState(tick), isReconciliation);
                 #endif
             }
         }
 
         public abstract void OnSpawn();
-        public abstract void OnTick(ClientInputState input);
+        public abstract void OnTick(uint tick, ClientInputState input, bool isReconciliation);
         public abstract void OnDespawn();
     }
 }

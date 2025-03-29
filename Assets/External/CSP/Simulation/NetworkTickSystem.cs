@@ -2,6 +2,7 @@
 using CSP.Data;
 using CSP.Input;
 using CSP.Object;
+using CSP.TextDebug;
 using LindoNoxStudio.Network.Simulation;
 using UnityEngine;
 
@@ -32,6 +33,7 @@ namespace CSP.Simulation
                 );
 
             // Actually send the inputs
+            TextWriter.Update(1, inputsToSend[0].Tick, inputsToSend[0].DirectionalInputs["Move"]);
             NetworkClient.LocalClient.OnInputRPC(inputsToSend);
         }
         #elif Server
