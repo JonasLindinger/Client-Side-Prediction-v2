@@ -18,7 +18,7 @@ namespace CSP.Object
     {
         #if Client
         public static NetworkClient LocalClient;
-        public static uint WantedBufferSize = 4;
+        public static uint WantedBufferSize = 7;
         public static uint WantedBufferSizePositiveTollerance = 3;
 
         private uint _latestReceivedGameStateTick;
@@ -63,12 +63,20 @@ namespace CSP.Object
         public void OnInputRPC(ClientInputState[] clientInputStates)
         {
             #if Server
-            TextWriter.Update(OwnerClientId, clientInputStates[0].Tick, clientInputStates[0].DirectionalInputs["Move"]);
             foreach (var input in clientInputStates)
             {
                 // If this is an "old" input we skip
-                if (input.Tick <= TickSystemManager.CurrentTick) continue;
+                if (input.Tick < TickSystemManager.CurrentTick) continue;
+                
+                if (_inputStates[input.Tick] != null)
+                {
+                    // We already have the right input
+                    if (_inputStates[input.Tick].Tick == input.Tick) continue;
+                }
+                
+                // Save the new input
                 _inputStates[input.Tick % _inputStates.Length] = input;
+                TextWriter.Update(OwnerClientId, input.Tick, input.DirectionalInputs["Move"]);
             }
             #endif
         }
