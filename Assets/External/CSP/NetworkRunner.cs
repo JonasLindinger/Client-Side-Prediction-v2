@@ -1,8 +1,10 @@
-﻿using CSP.Connection.Approval;
+﻿using System;
+using CSP.Connection.Approval;
 using CSP.Connection.Listener;
 using CSP.Data;
 using CSP.Simulation;
 using _Project.Scripts.Utility;
+using CSP.Connection;
 using SceneManagement;
 using Singletons;
 using Unity.Netcode;
@@ -12,12 +14,15 @@ using NetworkSettings = CSP.ScriptableObjects.NetworkSettings;
 
 namespace CSP
 {
-    [RequireComponent(typeof(TickSystemManager))]
     [RequireComponent(typeof(NetworkManager))]
     [RequireComponent(typeof(UnityTransport))]
     public class NetworkRunner : MonoBehaviourSingleton<NetworkRunner>
     {
         public static NetworkSettings NetworkSettings;
+        #if Client
+        public static ulong ServerClientId => GetInstance()._networkManager.NetworkConfig.NetworkTransport.ServerClientId;
+        #endif
+        
         [Header("References")]
         [SerializeField] private NetworkSettings networkSettings;
         [SerializeField] private ConnectionApproval connectionApproval;
@@ -27,9 +32,8 @@ namespace CSP
         [SerializeField] private bool autoStartServer = true;
         
         // References
-        private TickSystemManager _tickSystemManager;
         private NetworkManager _networkManager;
-        private UnityTransport _unityTransport;
+        public UnityTransport UnityTransport { get; private set; }
         
         private async void Start()
         {
@@ -52,6 +56,12 @@ namespace CSP
             #endif
         }
 
+        private void Update()
+        {
+            SnapshotManager.Update(Time.deltaTime);
+            CommunicationManager.Update(Time.deltaTime);
+        }
+
         #region References
 
         /// <summary>
@@ -60,8 +70,7 @@ namespace CSP
         private void Reference()
         {
             _networkManager = GetComponent<NetworkManager>();
-            _unityTransport = GetComponent<UnityTransport>();
-            _tickSystemManager = GetComponent<TickSystemManager>();
+            UnityTransport = GetComponent<UnityTransport>();
             NetworkSettings = networkSettings;
         }
 
@@ -77,7 +86,7 @@ namespace CSP
         private void SetUpNetworkManager()
         {
             // Setting the TickRate to our custom TickRate
-            _networkManager.NetworkConfig.TickRate = networkSettings.networkTickRate;
+            _networkManager.NetworkConfig.TickRate = NetworkSettings.networkTickRate;
             
             // We use our custom scene manager so we don't need Unity to do that for us.
             _networkManager.NetworkConfig.EnableSceneManagement = false;
@@ -96,7 +105,7 @@ namespace CSP
         private void LimitFPS()
         {
             #if Server
-            Application.targetFrameRate = (int) networkSettings.physicsTickRate;
+            Application.targetFrameRate = (int) NetworkSettings.physicsTickRate;
             #endif
         }
         
@@ -105,7 +114,7 @@ namespace CSP
         /// </summary>
         private void LinkTransport()
         {
-            _networkManager.NetworkConfig.NetworkTransport = _unityTransport;
+            _networkManager.NetworkConfig.NetworkTransport = UnityTransport;
         }
 
         /// <summary>
@@ -136,17 +145,13 @@ namespace CSP
         private async void Run()
         {
             await SceneLoader.GetInstance().LoadSceneGroup(1);
-            SnapshotManager.Initialize();
             SetConnectionData("", 0);
 
             if (_networkManager.StartServer()) 
             {
+                SnapshotManager.KeepTrack(NetworkSettings.physicsTickRate);
+                CommunicationManager.StartCommunication(NetworkSettings.networkTickRate);
                 Debug.Log("Server started");
-                _tickSystemManager.StartTickSystems(
-                    networkSettings.physicsTickRate, 
-                    networkSettings.networkTickRate,
-                    1
-                );
             }
             else
                 Debug.LogError("Couldn't start server");
@@ -161,8 +166,6 @@ namespace CSP
         {
             await SceneLoader.GetInstance().LoadSceneGroup(1);
             
-            SnapshotManager.Initialize();
-
             SetConnectionData(ipAddress, port);
             SendPayload(payload);
             
@@ -170,6 +173,15 @@ namespace CSP
                 Debug.Log("Client started");
             else
                 Debug.LogError("Couldn't start client");
+        }
+        
+        /// <summary>
+        /// Set's the connectionPayload of the NetworkManager to the payload you give the method
+        /// </summary>
+        /// <param name="payload"></param>
+        private void SendPayload(ConnectionPayload payload)
+        {
+            _networkManager.NetworkConfig.ConnectionData = payload.GetAsPayload();
         }
         
         #endif
@@ -181,17 +193,8 @@ namespace CSP
         /// <param name="port"></param>
         private void SetConnectionData(string ipAddress, ushort port)
         {
-            _unityTransport.ConnectionData.Address = string.IsNullOrEmpty(ipAddress) ? networkSettings.defaultIp : ipAddress;
-            _unityTransport.ConnectionData.Port = port == 0 ? networkSettings.defaultPort : port;
-        }
-
-        /// <summary>
-        /// Set's the connectionPayload of the NetworkManager to the payload you give the method
-        /// </summary>
-        /// <param name="payload"></param>
-        private void SendPayload(ConnectionPayload payload)
-        {
-            _networkManager.NetworkConfig.ConnectionData = payload.GetAsPayload();
+            UnityTransport.ConnectionData.Address = string.IsNullOrEmpty(ipAddress) ? NetworkSettings.defaultIp : ipAddress;
+            UnityTransport.ConnectionData.Port = port == 0 ? NetworkSettings.defaultPort : port;
         }
         
         #endregion

@@ -1,42 +1,38 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace CSP.Simulation
 {
-    public abstract class TickSystem : MonoBehaviour
+    public class TickSystem
     {
+        public event Action<uint> OnTick = delegate { };
+        
         public uint CurrentTick { get; protected set; }
-        public int TickRate { get; protected set; }
+        public uint TickRate { get; protected set; }
         public float TimeBetweenTicks { get; protected set; }
 
         private float _time;
         private int _ticksToSkip;
-        private bool _started;
         
         /// <summary>
         /// Starts the Tick System
         /// </summary>
         /// <param name="tickRate">Amount of ticks per second</param>
         /// <param name="startingTickOffset"></param>
-        public void Run(uint tickRate, uint startingTickOffset = 0)
+        public TickSystem(uint tickRate, uint startingTickOffset = 0)
         {
             // Setting the TickRate and calculating the Time Between Ticks.
-            TickRate = (int) tickRate;
+            TickRate = tickRate;
             TimeBetweenTicks = 1f / tickRate;
             
             // Setting the starting Tick (default 0)
             CurrentTick = startingTickOffset;
-            
-            _started = true;
         }
         
-        public abstract void OnTick(uint tick);
-
-        private protected void Update()
+        public void Update(float deltaTime)
         {
-            if (!_started) return;
-            
             // Increase the Time between last Tick and now
-            _time += Time.deltaTime;
+            _time += deltaTime;
 
             // If the Time between last Tick and now is greater than the Time Between Ticks,
             // we should run a tick and decrease the time between the last Tick by the Time Between Ticks.
@@ -52,7 +48,7 @@ namespace CSP.Simulation
                 
             // Increase tick and run the tick
             CurrentTick++;
-            OnTick(CurrentTick);
+            OnTick?.Invoke(CurrentTick);
         }
         
         /// <summary>
@@ -76,8 +72,14 @@ namespace CSP.Simulation
             for (int i = 0; i < amount; i++)
             {
                 CurrentTick++;
-                OnTick(CurrentTick);
+                OnTick?.Invoke(CurrentTick);
             }
         }
+
+        /// <summary>
+        /// Sets the tick to the given tick
+        /// </summary>
+        /// <param name="tick"></param>
+        public void SetTick(uint tick) => CurrentTick = tick;
     }
 }

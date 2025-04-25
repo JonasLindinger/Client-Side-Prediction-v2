@@ -820,9 +820,7 @@ MultiplayerRolesData:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1718461852}
   m_GameObjectRolesMask: 3
-  m_ComponentsRolesMasks:
-  - m_Object: {fileID: 1718461856}
-    m_RolesMask: 3
+  m_ComponentsRolesMasks: []
 --- !u!1 &1997939543
 GameObject:
   m_ObjectHideFlags: 0
@@ -901,6 +899,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1962195301515931196, guid: 1e4f130baac72af48bdd37051f85d5b5, type: 3}
+      propertyPath: ConnectionData.ServerListenAddress
+      value: 127.0.0.1
+      objectReference: {fileID: 0}
     - target: {fileID: 3683671652473672414, guid: 1e4f130baac72af48bdd37051f85d5b5, type: 3}
       propertyPath: m_Name
       value: NetworkRunner
@@ -945,7 +947,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 6739634703145947386, guid: 1e4f130baac72af48bdd37051f85d5b5, type: 3}
+    - {fileID: 5108373588467975732, guid: 1e4f130baac72af48bdd37051f85d5b5, type: 3}
+    - {fileID: 4758883948955669511, guid: 1e4f130baac72af48bdd37051f85d5b5, type: 3}
+    - {fileID: 791787523873105731, guid: 1e4f130baac72af48bdd37051f85d5b5, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
