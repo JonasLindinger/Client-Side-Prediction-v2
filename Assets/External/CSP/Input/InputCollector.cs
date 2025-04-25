@@ -78,12 +78,9 @@ namespace CSP.Input
                 Tick = tick,
             };
             
-            return clientInputState;
-        }
-
-        public void AddInputState(ClientInputState clientInputState)
-        {
             _lastInputStates.Enqueue(clientInputState);
+            
+            return clientInputState;
         }
         
         public ClientInputState[] GetLastInputStates(int amount)
