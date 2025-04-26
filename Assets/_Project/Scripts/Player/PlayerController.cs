@@ -2,11 +2,11 @@
 using CSP.Data;
 using CSP.Player;
 using CSP.Simulation;
-using CSP.TextDebug;
 using UnityEngine;
 
 namespace _Project.Scripts.Player
 {
+    [RequireComponent(typeof(Rigidbody))]
     public class PlayerController : PlayerInputNetworkBehaviour
     {
         [Header("Settings")]
@@ -28,14 +28,13 @@ namespace _Project.Scripts.Player
         private bool _grounded;
         private bool _readyToJump = true;
 
-        //private Vector3 _virualPosition;
-        
-        //private Rigidbody _rb;
+        private Rigidbody _rb;
         
         public override void OnSpawn()
         {
-            //_rb = GetComponent<Rigidbody>();
-            //_rb.freezeRotation = true;
+            _rb = GetComponent<Rigidbody>();
+            _rb.freezeRotation = true;
+            _rb.interpolation = RigidbodyInterpolation.Interpolate;
         }
         
         public override void OnDespawn()
@@ -45,9 +44,6 @@ namespace _Project.Scripts.Player
         
         public override void OnTick(uint tick, ClientInputState input, bool isReconciliation)
         {
-            transform.position += new Vector3(input.DirectionalInputs["Move"].x, 0, input.DirectionalInputs["Move"].y) * 0.5f;
-            return;
-            /*
             // Applying movement
             // Setting the drag
             _grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.2f, whatIsGround);
@@ -95,7 +91,6 @@ namespace _Project.Scripts.Player
                 _readyToJump = false;
                 Invoke(nameof(ResetJump), jumpCooldown);
             }
-            */
         }
         
         private void ResetJump()
@@ -109,8 +104,8 @@ namespace _Project.Scripts.Player
             {
                 Position = transform.position,
                 Rotation = transform.eulerAngles,
-                //Velocity = _rb.linearVelocity,
-                //AngularVelocity = _rb.angularVelocity,
+                Velocity = _rb.linearVelocity,
+                AngularVelocity = _rb.angularVelocity,
             };
         }
 
@@ -122,8 +117,8 @@ namespace _Project.Scripts.Player
 
             transform.position = playerState.Position;
             transform.eulerAngles = playerState.Rotation;
-            //_rb.linearVelocity = playerState.Velocity;
-            //_rb.angularVelocity = playerState.AngularVelocity;
+            _rb.linearVelocity = playerState.Velocity;
+            _rb.angularVelocity = playerState.AngularVelocity;
         }
 
         public override bool DoWeNeedToReconcile(IState predictedStateData, IState serverStateData)
@@ -135,10 +130,9 @@ namespace _Project.Scripts.Player
             if (Vector3.Distance(predictedState.Position, serverState.Position) >= 0.001f)
                 return true;
             // If our rotation is off, we reconcile
-            /* We don't do that (at least for now)
-            else if (Vector3.Distance(clientState.Rotation, serverState.Rotation) >= 0.001f)
+            // We don't do that (at least for now)
+            else if (Vector3.Distance(predictedState.Rotation, serverState.Rotation) >= 0.001f)
                 return true;
-            */
             // If our Velocity is of, we reconcile
             else if (Vector3.Distance(predictedState.Velocity, serverState.Velocity) >= 0.01f)
                 return true;
