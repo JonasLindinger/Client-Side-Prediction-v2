@@ -57,7 +57,6 @@ namespace CSP.Simulation
         /// <param name="amount"></param>
         public void SkipTick(int amount)
         {
-            // Todo: Check if the amount is too high, so we set the CurrentTick or run slower over a longer period
             _ticksToSkip = amount;
         }
 

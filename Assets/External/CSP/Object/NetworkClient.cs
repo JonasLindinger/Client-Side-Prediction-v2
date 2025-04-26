@@ -224,8 +224,6 @@ namespace CSP.Object
         #if Client
         private void ReconcileLocalPlayer(GameState serverGameState)
         {
-            // Todo: Use IState only. Not PlayerState stuff.
-            
             // Get our local Player Object Id
             ulong localPlayerObjectId = PlayerInputNetworkBehaviour.LocalPlayer.NetworkObjectId;
 
