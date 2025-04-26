@@ -15,8 +15,6 @@ namespace CSP.Object
     {
         #if Client
         public static NetworkClient LocalClient;
-        public static uint WantedBufferSize = 7;
-        public static uint WantedBufferSizePositiveTollerance = 3;
 
         private uint _latestReceivedGameStateTick;
         #elif Server
@@ -26,7 +24,6 @@ namespace CSP.Object
         public static Dictionary<ulong, NetworkClient> ClientsByOwnerId = new Dictionary<ulong, NetworkClient>();
         
         private ClientInputState[] _inputStates;
-        
         private ClientInputState _emptyInputState;
         #endif
         
@@ -69,7 +66,7 @@ namespace CSP.Object
             
             uint theServerTickNow = (uint)(tickOffset + passedTicks);
             
-            SnapshotManager.KeepTrack(physicsTickRate, theServerTickNow + NetworkRunner.NetworkSettings.tickBuffer);
+            SnapshotManager.KeepTrack(physicsTickRate, theServerTickNow + NetworkRunner.NetworkSettings.tickOffsetBuffer);
             CommunicationManager.StartCommunication(networkTickRate);
             
             #endif
@@ -79,8 +76,6 @@ namespace CSP.Object
         public void OnSyncRPC(uint serverTick)
         {
             #if Client
-            // Todo: Check for the input buffer
-            
             // Calculating the amount of ticks,
             // that happen between the time that the server sends the RPC and the Client received the RPC.
             ulong ms = NetworkRunner.GetInstance().UnityTransport.GetCurrentRtt(NetworkRunner.ServerClientId) / 2;
@@ -100,28 +95,28 @@ namespace CSP.Object
                 if (Mathf.Abs(difference) > 6)
                 {
                     Debug.LogWarning("Setting tick, because we are too far behind the server");
-                    SnapshotManager.PhysicsTickSystem.SetTick(theServerTickNow + NetworkRunner.NetworkSettings.tickBuffer);
+                    SnapshotManager.PhysicsTickSystem.SetTick(theServerTickNow + NetworkRunner.NetworkSettings.tickOffsetBuffer);
                 }
                 // Calculate extra ticks if the difference to the server tick isn't that big
                 else
                 {
                     Debug.LogWarning("Calculating extra ticks, because we are a bit behind the server");
-                    SnapshotManager.PhysicsTickSystem.CalculateExtraTicks((int)(difference + NetworkRunner.NetworkSettings.tickBuffer));
+                    SnapshotManager.PhysicsTickSystem.CalculateExtraTicks((int)(difference + NetworkRunner.NetworkSettings.tickOffsetBuffer));
                 }
             }
-            else if (difference > NetworkRunner.NetworkSettings.tickBuffer)
+            else if (difference > NetworkRunner.NetworkSettings.tickOffsetBuffer)
             {
                 // Skip to the server tick if we have to calculate too many ticks to get to the server tick
                 if (Mathf.Abs(difference) > 6)
                 {
                     Debug.LogWarning("Setting tick, because we are too far in front of the server");
-                    SnapshotManager.PhysicsTickSystem.SetTick(theServerTickNow + NetworkRunner.NetworkSettings.tickBuffer);
+                    SnapshotManager.PhysicsTickSystem.SetTick(theServerTickNow + NetworkRunner.NetworkSettings.tickOffsetBuffer);
                 }
                 // Calculate extra ticks if the difference to the server tick isn't that big
                 else
                 {
                     Debug.LogWarning("Skipping ticks, because we are a bit in front of the server");
-                    SnapshotManager.PhysicsTickSystem.SkipTick((int)(difference - NetworkRunner.NetworkSettings.tickBuffer + 1));
+                    SnapshotManager.PhysicsTickSystem.SkipTick((int)(difference - NetworkRunner.NetworkSettings.tickOffsetBuffer + 1));
                 }
             }
             else
@@ -130,6 +125,28 @@ namespace CSP.Object
                 // Debug.Log("We are in the sweet spot");
             }
             
+            #endif
+        }
+
+        [Rpc(SendTo.Server, Delivery = RpcDelivery.Unreliable)]
+        public void OnClientInputsRPC(ClientInputState[] clientInputStates)
+        {
+            #if Server
+            foreach (var input in clientInputStates)
+            {
+                // If this is an "old" input we skip
+                if (input.Tick < SnapshotManager.CurrentTick) continue;
+                
+                if (_inputStates[input.Tick % _inputStates.Length] != null)
+                {
+                    // We already have the right input, so we skip it
+                    if (_inputStates[input.Tick % _inputStates.Length].Tick == input.Tick) continue;
+                }
+                
+                // Save the new input
+                _inputStates[input.Tick % _inputStates.Length] = input;
+                // Debug - TextWriter.Update(OwnerClientId, input.Tick, input.DirectionalInputs["Move"]);
+            }
             #endif
         }
         

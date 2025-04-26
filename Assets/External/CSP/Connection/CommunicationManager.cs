@@ -1,5 +1,7 @@
-﻿using CSP.Simulation;
+﻿using CSP.Input;
+using CSP.Simulation;
 using Unity.Netcode;
+using UnityEngine;
 using NetworkClient = CSP.Object.NetworkClient;
 
 namespace CSP.Connection
@@ -9,6 +11,11 @@ namespace CSP.Connection
         public static uint TickRate => _communicationTickSystem.TickRate;
         
         private static TickSystem _communicationTickSystem;
+        
+        #if Client
+        // Local Client Input Saving
+        private static InputCollector _inputCollector;
+        #endif
         
         #if Server
         // Syncs the physics tick to compare. informs the client about the amount of inputs are buffered.
@@ -53,7 +60,13 @@ namespace CSP.Connection
 
         private static void OnTick(uint tick)
         {
-            
+            #if Client
+            if (!_inputCollector)
+                _inputCollector = InputCollector.GetInstance();
+
+            NetworkClient.LocalClient
+                .OnClientInputsRPC(_inputCollector.GetLastInputStates((int) NetworkRunner.NetworkSettings.inputBufferOnTheServer));
+            #endif
         }
 
         #if Server

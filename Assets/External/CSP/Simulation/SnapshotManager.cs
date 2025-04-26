@@ -19,6 +19,11 @@ namespace CSP.Simulation
         
         public static void KeepTrack(uint tickRate, uint startingTickOffset = 0)
         {
+            Physics.simulationMode = SimulationMode.Script;
+            #if Client
+            _inputStates = new ClientInputState[NetworkRunner.NetworkSettings.inputBufferSize];
+            #endif
+            
             PhysicsTickSystem = new TickSystem(tickRate, startingTickOffset);
             
             PhysicsTickSystem.OnTick += OnTick;
@@ -26,6 +31,8 @@ namespace CSP.Simulation
 
         public static void StopTracking()
         {
+            Physics.simulationMode = SimulationMode.FixedUpdate;
+            
             PhysicsTickSystem.OnTick -= OnTick;
             
             PhysicsTickSystem = null;
@@ -55,8 +62,9 @@ namespace CSP.Simulation
                 _inputCollector = InputCollector.GetInstance();
             
             // If we already collected input for this tick, we reuse it.
-            if (_inputStates[tick % _inputStates.Length].Tick == tick)
-                return _inputStates[tick % _inputStates.Length];
+            if (_inputStates[tick % _inputStates.Length] != null)
+                if (_inputStates[tick % _inputStates.Length].Tick == tick)
+                    return _inputStates[tick % _inputStates.Length];
             
             ClientInputState clientInputState = _inputCollector.GetClientInputState(tick);
             _inputStates[tick % _inputStates.Length] = clientInputState;
