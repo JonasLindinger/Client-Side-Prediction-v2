@@ -66,6 +66,8 @@ namespace CSP.Connection
 
             NetworkClient.LocalClient
                 .OnClientInputsRPC(_inputCollector.GetLastInputStates((int) NetworkRunner.NetworkSettings.inputBufferOnTheServer));
+            #elif Server
+            SendGameState();
             #endif
         }
 
@@ -78,6 +80,17 @@ namespace CSP.Connection
                 var client = kvp.Value;
 
                 client.OnSyncRPC(SnapshotManager.CurrentTick);
+            }
+        }
+        
+        private static void SendGameState()
+        {
+            GameState latestGameState = SnapshotManager.GetLatestGameState();
+            
+            foreach (var kvp in NetworkClient.ClientsByOwnerId)
+            {
+                NetworkClient client = kvp.Value;
+                client.OnServerStateRPC(latestGameState);
             }
         }
         #endif

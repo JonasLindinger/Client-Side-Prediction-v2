@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using _Project.Scripts.Network;
 using CSP.Connection;
 using CSP.Data;
 using CSP.Input;
+using CSP.Player;
 using CSP.ScriptableObjects;
 using CSP.Simulation;
 using CSP.TextDebug;
@@ -89,8 +91,6 @@ namespace CSP.Object
 
             if (difference < 0)
             {
-                // Todo: While reconciliation, check, how many ticks we have to reconcile. If this is too many, just apply the serverState
-
                 // Skip to the server tick if we have to calculate too many ticks to get to the server tick
                 if (Mathf.Abs(difference) > 6)
                 {
@@ -150,6 +150,26 @@ namespace CSP.Object
             #endif
         }
         
+        [Rpc(SendTo.Owner, Delivery = RpcDelivery.Unreliable)]
+        public void OnServerStateRPC(GameState latestGameState)
+        {
+            #if Client
+            if (latestGameState == null) 
+                return;
+            
+            if (latestGameState.Tick <= _latestReceivedGameStateTick)
+                _latestReceivedGameStateTick = latestGameState.Tick;
+
+            if (latestGameState.States == null)
+                return;
+
+            if (latestGameState.States.Count == 0)
+                return;
+            
+            ReconcileLocalPlayer(latestGameState);
+            #endif
+        }
+        
         #endregion
         
         #if Server
@@ -197,6 +217,103 @@ namespace CSP.Object
                 emptyInputForThisTick.Tick = tick;
                 
                 return emptyInputForThisTick;
+            }
+        }
+        #endif
+        
+        #if Client
+        private void ReconcileLocalPlayer(GameState serverGameState)
+        {
+            // Todo: Use IState only. Not PlayerState stuff.
+            
+            // Get our local Player Object Id
+            ulong localPlayerObjectId = PlayerInputNetworkBehaviour.LocalPlayer.NetworkObjectId;
+
+            bool canComparePredictedState = true;
+            
+            // Try to get the predicted Player State and server Player State
+            IState predictedClientState = null;
+            IState serverClientState = null;
+            try
+            {
+                if (!SnapshotManager.GetGameState(serverGameState.Tick).States
+                        .TryGetValue(localPlayerObjectId, out var predictedState))
+                    canComparePredictedState = false;
+
+                predictedClientState = predictedState;
+
+                // Try to find our Player in the Server State
+                if (!serverGameState.States.TryGetValue(localPlayerObjectId, out var serverState))
+                    canComparePredictedState = false;
+
+                serverClientState = serverState;
+            }
+            catch (Exception)
+            {
+                canComparePredictedState = false;
+            }
+
+            if (!canComparePredictedState)
+            {
+                // Apply game state
+                ApplyNonLocalPlayersState(serverGameState, false);
+                SnapshotManager.SaveGameState(serverGameState);
+                return;
+            }
+
+            bool weNeedToReconcile = PlayerInputNetworkBehaviour.LocalPlayer.DoWeNeedToReconcile(
+                predictedClientState, serverClientState
+            );
+            
+            if (!weNeedToReconcile)
+            {   
+                // Apply the Game State, but skip the local Player, because we predicted the state correct.
+                ApplyNonLocalPlayersState(serverGameState, true);
+                SnapshotManager.SaveGameState(serverGameState);
+                return;
+            }
+            
+            // -- RECONCILIATION --
+            
+            // Apply all states including our player
+            ApplyNonLocalPlayersState(serverGameState, false);
+            
+            // Saving state for reconciliation in the future
+            SnapshotManager.TakeSnapshot(serverGameState.Tick);
+            
+            // Collect Input
+            PlayerInputNetworkBehaviour.UpdatePlayersWithAuthority(serverGameState.Tick, true);
+            
+            // Check if the amount of ticks that we have to recalculate is too big, so that it potentially crashes the game or is bad player experience.
+            uint ticksToRecalculate = SnapshotManager.CurrentTick - serverGameState.Tick + 1;
+            if (ticksToRecalculate > 20)
+            {
+                // Do nothing and leave the client in the past, because we will reconcile correct later.
+                // t ~ 1 second because of the OnSyncRPC method
+                Debug.LogWarning("Can't reconcile because of a potential crash!");
+            }
+            else
+            {
+                // Recalculate every tick
+                for (uint tick = serverGameState.Tick + 1; tick <= SnapshotManager.CurrentTick; tick++)
+                    SnapshotManager.RecalculatePhysicsTick(tick);
+                
+                Debug.LogWarning("Reconciled!");
+            }
+        }
+
+        private void ApplyNonLocalPlayersState(GameState serverGameState, bool skipLocalPlayer)
+        {
+            foreach (var kvp in serverGameState.States)
+            {
+                ulong objectId = kvp.Key;
+                IState state = kvp.Value;
+                
+                // If it is local Player, we skip
+                if (objectId == PlayerInputNetworkBehaviour.LocalPlayer.NetworkObjectId && skipLocalPlayer)
+                    continue;
+                
+                SnapshotManager.ApplyState(objectId, state);
             }
         }
         #endif

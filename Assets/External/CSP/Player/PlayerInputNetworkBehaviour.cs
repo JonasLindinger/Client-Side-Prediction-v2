@@ -23,7 +23,8 @@ namespace CSP.Player
 
             #if Client
             _networkClient = NetworkClient.LocalClient;
-            LocalPlayer = this;
+            if (IsOwner)
+                LocalPlayer = this;
             #elif Server
             _networkClient = NetworkClient.ClientsByOwnerId[OwnerClientId];
             #endif
@@ -41,8 +42,6 @@ namespace CSP.Player
 
         public static void UpdatePlayersWithAuthority(uint tick, bool isReconciliation)
         {
-            SnapshotManager.TakeSnapshot(tick);
-
             foreach (PlayerInputNetworkBehaviour player in _playersWithAuthority)
             {
                 #if Client

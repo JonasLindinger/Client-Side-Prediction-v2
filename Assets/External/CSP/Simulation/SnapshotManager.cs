@@ -104,13 +104,28 @@ namespace CSP.Simulation
             // 1. Simulate Physics
             Physics.Simulate(PhysicsTickSystem.TimeBetweenTicks);
             
+            // 2. Save the current State
+            TakeSnapshot(tick);
+            
             #if Client
-            // 1.5 Collect Client Input
+            // 2.5 Collect Client Input
             ClientInputState clientInputState = GetInputState(tick);
             #endif
             
-            // 2. Update all Players (Server moves everyone, Client predicts his own player)
+            // 3. Update all Players (Server moves everyone, Client predicts his own player)
             PlayerInputNetworkBehaviour.UpdatePlayersWithAuthority(tick, false);
+        }
+
+        public static void RecalculatePhysicsTick(uint tick)
+        {
+            // 1. Simulate Physics
+            Physics.Simulate(PhysicsTickSystem.TimeBetweenTicks);
+            
+            // 2. Save the current State
+            TakeSnapshot(tick);
+            
+            // 3. Update all Players (Server moves everyone, Client predicts his own player)
+            PlayerInputNetworkBehaviour.UpdatePlayersWithAuthority(tick, true);
         }
         
         #if Client
@@ -129,6 +144,42 @@ namespace CSP.Simulation
 
             return clientInputState;
         }
+        
+        /// <summary>
+        /// Apply's the state on the object with the corresponding network Id
+        /// </summary>
+        /// <param name="networkId"></param>
+        /// <param name="state"></param>
+        /// <returns>Return's if the prediction was wrong</returns>
+        public static void ApplyState(ulong networkId, IState state)
+        {
+            if (!_networkedObjects.ContainsKey(networkId)) return;
+            NetworkedObject networkedObject = _networkedObjects[networkId];
+
+            // Check for null reference
+            if (networkedObject == null)
+            {
+                Debug.LogWarning("Something went wrong!");
+                return;
+            }
+            
+            networkedObject.ApplyState(state);
+        }
+        #elif Server
+        public static GameState GetLatestGameState()
+        {
+            return _gameStates[(int)_latestGameStateTick % _gameStates.Length];
+        }
         #endif
+        
+        public static GameState GetGameState(uint tick)
+        {
+            return _gameStates[(int)tick % _gameStates.Length];
+        }
+        
+        public static void SaveGameState(GameState gameState)
+        {
+            _gameStates[(int) gameState.Tick % _gameStates.Length] = gameState;
+        }
     }
 }
