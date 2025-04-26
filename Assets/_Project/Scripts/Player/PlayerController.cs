@@ -29,12 +29,18 @@ namespace _Project.Scripts.Player
         private bool _readyToJump = true;
 
         private Rigidbody _rb;
+        private AudioListener _audioListener;
         
         public override void OnSpawn()
         {
             _rb = GetComponent<Rigidbody>();
             _rb.freezeRotation = true;
             _rb.interpolation = RigidbodyInterpolation.Interpolate;
+            
+            playerCamera.enabled = IsOwner;
+            
+            _audioListener = playerCamera.GetComponent<AudioListener>();
+            _audioListener.enabled = IsOwner;
         }
         
         public override void OnDespawn()
@@ -97,7 +103,7 @@ namespace _Project.Scripts.Player
         {
             _readyToJump = true;
         }
-        
+
         public override IState GetCurrentState()
         {
             return new PlayerState()
