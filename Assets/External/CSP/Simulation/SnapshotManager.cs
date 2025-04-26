@@ -1,5 +1,8 @@
-﻿using CSP.Data;
+﻿using System.Collections.Generic;
+using CSP.Data;
 using CSP.Input;
+using CSP.Object;
+using CSP.Player;
 using UnityEngine;
 
 namespace CSP.Simulation
@@ -11,15 +14,24 @@ namespace CSP.Simulation
             
         public static TickSystem PhysicsTickSystem;
 
+        private static Dictionary<ulong, NetworkedObject> _networkedObjects  = new Dictionary<ulong, NetworkedObject>(); // NetworkObjectId | PredictionObject
+        
+        private static GameState[] _gameStates;
+        
         #if Client
         // Local Client Input Saving
         private static InputCollector _inputCollector;
         private static ClientInputState[] _inputStates;
+        #elif Server
+        private static uint _latestGameStateTick;
         #endif
         
         public static void KeepTrack(uint tickRate, uint startingTickOffset = 0)
         {
             Physics.simulationMode = SimulationMode.Script;
+            
+            _gameStates = new GameState[NetworkRunner.NetworkSettings.stateBufferSize];
+            
             #if Client
             _inputStates = new ClientInputState[NetworkRunner.NetworkSettings.inputBufferSize];
             #endif
@@ -37,6 +49,53 @@ namespace CSP.Simulation
             
             PhysicsTickSystem = null;
         }
+        
+        /// <summary>
+        /// Every Networked Object registered will be included in the GameState.
+        /// It wouldn't make to Unregister Objects so we don't have a method for that!
+        /// </summary>
+        /// <param name="id">NetworkId</param>
+        /// <param name="networkedObject"></param>
+        public static void RegisterNetworkedObject(ulong id, NetworkedObject networkedObject)
+        {
+            _networkedObjects.Add(id, networkedObject);
+        }
+        
+        /// <summary>
+        /// Saves the current GameState.
+        /// </summary>
+        /// <param name="tick">Current Tick</param>
+        public static void TakeSnapshot(uint tick)
+        {
+            GameState currentGameState = GetCurrentState(tick);
+
+            _gameStates[(int)tick % _gameStates.Length] = currentGameState;
+            #if Server
+            _latestGameStateTick = tick;
+            #endif
+        }
+        
+        /// <summary>
+        /// Returns the current GameState.
+        /// </summary>
+        /// <param name="tick">Current Tick</param>
+        public static GameState GetCurrentState(uint tick)
+        {
+            GameState currentGameState = new GameState();
+            currentGameState.Tick = tick;
+            
+            foreach (var kvp in _networkedObjects)
+            {
+                ulong networkId = kvp.Key;
+                NetworkedObject networkedObject = kvp.Value;
+
+                IState state = networkedObject.GetCurrentState();
+                
+                currentGameState.States.Add(networkId, state);
+            }
+            
+            return currentGameState;
+        }
 
         public static void Update(float deltaTime) => PhysicsTickSystem?.Update(deltaTime);
         
@@ -51,12 +110,11 @@ namespace CSP.Simulation
             #endif
             
             // 2. Update all Players (Server moves everyone, Client predicts his own player)
-            // Todo: Do Player Controlling
-            // PlayerInputBehaviour.UpdatePlayersWithAuthority(tick, false);
+            PlayerInputNetworkBehaviour.UpdatePlayersWithAuthority(tick, false);
         }
         
         #if Client
-        private static ClientInputState GetInputState(uint tick)
+        public static ClientInputState GetInputState(uint tick)
         {
             if (!_inputCollector)
                 _inputCollector = InputCollector.GetInstance();
