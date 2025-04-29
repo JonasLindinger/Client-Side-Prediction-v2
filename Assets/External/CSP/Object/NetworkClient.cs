@@ -26,8 +26,8 @@ namespace CSP.Object
         public static Dictionary<ulong, NetworkClient> ClientsByOwnerId = new Dictionary<ulong, NetworkClient>();
         
         private ClientInputState[] _inputStates;
-        private ClientInputState _emptyInputState;
         #endif
+        public bool sentInput = false;
         
         public override void OnNetworkSpawn()
         {
@@ -132,6 +132,8 @@ namespace CSP.Object
         public void OnClientInputsRPC(ClientInputState[] clientInputStates)
         {
             #if Server
+            sentInput = true;
+            
             foreach (var input in clientInputStates)
             {
                 // If this is an "old" input we skip
@@ -196,27 +198,7 @@ namespace CSP.Object
             }
             else
             {
-                if (_emptyInputState == null)
-                {
-                    Dictionary<string, bool> inputFlags = new Dictionary<string, bool>();
-                    foreach (string inputName in InputCollector.InputFlagNames)
-                        inputFlags.Add(inputName, false);
-                    
-                    Dictionary<string, Vector2> directionalInputs = new Dictionary<string, Vector2>();
-                    foreach (string inputName in InputCollector.DirectionalInputNames)
-                        directionalInputs.Add(inputName, Vector2.zero);
-                    
-                    _emptyInputState = new ClientInputState()
-                    {
-                        InputFlags = inputFlags,
-                        DirectionalInputs = directionalInputs,
-                    };
-                }
-                
-                ClientInputState emptyInputForThisTick = _emptyInputState;
-                emptyInputForThisTick.Tick = tick;
-                
-                return emptyInputForThisTick;
+                return null;
             }
         }
         #endif

@@ -41,13 +41,19 @@ namespace _Project.Scripts.Player
             
             _audioListener = playerCamera.GetComponent<AudioListener>();
             _audioListener.enabled = IsOwner;
+
+            if (IsOwner)
+            {
+                Cursor.lockState = CursorLockMode.Locked; 
+                Cursor.visible = false;
+            }
         }
         
         public override void OnDespawn()
         {
             
         }
-        
+
         public override void OnTick(uint tick, ClientInputState input, bool isReconciliation)
         {
             // Applying movement
@@ -104,6 +110,12 @@ namespace _Project.Scripts.Player
             _readyToJump = true;
         }
 
+        public override IData GetPlayerData()
+        {
+            LocalPlayerData localPlayerData = new LocalPlayerData();
+            return localPlayerData;
+        }
+        
         public override IState GetCurrentState()
         {
             return new PlayerState()

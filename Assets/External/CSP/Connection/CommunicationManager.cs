@@ -1,4 +1,5 @@
-﻿using CSP.Input;
+﻿using CSP.Data;
+using CSP.Input;
 using CSP.Simulation;
 using Unity.Netcode;
 using UnityEngine;
@@ -64,8 +65,11 @@ namespace CSP.Connection
             if (!_inputCollector)
                 _inputCollector = InputCollector.GetInstance();
 
-            NetworkClient.LocalClient
-                .OnClientInputsRPC(_inputCollector.GetLastInputStates((int) NetworkRunner.NetworkSettings.inputBufferOnTheServer));
+            ClientInputState[] inputsToSend =
+                _inputCollector.GetLastInputStates((int)NetworkRunner.NetworkSettings.inputBufferOnTheServer);
+            
+            if (inputsToSend.Length > 0) 
+                NetworkClient.LocalClient.OnClientInputsRPC(inputsToSend);
             #elif Server
             SendGameState();
             #endif

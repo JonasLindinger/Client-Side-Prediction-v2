@@ -45,8 +45,9 @@ namespace CSP.Player
             foreach (PlayerInputNetworkBehaviour player in _playersWithAuthority)
             {
                 #if Client
-                player.OnTick(tick, SnapshotManager.GetInputState(tick), isReconciliation);
+                player.OnTick(tick, SnapshotManager.GetInputState(tick, null), isReconciliation);
                 #elif Server
+                if (!player._networkClient.sentInput) continue;
                 player.OnTick(tick, player._networkClient.GetInputState(tick), isReconciliation);
                 #endif
             }
@@ -55,5 +56,7 @@ namespace CSP.Player
         public abstract void OnSpawn();
         public abstract void OnTick(uint tick, ClientInputState input, bool isReconciliation);
         public abstract void OnDespawn();
+
+        public abstract IData GetPlayerData();
     }
 }

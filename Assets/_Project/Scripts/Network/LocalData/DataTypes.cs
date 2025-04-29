@@ -1,8 +1,7 @@
 ﻿namespace _Project.Scripts.Network
 {
-    public enum StateTypes : int
+    public enum DataTypes
     {
-        Player,
         LocalPlayer,
     }
 }

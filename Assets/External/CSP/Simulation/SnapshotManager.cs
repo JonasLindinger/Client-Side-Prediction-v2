@@ -108,8 +108,15 @@ namespace CSP.Simulation
             TakeSnapshot(tick);
             
             #if Client
-            // 2.5 Collect Client Input
-            ClientInputState clientInputState = GetInputState(tick);
+            // 2.5 Collect Client Data and Input
+            if (PlayerInputNetworkBehaviour.LocalPlayer != null)
+            {
+                IData data = PlayerInputNetworkBehaviour.LocalPlayer.GetPlayerData();
+                Debug.Log(data == null);
+            
+                // Collect input
+                ClientInputState clientInputState = GetInputState(tick, data);
+            }
             #endif
             
             // 3. Update all Players (Server moves everyone, Client predicts his own player)
@@ -129,7 +136,7 @@ namespace CSP.Simulation
         }
         
         #if Client
-        public static ClientInputState GetInputState(uint tick)
+        public static ClientInputState GetInputState(uint tick, IData data)
         {
             if (!_inputCollector)
                 _inputCollector = InputCollector.GetInstance();
@@ -140,6 +147,7 @@ namespace CSP.Simulation
                     return _inputStates[tick % _inputStates.Length];
             
             ClientInputState clientInputState = _inputCollector.GetClientInputState(tick);
+            clientInputState.Data = data;
             _inputStates[tick % _inputStates.Length] = clientInputState;
 
             return clientInputState;

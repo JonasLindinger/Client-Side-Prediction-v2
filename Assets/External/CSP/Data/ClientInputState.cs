@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using CSP.Input;
+using CSP.Simulation;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -9,6 +10,8 @@ namespace CSP.Data
     public class ClientInputState : INetworkSerializable
     {
         public uint Tick;
+        public IData Data;
+        
         private bool[] _inputFlags;
         private Vector2[] _directionalInputs;
         
@@ -29,6 +32,12 @@ namespace CSP.Data
                 
                 serializer.SerializeValue(ref _inputFlagsByte);
                 serializer.SerializeValue(ref _directionalInputsByte);
+                
+                // Serialize the data type
+                int dataType = Data.GetDataType();
+                serializer.SerializeValue(ref dataType);
+                
+                Data.NetworkSerialize(serializer);
             }
             else
             {
@@ -37,7 +46,21 @@ namespace CSP.Data
                 
                 DeserializeFlags();
                 DeserializeDirectionals();
+                
+                int dataType = 0;
+                serializer.SerializeValue(ref dataType); // Read the data type
+                
+                IData data = DataFactory.Create(dataType);
+                if (data == null)
+                {
+                    Debug.Log("Failed to serialize");
+                    return;
+                }
+                Debug.Log("Serialized correct");
+                data.NetworkSerialize(serializer);
+                Data = data;
             }
+            
         }
         
         private void SerializeFlags()
