@@ -13,8 +13,8 @@ namespace _Project.Scripts.Network
             serializer.SerializeValue(ref PlayerRotation);
         }
 
-        static LocalPlayerData() => DataFactory.Register((int) DataTypes.LocalPlayer,() => new LocalPlayerData());
+        static LocalPlayerData() => DataFactory.Register((int) LocalDataTypes.LocalPlayer,() => new LocalPlayerData());
 
-        public int GetDataType() => (int) DataTypes.LocalPlayer;
+        public int GetDataType() => (int) LocalDataTypes.LocalPlayer;
     }
 }
