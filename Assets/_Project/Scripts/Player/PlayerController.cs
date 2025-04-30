@@ -2,14 +2,20 @@
 using CSP.Data;
 using CSP.Player;
 using CSP.Simulation;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using IState = CSP.Simulation.IState;
 
 namespace _Project.Scripts.Player
 {
     [RequireComponent(typeof(Rigidbody))]
     public class PlayerController : PlayerInputNetworkBehaviour
     {
+        [Header("Settings")]
+        [SerializeField] private float xSensitivity = 3;
+        [SerializeField] private float ySensitivity = 3;
+        [Space(10)]
         [Header("Settings")]
         [SerializeField] private float walkSpeed;
         [SerializeField] private float sprintSpeed;
@@ -28,6 +34,9 @@ namespace _Project.Scripts.Player
 
         private bool _grounded;
         private bool _readyToJump = true;
+        
+        private float xRotation;
+        private float yRotation;
 
         private Rigidbody _rb;
         private AudioListener _audioListener;
@@ -58,10 +67,23 @@ namespace _Project.Scripts.Player
         public override void InputUpdate(PlayerInput playerInput)
         {
             // Todo: Add looking
+            float mouseX = playerInput.actions["Look"].ReadValue<Vector2>().x * Time.deltaTime * xSensitivity;
+            float mouseY = playerInput.actions["Look"].ReadValue<Vector2>().y * Time.deltaTime * ySensitivity;
+            
+            yRotation += mouseX;
+            
+            xRotation -= mouseY;
+            xRotation = Mathf.Clamp(xRotation, -90f, 90f);
+            
+            playerCamera.transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
+            orientation.rotation = Quaternion.Euler(0, yRotation, 0);
         }
 
         public override void OnTick(uint tick, ClientInputState input, bool isReconciliation)
         {
+            LocalPlayerData playerData = (LocalPlayerData) input.Data;
+            orientation.rotation = Quaternion.Euler(0, playerData.PlayerRotation.y, 0);
+            
             // Applying movement
             // Setting the drag
             _grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.2f, whatIsGround);
@@ -119,6 +141,7 @@ namespace _Project.Scripts.Player
         public override IData GetPlayerData()
         {
             LocalPlayerData localPlayerData = new LocalPlayerData();
+            localPlayerData.PlayerRotation = new Vector2(xRotation, yRotation);
             return localPlayerData;
         }
         
