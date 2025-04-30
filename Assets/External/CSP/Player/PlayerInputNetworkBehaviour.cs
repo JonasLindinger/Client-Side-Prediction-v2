@@ -58,11 +58,23 @@ namespace CSP.Player
         {
             foreach (PlayerInputNetworkBehaviour player in _playersWithAuthority)
             {
+                // Getting input
+                ClientInputState input = null;
                 #if Client
-                player.OnTick(tick, SnapshotManager.GetInputState(tick, null), isReconciliation);
+                input = SnapshotManager.GetInputState(tick, null);
                 #elif Server
                 if (!player._networkClient.sentInput) continue;
-                player.OnTick(tick, player._networkClient.GetInputState(tick), isReconciliation);
+                input = player._networkClient.GetInputState(tick);
+                #endif
+                
+                // Checking for null input
+                if (input == null) continue;
+                
+                // Processing input
+                #if Client
+                player.OnTick(tick, input, isReconciliation);
+                #elif Server
+                player.OnTick(tick, input, isReconciliation);
                 #endif
             }
         }
