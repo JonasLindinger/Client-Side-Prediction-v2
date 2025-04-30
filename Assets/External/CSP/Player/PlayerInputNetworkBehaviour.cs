@@ -69,6 +69,7 @@ namespace CSP.Player
                 
                 // Checking for null input
                 if (input == null) continue;
+                if (input.Data == null) continue;
                 
                 // Processing input
                 #if Client

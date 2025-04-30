@@ -112,7 +112,6 @@ namespace CSP.Simulation
             if (PlayerInputNetworkBehaviour.LocalPlayer != null)
             {
                 IData data = PlayerInputNetworkBehaviour.LocalPlayer.GetPlayerData();
-                Debug.Log(data == null);
             
                 // Collect input
                 ClientInputState clientInputState = GetInputState(tick, data);

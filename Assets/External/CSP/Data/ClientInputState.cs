@@ -33,6 +33,8 @@ namespace CSP.Data
                 serializer.SerializeValue(ref _inputFlagsByte);
                 serializer.SerializeValue(ref _directionalInputsByte);
                 
+                if (Data == null) return;
+                
                 // Serialize the data type
                 int dataType = Data.GetDataType();
                 serializer.SerializeValue(ref dataType);
@@ -46,21 +48,23 @@ namespace CSP.Data
                 
                 DeserializeFlags();
                 DeserializeDirectionals();
-                
-                int dataType = 0;
-                serializer.SerializeValue(ref dataType); // Read the data type
-                
-                IData data = DataFactory.Create(dataType);
-                if (data == null)
+
+                try
                 {
-                    Debug.Log("Failed to serialize");
-                    return;
+                    int dataType = 0;
+                    serializer.SerializeValue(ref dataType); // Read the data type
+
+                    IData data = DataFactory.Create(dataType);
+                    if (data == null)
+                        return;
+                    data.NetworkSerialize(serializer);
+                    Data = data;
                 }
-                Debug.Log("Serialized correct");
-                data.NetworkSerialize(serializer);
-                Data = data;
+                catch (Exception e)
+                {
+                    // Ignore
+                }
             }
-            
         }
         
         private void SerializeFlags()
