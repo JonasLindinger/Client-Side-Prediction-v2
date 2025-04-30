@@ -924,6 +924,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: NetworkRunner
       objectReference: {fileID: 0}
+    - target: {fileID: 5154503558861923063, guid: 1e4f130baac72af48bdd37051f85d5b5, type: 3}
+      propertyPath: m_DefaultActionMap
+      value: Networked
+      objectReference: {fileID: 0}
     - target: {fileID: 7673315925427211502, guid: 1e4f130baac72af48bdd37051f85d5b5, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

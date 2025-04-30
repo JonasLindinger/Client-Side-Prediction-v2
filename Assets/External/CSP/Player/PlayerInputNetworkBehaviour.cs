@@ -1,11 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using _Project.Scripts.Network;
 using CSP.Data;
+using CSP.Input;
 using CSP.Object;
 using CSP.Simulation;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace CSP.Player
 {
+    [RequireComponent(typeof(PlayerInput))]
     public abstract class PlayerInputNetworkBehaviour : NetworkedObject
     {
         #if Client
@@ -15,6 +20,7 @@ namespace CSP.Player
         private static List<PlayerInputNetworkBehaviour> _playersWithAuthority = new List<PlayerInputNetworkBehaviour>();
 
         private NetworkClient _networkClient;
+        private PlayerInput _playerInput;
         
         public override void OnNetworkSpawn()
         {
@@ -23,6 +29,7 @@ namespace CSP.Player
 
             #if Client
             _networkClient = NetworkClient.LocalClient;
+            _playerInput = GetComponent<PlayerInput>();
             if (IsOwner)
                 LocalPlayer = this;
             #elif Server
@@ -40,6 +47,13 @@ namespace CSP.Player
             OnDespawn();
         }
 
+        protected void Update()
+        {
+            #if Client
+            InputUpdate(_playerInput);
+            #endif
+        }
+
         public static void UpdatePlayersWithAuthority(uint tick, bool isReconciliation)
         {
             foreach (PlayerInputNetworkBehaviour player in _playersWithAuthority)
@@ -54,8 +68,9 @@ namespace CSP.Player
         }
 
         public abstract void OnSpawn();
-        public abstract void OnTick(uint tick, ClientInputState input, bool isReconciliation);
         public abstract void OnDespawn();
+        public abstract void InputUpdate(PlayerInput playerInput);
+        public abstract void OnTick(uint tick, ClientInputState input, bool isReconciliation);
 
         public abstract IData GetPlayerData();
     }

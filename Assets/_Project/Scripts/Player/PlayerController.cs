@@ -3,6 +3,7 @@ using CSP.Data;
 using CSP.Player;
 using CSP.Simulation;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace _Project.Scripts.Player
 {
@@ -52,6 +53,11 @@ namespace _Project.Scripts.Player
         public override void OnDespawn()
         {
             
+        }
+        
+        public override void InputUpdate(PlayerInput playerInput)
+        {
+            // Todo: Add looking
         }
 
         public override void OnTick(uint tick, ClientInputState input, bool isReconciliation)

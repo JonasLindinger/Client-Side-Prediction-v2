@@ -322,6 +322,7 @@ GameObject:
   - component: {fileID: 7936571346395074715}
   - component: {fileID: 3518043298984401450}
   - component: {fileID: 3782119314389561819}
+  - component: {fileID: 6910658358285188117}
   m_Layer: 0
   m_Name: NetworkPlayer
   m_TagString: Untagged
@@ -425,3 +426,33 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &6910658358285188117
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7537445062675534531}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Actions: {fileID: -944628639613478452, guid: e95ce6c9434a3684e9b67d2d46f371eb, type: 3}
+  m_NotificationBehavior: 0
+  m_UIInputModule: {fileID: 0}
+  m_DeviceLostEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_DeviceRegainedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ControlsChangedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ActionEvents: []
+  m_NeverAutoSwitchControlSchemes: 0
+  m_DefaultControlScheme: 
+  m_DefaultActionMap: 5c68f639-991a-4ed8-99f0-ab9514d99d81
+  m_SplitScreenIndex: -1
+  m_Camera: {fileID: 0}

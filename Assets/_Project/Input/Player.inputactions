@@ -179,12 +179,12 @@
         },
         {
             "name": "Local",
-            "id": "095fc621-7bf1-4b69-9243-55e28bedc1ce",
+            "id": "5c68f639-991a-4ed8-99f0-ab9514d99d81",
             "actions": [
                 {
                     "name": "Look",
                     "type": "Value",
-                    "id": "bec64549-c248-4d29-8e28-a2d4c340a652",
+                    "id": "6351eef8-be70-4abb-80ec-3508d46a4408",
                     "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": "",
@@ -194,8 +194,8 @@
             "bindings": [
                 {
                     "name": "",
-                    "id": "3a4bee7e-d72d-406c-a0ee-d503eaf64a65",
-                    "path": "<Mouse>/delta",
+                    "id": "42702e08-603c-4051-8780-e96d609464d4",
+                    "path": "<Pointer>/delta",
                     "interactions": "",
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
