@@ -66,7 +66,6 @@ namespace _Project.Scripts.Player
         
         public override void InputUpdate(PlayerInput playerInput)
         {
-            // Todo: Add looking
             float mouseX = playerInput.actions["Look"].ReadValue<Vector2>().x * Time.deltaTime * xSensitivity;
             float mouseY = playerInput.actions["Look"].ReadValue<Vector2>().y * Time.deltaTime * ySensitivity;
             
