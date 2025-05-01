@@ -66,6 +66,7 @@ namespace _Project.Scripts.Player
         
         public override void InputUpdate(PlayerInput playerInput)
         {
+            // Looking
             float mouseX = playerInput.actions["Look"].ReadValue<Vector2>().x * Time.deltaTime * xSensitivity;
             float mouseY = playerInput.actions["Look"].ReadValue<Vector2>().y * Time.deltaTime * ySensitivity;
             
@@ -80,6 +81,7 @@ namespace _Project.Scripts.Player
 
         public override void OnTick(uint tick, ClientInputState input, bool isReconciliation)
         {
+            // Apply rotation
             LocalPlayerData playerData = (LocalPlayerData) input.Data;
             orientation.rotation = Quaternion.Euler(0, playerData.PlayerRotation.y, 0);
             
@@ -137,6 +139,8 @@ namespace _Project.Scripts.Player
             _readyToJump = true;
         }
 
+        #region State Stuff
+
         public override IData GetPlayerData()
         {
             LocalPlayerData localPlayerData = new LocalPlayerData();
@@ -188,5 +192,7 @@ namespace _Project.Scripts.Player
 
             return false;
         }
+        
+        #endregion
     }
 }
