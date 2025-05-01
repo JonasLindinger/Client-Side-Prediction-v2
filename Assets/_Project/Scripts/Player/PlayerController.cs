@@ -35,8 +35,8 @@ namespace _Project.Scripts.Player
         private bool _grounded;
         private bool _readyToJump = true;
         
-        private float xRotation;
-        private float yRotation;
+        private float _xRotation;
+        private float _yRotation;
 
         private Rigidbody _rb;
         private AudioListener _audioListener;
@@ -70,13 +70,13 @@ namespace _Project.Scripts.Player
             float mouseX = playerInput.actions["Look"].ReadValue<Vector2>().x * Time.deltaTime * xSensitivity;
             float mouseY = playerInput.actions["Look"].ReadValue<Vector2>().y * Time.deltaTime * ySensitivity;
             
-            yRotation += mouseX;
+            _yRotation += mouseX;
             
-            xRotation -= mouseY;
-            xRotation = Mathf.Clamp(xRotation, -90f, 90f);
+            _xRotation -= mouseY;
+            _xRotation = Mathf.Clamp(_xRotation, -90f, 90f);
             
-            playerCamera.transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
-            orientation.rotation = Quaternion.Euler(0, yRotation, 0);
+            playerCamera.transform.rotation = Quaternion.Euler(_xRotation, _yRotation, 0);
+            orientation.rotation = Quaternion.Euler(0, _yRotation, 0);
         }
 
         public override void OnTick(uint tick, ClientInputState input, bool isReconciliation)
@@ -144,7 +144,7 @@ namespace _Project.Scripts.Player
         public override IData GetPlayerData()
         {
             LocalPlayerData localPlayerData = new LocalPlayerData();
-            localPlayerData.PlayerRotation = new Vector2(xRotation, yRotation);
+            localPlayerData.PlayerRotation = new Vector2(_xRotation, _yRotation);
             return localPlayerData;
         }
         
