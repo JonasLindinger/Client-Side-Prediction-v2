@@ -84,6 +84,7 @@ namespace CSP.Player
         public abstract void OnDespawn();
         public abstract void InputUpdate(PlayerInput playerInput);
         public abstract void OnTick(uint tick, ClientInputState input, bool isReconciliation);
+        public abstract bool DoWeNeedToReconcile(IState predictedStateData, IState serverStateData);
 
         public abstract IData GetPlayerData();
     }

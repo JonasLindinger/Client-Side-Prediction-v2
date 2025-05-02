@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using CSP.Items;
+using UnityEngine;
 
 namespace _Project.Scripts.Network
 {
@@ -6,7 +7,10 @@ namespace _Project.Scripts.Network
     {
         private void Start()
         {
+            // Initializing states / data
             LocalPlayerData localPlayerData = new LocalPlayerData();
+            Gun1State gun1State = new Gun1State();
+            
             Destroy(this);
         }
     }

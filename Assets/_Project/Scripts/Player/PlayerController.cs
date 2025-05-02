@@ -1,5 +1,8 @@
-﻿using _Project.Scripts.Network;
+﻿using System.Linq;
+using _Project.Scripts.Items;
+using _Project.Scripts.Network;
 using CSP.Data;
+using CSP.Items;
 using CSP.Player;
 using CSP.Simulation;
 using UnityEngine;
@@ -26,10 +29,11 @@ namespace _Project.Scripts.Player
         [SerializeField] private float airMultipier;
         [Space(10)]
         [Header("References")]
-        [SerializeField] private Camera playerCamera;
         [SerializeField] private Transform orientation;
         [SerializeField] private LayerMask whatIsGround;
         [SerializeField] private float playerHeight;
+        [SerializeField] private Camera playerCamera;
+        [SerializeField] private Transform gunContainer;
 
         private bool _grounded;
         private bool _readyToJump = true;
@@ -39,6 +43,15 @@ namespace _Project.Scripts.Player
 
         private Rigidbody _rb;
         private AudioListener _audioListener;
+        
+        // "Inventory"
+        private PickUpItem _equippedItem;
+        
+        #if Client
+        // "Client's Inventory actions"
+        private PickUpItem _itemToEquip;
+        private PickUpItem _itemToDrop;
+        #endif
         
         public override void OnSpawn()
         {
@@ -65,16 +78,109 @@ namespace _Project.Scripts.Player
         
         public override void InputUpdate(PlayerInput playerInput)
         {
+            PickUp(playerInput);
+            DropItem(playerInput);
             Look(playerInput);
         }
 
         public override void OnTick(uint tick, ClientInputState input, bool isReconciliation)
         {
+            CheckInventory(input);
             Move(input);
         }
 
+        #region PickUpStuff
+        
+        #if Client
+        #region Local Actions
+
+        private void PickUp(PlayerInput playerInput)
+        {
+            if (playerInput.actions["PickUp"].ReadValue<float>() > 0.4f) return; // We don't want to pick up, so we return early.
+            if (PickUpItem.PickUpAbleItems.Count == 0) return; // No item to pick Up
+            
+            _itemToEquip = PickUpItem.PickUpAbleItems.First().Value;
+        }
+
+        private void DropItem(PlayerInput playerInput)
+        {
+            if (playerInput.actions["Drop"].ReadValue<float>() > 0.4f) return; // We don't want to drop, so we return early.
+            if (_equippedItem == null) return; // No item to drop
+            
+            _itemToDrop = _equippedItem;
+        }
+
+        #endregion
+        #endif
+
+        #region Actions
+        private void DropItemAction(ulong itemIdToDrop)
+        {
+            if (_equippedItem == null) return; // No item to drop
+            if (_equippedItem.NetworkObjectId == itemIdToDrop)
+            {
+                Debug.LogWarning("Something went wrong. We have a different item, so we can't drop the item that we should drop");
+                return; // We have a different item, so we can't drop
+            }
+            
+            _equippedItem.Drop(gunContainer, playerCamera);
+            _equippedItem = null;
+        }
+
+        private void PickUpItemAction(ulong itemIdToPickUp)
+        {
+            if (_equippedItem.NetworkObjectId == itemIdToPickUp) return; // We already equipped this item, so we don't do anything.
+            
+            if (_equippedItem != null)
+                DropItemAction(_equippedItem.NetworkObjectId);  // Dropping old item if we need to.
+            
+            if (!PickUpItem.PickUpItems.ContainsKey(itemIdToPickUp))
+            {
+                Debug.LogWarning("Item to pick up not found!");
+                return; // Item doesn't exist?
+            }
+            
+            _equippedItem = PickUpItem.PickUpItems[itemIdToPickUp];
+            _equippedItem.PickUp(gunContainer, playerCamera);
+        }
+        #endregion
+
+        #region Handle Inventory
+
+        private void SetInventory(PlayerState playerState)
+        {
+            if (playerState.EquippedItem == -1) // We shouldn't have an item equipped
+                if (_equippedItem != null) 
+                    DropItemAction(_equippedItem.NetworkObjectId);
+                else
+                {
+                    // Everything is fine.
+                }
+            else
+            {
+                PickUpItemAction((ulong) playerState.EquippedItem);
+            }
+        }
+
+        private void CheckInventory(ClientInputState input)
+        {
+            if (input.Data.GetDataType() != (int) LocalDataTypes.LocalPlayer) return;
+            LocalPlayerData playerData = (LocalPlayerData) input.Data;
+            if (playerData == null) return;
+
+            if (playerData.ItemToDrop != -1)
+                DropItemAction((ulong) playerData.ItemToDrop);
+            else if (playerData.ItemToPickUp != -1) 
+                PickUpItemAction((ulong) playerData.ItemToPickUp);
+        }
+
+        #endregion
+        
+        #endregion
+        
         #region Look
 
+        #if Client
         private void Look(PlayerInput playerInput)
         {
             // Looking
@@ -88,7 +194,8 @@ namespace _Project.Scripts.Player
             
             playerCamera.transform.rotation = Quaternion.Euler(_xRotation, _yRotation, 0);
             orientation.rotation = Quaternion.Euler(0, _yRotation, 0);
-        } 
+        }
+        #endif
         
         #endregion
         
@@ -173,6 +280,7 @@ namespace _Project.Scripts.Player
                 Rotation = transform.eulerAngles,
                 Velocity = _rb.linearVelocity,
                 AngularVelocity = _rb.angularVelocity,
+                EquippedItem = (long) _equippedItem.NetworkObjectId,
             };
         }
 
@@ -186,6 +294,8 @@ namespace _Project.Scripts.Player
             transform.eulerAngles = playerState.Rotation;
             _rb.linearVelocity = playerState.Velocity;
             _rb.angularVelocity = playerState.AngularVelocity;
+
+            SetInventory(playerState);
         }
 
         public override bool DoWeNeedToReconcile(IState predictedStateData, IState serverStateData)

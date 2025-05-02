@@ -17,6 +17,5 @@ namespace CSP.Object
 
         public abstract IState GetCurrentState();
         public abstract void ApplyState(IState state);
-        public abstract bool DoWeNeedToReconcile(IState predictedStateData, IState serverStateData);
     }
 }

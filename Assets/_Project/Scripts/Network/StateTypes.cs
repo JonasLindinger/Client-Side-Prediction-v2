@@ -3,6 +3,6 @@
     public enum StateTypes : int
     {
         Player,
-        LocalPlayer,
+        Gun
     }
 }
