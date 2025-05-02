@@ -207,21 +207,9 @@ namespace CSP.Object
         private void ReconcileLocalPlayer(GameState serverGameState)
         {
             GameState localGameState = SnapshotManager.GetGameState(serverGameState.Tick);
-            if (localGameState == null)
-            {
-                Debug.Log("Local Game State is null");
-                return;
-            }
-            if (localGameState.States == null) 
-            {
-                Debug.Log("Local Game State States is null");
-                return;
-            }
-            if (localGameState.States.Count == 0)
-            {
-                Debug.Log("Local Game State States has a length of 0 is null");
-                return;
-            }
+            if (localGameState == null) return;
+            if (localGameState.States == null) return;
+            if (localGameState.States.Count == 0) return;
 
             Dictionary<PredictedNetworkedObject, IState> predictedStates = new Dictionary<PredictedNetworkedObject, IState>();
             Dictionary<PredictedNetworkedObject, IState> serverStates = new Dictionary<PredictedNetworkedObject, IState>();
@@ -245,6 +233,7 @@ namespace CSP.Object
                 }
                 catch (Exception e)
                 {
+                    // Skip this. This isn't a predicted networked object.
                     Debug.Log("Skip this. This isn't a predicted networked object.");
                     continue;
                 }
@@ -289,7 +278,6 @@ namespace CSP.Object
             
             if (shouldReconcile)
             {
-                // Todo: Reconcile everything.
                 // -- RECONCILIATION --
                 ApplyStates(serverGameState, false);
                 SnapshotManager.TakeSnapshot(serverGameState.Tick);
@@ -318,7 +306,6 @@ namespace CSP.Object
 
         private void ApplyStates(GameState serverGameState, bool skipPredictedObjects)
         {
-            Debug.Log("Applying States");
             foreach (var kvp in serverGameState.States)
             {
                 ulong objectId = kvp.Key;
@@ -333,20 +320,13 @@ namespace CSP.Object
                 }
                 catch (Exception e)
                 {
-                    Debug.LogWarning("Exceptoion!");
+                    // not a predicted object.
                 }
                 
                 bool isPredictedObject = predictedNetworkedObject != null;
 
-                if (isPredictedObject)
-                {
-                    if (!predictedNetworkedObject.canBeIgnored && skipPredictedObjects)
-                    {
-                        if (objectId != PlayerInputNetworkBehaviour.LocalPlayer.NetworkObjectId)
-                            Debug.LogWarning("SKIPPING");
+                if (isPredictedObject && !predictedNetworkedObject.canBeIgnored && skipPredictedObjects)
                         continue;
-                    }
-                }
                 
                 SnapshotManager.ApplyState(objectId, state);
             }
