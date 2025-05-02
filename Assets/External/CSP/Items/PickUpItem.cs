@@ -21,6 +21,7 @@ namespace CSP.Items
         [SerializeField] private float dropUpwardForce;
 
         public bool Equipped { get; private set; }
+        public PlayerInputNetworkBehaviour owner;
         
         #if Client
         private Transform _player;
@@ -29,8 +30,6 @@ namespace CSP.Items
 
         public override void OnNetworkSpawn()
         {
-            // Todo: Check if the weapon to pick up is close enough.
-            // Todo: Add Cooldown to pick up items.
             // Todo: Make this a predicted object like the local player. Do that by adding a inherited class of NetworkedObject called PredictedNetworkedObject save local GameStates instead of PlayerStates. Also change the ApplyLocalState mathod in the NetworkClient to not just ignore the player. ignore all predicted objects (Type of PredictedNetworkedObject vs Networked Object).
             PickUpItems.Add(NetworkObjectId, this);
         }
@@ -87,15 +86,45 @@ namespace CSP.Items
         protected abstract void Highlight();
         protected abstract void UnHighlight();
         public abstract int GetItemType();
+
+        public bool IsAbleToPickUp(Transform player)
+        {
+            Vector3 distanceToPlayer = player.position - transform.position;
+            return distanceToPlayer.magnitude <= pickUpRange;
+        }
+
+        public void TransferOwnerShip(PlayerInputNetworkBehaviour player, Transform gunContainer)
+        {
+            if (Equipped)
+            {
+                player.OnDropItem((long) NetworkObjectId);
+                owner = player;
+            }
+            else
+            {
+                Equipped = true;
+                owner = player;
+            }
+        }
         
-        public void PickUp(Transform gunContainer, Camera playerCamera)
+        public void PickUp(PlayerInputNetworkBehaviour player, Transform gunContainer, Camera playerCamera)
         {
             Equipped = true;
+            owner = player;
         }
 
         public void Drop(Transform gunContainer, Camera playerCamera)
         {
             Equipped = true;
+            owner = null;
+        }
+
+        public void DropFromOwner()
+        {
+            if (!Equipped) return;
+            if (owner == null) return;
+            
+            owner.OnDropItem((long) NetworkObjectId);
         }
     }
 }

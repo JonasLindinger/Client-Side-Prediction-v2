@@ -14,11 +14,14 @@ namespace _Project.Scripts.Player
     [RequireComponent(typeof(Rigidbody))]
     public class PlayerController : PlayerInputNetworkBehaviour
     {
-        [Header("Settings")]
+        [Header("Mouse Settings")]
         [SerializeField] private float xSensitivity = 3;
         [SerializeField] private float ySensitivity = 3;
+        [Space(10)] 
+        [Header("Pick Up Settings")] 
+        [SerializeField] private float pickUpCooldown = 3f;
         [Space(10)]
-        [Header("Settings")]
+        [Header("Move Settings")]
         [SerializeField] private float walkSpeed;
         [SerializeField] private float sprintSpeed;
         [SerializeField] private float crouchSpeed;
@@ -41,6 +44,8 @@ namespace _Project.Scripts.Player
         private float _xRotation;
         private float _yRotation;
 
+        private float _pickUpCooldownTimer;
+        
         private Rigidbody _rb;
         private AudioListener _audioListener;
         
@@ -127,7 +132,7 @@ namespace _Project.Scripts.Player
             _equippedItem = null;
         }
 
-        private void PickUpItemAction(ulong itemIdToPickUp)
+        private void PickUpItemAction(ulong itemIdToPickUp, bool force)
         {
             if (_equippedItem.NetworkObjectId == itemIdToPickUp) return; // We already equipped this item, so we don't do anything.
             
@@ -139,18 +144,47 @@ namespace _Project.Scripts.Player
                 Debug.LogWarning("Item to pick up not found!");
                 return; // Item doesn't exist?
             }
+
+            PickUpItem item = PickUpItem.PickUpItems[itemIdToPickUp];
             
-            _equippedItem = PickUpItem.PickUpItems[itemIdToPickUp];
-            _equippedItem.PickUp(gunContainer, playerCamera);
+            item.TransferOwnerShip(this, gunContainer);
+            
+            if (force)
+            {
+                if (item.Equipped && item.owner != this)
+                    item.DropFromOwner();
+            }
+            else 
+            {
+                if (!item.IsAbleToPickUp(transform)) return;
+                if (_pickUpCooldownTimer > 0) return;
+
+                _pickUpCooldownTimer = pickUpCooldown;
+            }
+            
+            _equippedItem = item;
+            _equippedItem.PickUp(this, gunContainer, playerCamera);
         }
         #endregion
+        
+        public override void OnPickUpItem(long itemNetworkId)
+        {
+            PickUpItemAction((ulong) itemNetworkId, true);
+        }
+        
+        public override void OnDropItem(long itemNetworkId)
+        {
+            DropItemAction((ulong) itemNetworkId);
+        }
 
         #region Handle Inventory
 
         private void SetInventory(PlayerState playerState)
         {
+            _pickUpCooldownTimer = playerState.PickUpCooldownTimer;
+            
             if (playerState.EquippedItem == -1) // We shouldn't have an item equipped
-                if (_equippedItem != null) 
+                if (_equippedItem != null)
                     DropItemAction(_equippedItem.NetworkObjectId);
                 else
                 {
@@ -158,12 +192,16 @@ namespace _Project.Scripts.Player
                 }
             else
             {
-                PickUpItemAction((ulong) playerState.EquippedItem);
+                PickUpItemAction((ulong) playerState.EquippedItem, true);
             }
         }
 
         private void CheckInventory(ClientInputState input)
         {
+            // Reduce cooldown
+            if (_pickUpCooldownTimer > 0)
+                _pickUpCooldownTimer -= SnapshotManager.PhysicsTickSystem.TimeBetweenTicks;
+            
             if (input.Data.GetDataType() != (int) LocalDataTypes.LocalPlayer) return;
             LocalPlayerData playerData = (LocalPlayerData) input.Data;
             if (playerData == null) return;
@@ -171,7 +209,7 @@ namespace _Project.Scripts.Player
             if (playerData.ItemToDrop != -1)
                 DropItemAction((ulong) playerData.ItemToDrop);
             else if (playerData.ItemToPickUp != -1) 
-                PickUpItemAction((ulong) playerData.ItemToPickUp);
+                PickUpItemAction((ulong) playerData.ItemToPickUp, false);
         }
 
         #endregion
@@ -288,6 +326,7 @@ namespace _Project.Scripts.Player
                 Velocity = _rb.linearVelocity,
                 AngularVelocity = _rb.angularVelocity,
                 EquippedItem = (long) _equippedItem.NetworkObjectId,
+                PickUpCooldownTimer = _pickUpCooldownTimer,
             };
         }
 
@@ -326,7 +365,7 @@ namespace _Project.Scripts.Player
 
             return false;
         }
-        
+
         #endregion
     }
 }
