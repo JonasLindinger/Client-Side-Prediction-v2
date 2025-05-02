@@ -326,13 +326,15 @@ namespace _Project.Scripts.Player
         
         public override IState GetCurrentState()
         {
+            long equippedItem = _equippedItem == null ? -1 : (long) _equippedItem.NetworkObjectId;
+            
             return new PlayerState()
             {
                 Position = transform.position,
                 Rotation = transform.eulerAngles,
                 Velocity = _rb.linearVelocity,
                 AngularVelocity = _rb.angularVelocity,
-                EquippedItem = (long) _equippedItem.NetworkObjectId,
+                EquippedItem = equippedItem,
                 PickUpCooldownTimer = _pickUpCooldownTimer,
             };
         }
