@@ -207,9 +207,21 @@ namespace CSP.Object
         private void ReconcileLocalPlayer(GameState serverGameState)
         {
             GameState localGameState = SnapshotManager.GetGameState(serverGameState.Tick);
-            if (localGameState == null) return;
-            if (localGameState.States == null) return;
-            if (localGameState.States.Count == 0) return;
+            if (localGameState == null)
+            {
+                Debug.Log("Local Game State is null");
+                return;
+            }
+            if (localGameState.States == null) 
+            {
+                Debug.Log("Local Game State States is null");
+                return;
+            }
+            if (localGameState.States.Count == 0)
+            {
+                Debug.Log("Local Game State States has a length of 0 is null");
+                return;
+            }
 
             Dictionary<PredictedNetworkedObject, IState> predictedStates = new Dictionary<PredictedNetworkedObject, IState>();
             Dictionary<PredictedNetworkedObject, IState> serverStates = new Dictionary<PredictedNetworkedObject, IState>();
@@ -306,6 +318,7 @@ namespace CSP.Object
 
         private void ApplyStates(GameState serverGameState, bool skipPredictedObjects)
         {
+            Debug.Log("Applying States");
             foreach (var kvp in serverGameState.States)
             {
                 ulong objectId = kvp.Key;
@@ -320,14 +333,20 @@ namespace CSP.Object
                 }
                 catch (Exception e)
                 {
-                    Debug.Log("Skip this. This isn't a predicted networked object.");
+                    Debug.LogWarning("Exceptoion!");
                 }
                 
                 bool isPredictedObject = predictedNetworkedObject != null;
-                
-                // If it is a predicted player, and we should skip them, we skip this object.
-                if (isPredictedObject && skipPredictedObjects)
-                    continue;
+
+                if (isPredictedObject)
+                {
+                    if (!predictedNetworkedObject.canBeIgnored && skipPredictedObjects)
+                    {
+                        if (objectId != PlayerInputNetworkBehaviour.LocalPlayer.NetworkObjectId)
+                            Debug.LogWarning("SKIPPING");
+                        continue;
+                    }
+                }
                 
                 SnapshotManager.ApplyState(objectId, state);
             }
