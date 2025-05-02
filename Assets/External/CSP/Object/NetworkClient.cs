@@ -155,7 +155,6 @@ namespace CSP.Object
         [Rpc(SendTo.Owner, Delivery = RpcDelivery.Unreliable)]
         public void OnServerStateRPC(GameState latestGameState)
         {
-            Debug.Log(latestGameState.States.Count);
             #if Client
             if (latestGameState == null) 
                 return;
