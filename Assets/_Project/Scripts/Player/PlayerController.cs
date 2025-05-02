@@ -49,7 +49,7 @@ namespace _Project.Scripts.Player
         
         #if Client
         // "Client's Inventory actions"
-        private PickUpItem _itemToEquip;
+        private PickUpItem _itemToPickUp;
         private PickUpItem _itemToDrop;
         #endif
         
@@ -99,7 +99,7 @@ namespace _Project.Scripts.Player
             if (playerInput.actions["PickUp"].ReadValue<float>() > 0.4f) return; // We don't want to pick up, so we return early.
             if (PickUpItem.PickUpAbleItems.Count == 0) return; // No item to pick Up
             
-            _itemToEquip = PickUpItem.PickUpAbleItems.First().Value;
+            _itemToPickUp = PickUpItem.PickUpAbleItems.First().Value;
         }
 
         private void DropItem(PlayerInput playerInput)
@@ -269,6 +269,13 @@ namespace _Project.Scripts.Player
         {
             LocalPlayerData localPlayerData = new LocalPlayerData();
             localPlayerData.PlayerRotation = new Vector2(_xRotation, _yRotation);
+            
+            // Do inventory stuff and reset the items to drop / pick up
+            localPlayerData.ItemToDrop = _itemToDrop == null ? -1 : (long) _itemToDrop.NetworkObjectId;
+            localPlayerData.ItemToPickUp = _itemToPickUp == null ? -1 : (long) _itemToPickUp.NetworkObjectId;
+            _itemToDrop = null;
+            _itemToPickUp = null;
+            
             return localPlayerData;
         }
         
