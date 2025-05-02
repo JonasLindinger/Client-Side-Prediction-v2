@@ -29,6 +29,7 @@ namespace CSP.Items
 
         public override void OnNetworkSpawn()
         {
+            // Todo: Check if the weapon to pick up is close enough.
             // Todo: Add Cooldown to pick up items.
             // Todo: Make this a predicted object like the local player. Do that by adding a inherited class of NetworkedObject called PredictedNetworkedObject save local GameStates instead of PlayerStates. Also change the ApplyLocalState mathod in the NetworkClient to not just ignore the player. ignore all predicted objects (Type of PredictedNetworkedObject vs Networked Object).
             PickUpItems.Add(NetworkObjectId, this);
