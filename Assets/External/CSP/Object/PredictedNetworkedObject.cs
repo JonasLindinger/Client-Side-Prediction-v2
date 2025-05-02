@@ -1,10 +1,11 @@
 ﻿using CSP.Simulation;
+using UnityEngine;
 
 namespace CSP.Object
 {
     public abstract class PredictedNetworkedObject : NetworkedObject
     {
-        public bool canBeIgnored;
+        [HideInInspector] public bool canBeIgnored;
         public abstract bool DoWeNeedToReconcile(IState predictedStateData, IState serverStateData);
     }
 }
