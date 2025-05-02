@@ -11,7 +11,6 @@ namespace CSP.Items
         protected override void SetUp()
         {
             _rb = GetComponent<Rigidbody>();
-            Debug.Log("Set Up");
         }
 
         protected override void Use()

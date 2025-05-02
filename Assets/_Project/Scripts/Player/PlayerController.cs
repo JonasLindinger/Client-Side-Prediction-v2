@@ -7,6 +7,7 @@ using CSP.Player;
 using CSP.Simulation;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 using IState = CSP.Simulation.IState;
 
 namespace _Project.Scripts.Player
@@ -17,9 +18,6 @@ namespace _Project.Scripts.Player
         [Header("Mouse Settings")]
         [SerializeField] private float xSensitivity = 3;
         [SerializeField] private float ySensitivity = 3;
-        [Space(10)] 
-        [Header("Pick Up Settings")] 
-        [SerializeField] private float pickUpCooldown = 3f;
         [Space(10)]
         [Header("Move Settings")]
         [SerializeField] private float walkSpeed;
@@ -43,8 +41,6 @@ namespace _Project.Scripts.Player
         
         private float _xRotation;
         private float _yRotation;
-
-        private float _pickUpCooldownTimer;
         
         private Rigidbody _rb;
         private AudioListener _audioListener;
@@ -134,9 +130,6 @@ namespace _Project.Scripts.Player
             
             _equippedItem.Drop(gunContainer, playerCamera);
             _equippedItem = null;
-            #if Client
-            _itemToDrop = null;
-            #endif
         }
 
         private void PickUpItemAction(ulong itemIdToPickUp, bool force)
@@ -165,16 +158,10 @@ namespace _Project.Scripts.Player
             else 
             {
                 if (!item.IsAbleToPickUp(transform)) return;
-                if (_pickUpCooldownTimer > 0) return;
-
-                _pickUpCooldownTimer = pickUpCooldown;
             }
             
             _equippedItem = item;
             _equippedItem.PickUp(this, gunContainer, playerCamera);
-            #if Client
-            _itemToPickUp = null;
-            #endif
         }
         #endregion
         
@@ -192,8 +179,6 @@ namespace _Project.Scripts.Player
 
         private void SetInventory(PlayerState playerState)
         {
-            _pickUpCooldownTimer = playerState.PickUpCooldownTimer;
-            
             if (playerState.EquippedItem == -1) // We shouldn't have an item equipped
                 if (_equippedItem != null)
                     DropItemAction(_equippedItem.NetworkObjectId);
@@ -209,18 +194,18 @@ namespace _Project.Scripts.Player
 
         private void CheckInventory(ClientInputState input)
         {
-            // Reduce cooldown
-            if (_pickUpCooldownTimer > 0)
-                _pickUpCooldownTimer -= SnapshotManager.PhysicsTickSystem.TimeBetweenTicks;
-            
             if (input.Data.GetDataType() != (int) LocalDataTypes.LocalPlayer) return;
             LocalPlayerData playerData = (LocalPlayerData) input.Data;
             if (playerData == null) return;
 
             if (playerData.ItemToDrop != -1)
+            {
                 DropItemAction((ulong) playerData.ItemToDrop);
-            else if (playerData.ItemToPickUp != -1) 
+            }
+            else if (playerData.ItemToPickUp != -1)
+            {
                 PickUpItemAction((ulong) playerData.ItemToPickUp, false);
+            }
         }
 
         #endregion
@@ -324,6 +309,9 @@ namespace _Project.Scripts.Player
             // Do inventory stuff and reset the items to drop / pick up
             localPlayerData.ItemToDrop = _itemToDrop == null ? -1 : (long) _itemToDrop.NetworkObjectId;
             localPlayerData.ItemToPickUp = _itemToPickUp == null ? -1 : (long) _itemToPickUp.NetworkObjectId;
+
+            _itemToPickUp = null;
+            _itemToDrop = null;
             #endif
             
             return localPlayerData;
@@ -340,7 +328,6 @@ namespace _Project.Scripts.Player
                 Velocity = _rb.linearVelocity,
                 AngularVelocity = _rb.angularVelocity,
                 EquippedItem = equippedItem,
-                PickUpCooldownTimer = _pickUpCooldownTimer,
             };
         }
 
@@ -377,8 +364,6 @@ namespace _Project.Scripts.Player
             else if (Vector3.Distance(predictedState.AngularVelocity, serverState.AngularVelocity) >= 0.01f)
                 return true;
             else if (predictedState.EquippedItem != serverState.EquippedItem)
-                return true;
-            else if (!Mathf.Approximately(predictedState.PickUpCooldownTimer, serverState.PickUpCooldownTimer))
                 return true;
 
             return false;

@@ -155,10 +155,10 @@ namespace CSP.Object
         [Rpc(SendTo.Owner, Delivery = RpcDelivery.Unreliable)]
         public void OnServerStateRPC(GameState latestGameState)
         {
+            Debug.Log(latestGameState.States.Count);
             #if Client
             if (latestGameState == null) 
                 return;
-            
             if (latestGameState.Tick <= _latestReceivedGameStateTick)
                 _latestReceivedGameStateTick = latestGameState.Tick;
 
@@ -168,7 +168,7 @@ namespace CSP.Object
             if (latestGameState.States.Count == 0)
                 return;
             
-            ReconcileLocalPlayer(latestGameState);
+            Reconcile(latestGameState);
             #endif
         }
         
@@ -204,7 +204,7 @@ namespace CSP.Object
         #endif
         
         #if Client
-        private void ReconcileLocalPlayer(GameState serverGameState)
+        private void Reconcile(GameState serverGameState)
         {
             GameState localGameState = SnapshotManager.GetGameState(serverGameState.Tick);
             if (localGameState == null) return;
@@ -306,12 +306,17 @@ namespace CSP.Object
 
         private void ApplyStates(GameState serverGameState, bool skipPredictedObjects)
         {
+            Debug.LogWarning("Applying states");
             foreach (var kvp in serverGameState.States)
             {
                 ulong objectId = kvp.Key;
                 IState state = kvp.Value;
-
-                if (!SnapshotManager.NetworkedObjects.ContainsKey(objectId)) continue;
+                Debug.LogWarning("Applying state");
+                if (!SnapshotManager.NetworkedObjects.ContainsKey(objectId))
+                {
+                    Debug.LogWarning("We don't have data for this object");
+                    continue;
+                }
                 NetworkedObject networkedObject = SnapshotManager.NetworkedObjects[objectId];
                 PredictedNetworkedObject predictedNetworkedObject = null;
                 try
@@ -324,10 +329,14 @@ namespace CSP.Object
                 }
                 
                 bool isPredictedObject = predictedNetworkedObject != null;
-
-                if (isPredictedObject && !predictedNetworkedObject.canBeIgnored && skipPredictedObjects)
-                        continue;
                 
+                if (isPredictedObject && !predictedNetworkedObject.canBeIgnored && skipPredictedObjects)
+                {
+                    Debug.LogWarning("Skipping");
+                    continue;
+                }
+                
+                Debug.LogWarning("Setting");
                 SnapshotManager.ApplyState(objectId, state);
             }
         }

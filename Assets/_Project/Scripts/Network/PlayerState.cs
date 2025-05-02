@@ -11,7 +11,6 @@ namespace _Project.Scripts.Network
         public Vector3 Velocity;
         public Vector3 AngularVelocity;
         public long EquippedItem;
-        public float PickUpCooldownTimer;
         
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
@@ -20,7 +19,6 @@ namespace _Project.Scripts.Network
             serializer.SerializeValue(ref Velocity);
             serializer.SerializeValue(ref AngularVelocity);
             serializer.SerializeValue(ref EquippedItem);
-            serializer.SerializeValue(ref PickUpCooldownTimer);
         }
 
         static PlayerState() => StateFactory.Register((int) StateTypes.Player,() => new PlayerState());

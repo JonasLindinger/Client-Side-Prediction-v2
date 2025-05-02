@@ -22,6 +22,8 @@ namespace CSP.Items
             serializer.SerializeValue(ref Equipped);
         }
 
+        static Gun1State() => StateFactory.Register((int) StateTypes.Gun,() => new Gun1State());
+        
         public int GetStateType() => (int) StateTypes.Gun;
     }
 }
