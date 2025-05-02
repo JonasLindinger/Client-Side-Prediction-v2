@@ -14,15 +14,15 @@ namespace CSP.Items
         #endif
         public static Dictionary<ulong, PickUpItem> PickUpItems = new Dictionary<ulong, PickUpItem>();
         
-        public BoxCollider boxCollider;
-        private Rigidbody _rb;
-        
+        [SerializeField] private BoxCollider boxCollider;
         [SerializeField] private float pickUpRange;
         [SerializeField] private float dropForwardForce;
         [SerializeField] private float dropUpwardForce;
 
-        public bool equipped;
-        public PlayerInputNetworkBehaviour owner;
+        [HideInInspector] public bool equipped;
+        [HideInInspector] public PlayerInputNetworkBehaviour owner;
+        
+        private Rigidbody _rb;
         
         #if Client
         private Transform _player;
