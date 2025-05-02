@@ -224,6 +224,7 @@ namespace CSP.Object
                 ulong objectId = kvp.Key;
                 IState state = kvp.Value;
 
+                if (!SnapshotManager.NetworkedObjects.ContainsKey(objectId)) return;
                 NetworkedObject networkedObject = SnapshotManager.NetworkedObjects[objectId];
                 PredictedNetworkedObject predictedNetworkedObject = null;
                 try
@@ -310,6 +311,7 @@ namespace CSP.Object
                 ulong objectId = kvp.Key;
                 IState state = kvp.Value;
 
+                if (!SnapshotManager.NetworkedObjects.ContainsKey(objectId)) continue;
                 NetworkedObject networkedObject = SnapshotManager.NetworkedObjects[objectId];
                 PredictedNetworkedObject predictedNetworkedObject = null;
                 try
