@@ -1,4 +1,5 @@
 ﻿using System;
+using _Project.Scripts.Items;
 using CSP.Connection.Approval;
 using CSP.Connection.Listener;
 using CSP.Data;
@@ -152,6 +153,7 @@ namespace CSP
                 SnapshotManager.KeepTrack(NetworkSettings.physicsTickRate);
                 CommunicationManager.StartCommunication(NetworkSettings.networkTickRate);
                 Debug.Log("Server started");
+                ItemSpawner.GetInstance().SpawnItems();
             }
             else
                 Debug.LogError("Couldn't start server");

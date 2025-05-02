@@ -105,7 +105,7 @@ namespace _Project.Scripts.Player
 
         private void PickUp(PlayerInput playerInput)
         {
-            if (playerInput.actions["Pick Up"].ReadValue<float>() > 0.4f) return; // We don't want to pick up, so we return early.
+            if (playerInput.actions["Pick Up"].ReadValue<float>() <= 0.4f) return; // We don't want to pick up, so we return early.
             if (PickUpItem.PickUpAbleItems.Count == 0) return; // No item to pick Up
             
             _itemToPickUp = PickUpItem.PickUpAbleItems.First().Value;
@@ -113,7 +113,7 @@ namespace _Project.Scripts.Player
 
         private void DropItem(PlayerInput playerInput)
         {
-            if (playerInput.actions["Drop"].ReadValue<float>() > 0.4f) return; // We don't want to drop, so we return early.
+            if (playerInput.actions["Drop"].ReadValue<float>() <= 0.4f) return; // We don't want to drop, so we return early.
             if (_equippedItem == null) return; // No item to drop
             
             _itemToDrop = _equippedItem;
@@ -138,10 +138,11 @@ namespace _Project.Scripts.Player
 
         private void PickUpItemAction(ulong itemIdToPickUp, bool force)
         {
-            if (_equippedItem.NetworkObjectId == itemIdToPickUp) return; // We already equipped this item, so we don't do anything.
-            
             if (_equippedItem != null)
+            {
+                if (_equippedItem.NetworkObjectId == itemIdToPickUp) return; // We already equipped this item, so we don't do anything.
                 DropItemAction(_equippedItem.NetworkObjectId);  // Dropping old item if we need to.
+            }
             
             if (!PickUpItem.PickUpItems.ContainsKey(itemIdToPickUp))
             {

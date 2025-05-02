@@ -22,7 +22,7 @@ namespace CSP.Items
         [HideInInspector] public bool equipped;
         [HideInInspector] public PlayerInputNetworkBehaviour owner;
         
-        private Rigidbody _rb;
+        private Rigidbody _rigidbody;
         
         #if Client
         private Transform _player;
@@ -32,6 +32,7 @@ namespace CSP.Items
         public override void OnNetworkSpawn()
         {
             PickUpItems.Add(NetworkObjectId, this);
+            SetUp();
         }
 
         #if Client
