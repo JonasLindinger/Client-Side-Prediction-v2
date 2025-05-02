@@ -69,11 +69,13 @@ namespace _Project.Scripts.Player
             _audioListener = playerCamera.GetComponent<AudioListener>();
             _audioListener.enabled = IsOwner;
 
+            #if Client
             if (IsOwner)
             {
                 Cursor.lockState = CursorLockMode.Locked; 
                 Cursor.visible = false;
             }
+            #endif
         }
         
         public override void OnDespawn()
@@ -83,9 +85,11 @@ namespace _Project.Scripts.Player
         
         public override void InputUpdate(PlayerInput playerInput)
         {
+            #if Client
             PickUp(playerInput);
             DropItem(playerInput);
             Look(playerInput);
+            #endif
         }
 
         public override void OnTick(uint tick, ClientInputState input, bool isReconciliation)
@@ -101,7 +105,7 @@ namespace _Project.Scripts.Player
 
         private void PickUp(PlayerInput playerInput)
         {
-            if (playerInput.actions["PickUp"].ReadValue<float>() > 0.4f) return; // We don't want to pick up, so we return early.
+            if (playerInput.actions["Pick Up"].ReadValue<float>() > 0.4f) return; // We don't want to pick up, so we return early.
             if (PickUpItem.PickUpAbleItems.Count == 0) return; // No item to pick Up
             
             _itemToPickUp = PickUpItem.PickUpAbleItems.First().Value;
@@ -151,7 +155,7 @@ namespace _Project.Scripts.Player
             
             if (force)
             {
-                if (item.Equipped && item.owner != this)
+                if (item.equipped && item.owner != this)
                     item.DropFromOwner();
             }
             else 
@@ -302,10 +306,12 @@ namespace _Project.Scripts.Player
         #endregion
         
         #region State Stuff
-
+        
         public override IData GetPlayerData()
         {
             LocalPlayerData localPlayerData = new LocalPlayerData();
+        
+            #if Client
             localPlayerData.PlayerRotation = new Vector2(_xRotation, _yRotation);
             
             // Do inventory stuff and reset the items to drop / pick up
@@ -313,6 +319,7 @@ namespace _Project.Scripts.Player
             localPlayerData.ItemToPickUp = _itemToPickUp == null ? -1 : (long) _itemToPickUp.NetworkObjectId;
             _itemToDrop = null;
             _itemToPickUp = null;
+            #endif
             
             return localPlayerData;
         }
@@ -361,6 +368,10 @@ namespace _Project.Scripts.Player
                 return true;
             // If our AngularVelocity is of, we reconcile
             else if (Vector3.Distance(predictedState.AngularVelocity, serverState.AngularVelocity) >= 0.01f)
+                return true;
+            else if (predictedState.EquippedItem != serverState.EquippedItem)
+                return true;
+            else if (!Mathf.Approximately(predictedState.PickUpCooldownTimer, serverState.PickUpCooldownTimer))
                 return true;
 
             return false;

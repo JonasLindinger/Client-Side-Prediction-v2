@@ -11,7 +11,7 @@ using UnityEngine.InputSystem;
 namespace CSP.Player
 {
     [RequireComponent(typeof(PlayerInput))]
-    public abstract class PlayerInputNetworkBehaviour : NetworkedObject
+    public abstract class PlayerInputNetworkBehaviour : PredictedNetworkedObject
     {
         #if Client
         public static PlayerInputNetworkBehaviour LocalPlayer;
@@ -32,6 +32,8 @@ namespace CSP.Player
             _playerInput = GetComponent<PlayerInput>();
             if (IsOwner)
                 LocalPlayer = this;
+            else 
+                canBeIgnored = true;
             #elif Server
             _networkClient = NetworkClient.ClientsByOwnerId[OwnerClientId];
             #endif
@@ -84,7 +86,6 @@ namespace CSP.Player
         public abstract void OnDespawn();
         public abstract void InputUpdate(PlayerInput playerInput);
         public abstract void OnTick(uint tick, ClientInputState input, bool isReconciliation);
-        public abstract bool DoWeNeedToReconcile(IState predictedStateData, IState serverStateData);
         public abstract void OnPickUpItem(long itemNetworkId);
         public abstract void OnDropItem(long itemNetworkId);
         public abstract IData GetPlayerData();

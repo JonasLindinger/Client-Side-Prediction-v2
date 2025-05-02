@@ -206,91 +206,125 @@ namespace CSP.Object
         #if Client
         private void ReconcileLocalPlayer(GameState serverGameState)
         {
-            // Get our local Player Object Id
-            ulong localPlayerObjectId = PlayerInputNetworkBehaviour.LocalPlayer.NetworkObjectId;
+            GameState localGameState = SnapshotManager.GetGameState(serverGameState.Tick);
+            if (localGameState == null) return;
+            if (localGameState.States == null) return;
+            if (localGameState.States.Count == 0) return;
 
-            bool canComparePredictedState = true;
+            Dictionary<PredictedNetworkedObject, IState> predictedStates = new Dictionary<PredictedNetworkedObject, IState>();
+            Dictionary<PredictedNetworkedObject, IState> serverStates = new Dictionary<PredictedNetworkedObject, IState>();
+            bool shouldReconcile = false;
             
-            // Try to get the predicted Player State and server Player State
-            IState predictedClientState = null;
-            IState serverClientState = null;
-            try
+            // Apply all not predicted states.
+            ApplyStates(serverGameState, true);
+            SnapshotManager.SaveGameState(serverGameState);
+            
+            foreach (var kvp in serverGameState.States)
             {
-                if (!SnapshotManager.GetGameState(serverGameState.Tick).States
-                        .TryGetValue(localPlayerObjectId, out var predictedState))
-                    canComparePredictedState = false;
+                ulong objectId = kvp.Key;
+                IState state = kvp.Value;
 
-                predictedClientState = predictedState;
-
-                // Try to find our Player in the Server State
-                if (!serverGameState.States.TryGetValue(localPlayerObjectId, out var serverState))
-                    canComparePredictedState = false;
-
-                serverClientState = serverState;
-            }
-            catch (Exception)
-            {
-                canComparePredictedState = false;
-            }
-
-            if (!canComparePredictedState)
-            {
-                // Apply game state
-                ApplyNonLocalPlayersState(serverGameState, false);
-                SnapshotManager.SaveGameState(serverGameState);
-                return;
-            }
-
-            bool weNeedToReconcile = PlayerInputNetworkBehaviour.LocalPlayer.DoWeNeedToReconcile(
-                predictedClientState, serverClientState
-            );
-            
-            if (!weNeedToReconcile)
-            {   
-                // Apply the Game State, but skip the local Player, because we predicted the state correct.
-                ApplyNonLocalPlayersState(serverGameState, true);
-                SnapshotManager.SaveGameState(serverGameState);
-                return;
-            }
-            
-            // -- RECONCILIATION --
-            
-            // Apply all states including our player
-            ApplyNonLocalPlayersState(serverGameState, false);
-            
-            // Saving state for reconciliation in the future
-            SnapshotManager.TakeSnapshot(serverGameState.Tick);
-            
-            // Collect Input
-            PlayerInputNetworkBehaviour.UpdatePlayersWithAuthority(serverGameState.Tick, true);
-            
-            // Check if the amount of ticks that we have to recalculate is too big, so that it potentially crashes the game or is bad player experience.
-            uint ticksToRecalculate = SnapshotManager.CurrentTick - serverGameState.Tick + 1;
-            if (ticksToRecalculate > 20)
-            {
-                // Do nothing and leave the client in the past, because we will reconcile correct later.
-                // t ~ 1 second because of the OnSyncRPC method
-                Debug.LogWarning("Can't reconcile because of a potential crash!");
-            }
-            else
-            {
-                // Recalculate every tick
-                for (uint tick = serverGameState.Tick + 1; tick <= SnapshotManager.CurrentTick; tick++)
-                    SnapshotManager.RecalculatePhysicsTick(tick);
+                NetworkedObject networkedObject = SnapshotManager.NetworkedObjects[objectId];
+                PredictedNetworkedObject predictedNetworkedObject = null;
+                try
+                {
+                    predictedNetworkedObject = networkedObject as PredictedNetworkedObject;
+                }
+                catch (Exception e)
+                {
+                    Debug.Log("Skip this. This isn't a predicted networked object.");
+                    continue;
+                }
                 
-                Debug.LogWarning("Reconciled!");
+                if (predictedNetworkedObject == null) return;
+                if (predictedNetworkedObject.canBeIgnored) return;
+                
+                bool canComparePredictedState = true;
+
+                // Try to get the predicted Player State and server Player State
+                IState predictedState = null;
+                IState serverState = null;
+                
+                try
+                {
+                    if (!localGameState.States.TryGetValue(objectId, out predictedState))
+                        canComparePredictedState = false;
+                    
+                    // Try to find our Player in the Server State
+                    if (!serverGameState.States.TryGetValue(objectId, out serverState))
+                        canComparePredictedState = false;
+                }
+                catch (Exception)
+                {
+                    canComparePredictedState = false;
+                }
+
+                if (canComparePredictedState)
+                {
+                    predictedStates.Add(predictedNetworkedObject, predictedState);
+                    serverStates.Add(predictedNetworkedObject, serverState);
+
+                    if (predictedNetworkedObject.DoWeNeedToReconcile(predictedState, serverState))
+                        shouldReconcile = true;
+                }
+                else
+                {
+                    // If we can't compare, just set it to be save.
+                    SnapshotManager.ApplyState(objectId, serverState);
+                }
+            }
+            
+            if (shouldReconcile)
+            {
+                // Todo: Reconcile everything.
+                // -- RECONCILIATION --
+                ApplyStates(serverGameState, false);
+                SnapshotManager.TakeSnapshot(serverGameState.Tick);
+                
+                // Collect Input
+                PlayerInputNetworkBehaviour.UpdatePlayersWithAuthority(serverGameState.Tick, true);
+                
+                // Check if the amount of ticks that we have to recalculate is too big, so that it potentially crashes the game or is bad player experience.
+                uint ticksToRecalculate = SnapshotManager.CurrentTick - serverGameState.Tick + 1;
+                if (ticksToRecalculate > 20)
+                {
+                    // Do nothing and leave the client in the past, because we will reconcile correct later.
+                    // t ~ 1 second because of the OnSyncRPC method
+                    Debug.LogWarning("Can't reconcile because of a potential crash!");
+                }
+                else
+                {
+                    // Recalculate every tick
+                    for (uint tick = serverGameState.Tick + 1; tick <= SnapshotManager.CurrentTick; tick++)
+                        SnapshotManager.RecalculatePhysicsTick(tick);
+                
+                    Debug.LogWarning("Reconciled!");
+                }
             }
         }
 
-        private void ApplyNonLocalPlayersState(GameState serverGameState, bool skipLocalPlayer)
+        private void ApplyStates(GameState serverGameState, bool skipPredictedObjects)
         {
             foreach (var kvp in serverGameState.States)
             {
                 ulong objectId = kvp.Key;
                 IState state = kvp.Value;
+
+                NetworkedObject networkedObject = SnapshotManager.NetworkedObjects[objectId];
+                PredictedNetworkedObject predictedNetworkedObject = null;
+                try
+                {
+                    predictedNetworkedObject = networkedObject as PredictedNetworkedObject;
+                }
+                catch (Exception e)
+                {
+                    Debug.Log("Skip this. This isn't a predicted networked object.");
+                }
                 
-                // If it is local Player, we skip
-                if (objectId == PlayerInputNetworkBehaviour.LocalPlayer.NetworkObjectId && skipLocalPlayer)
+                bool isPredictedObject = predictedNetworkedObject != null;
+                
+                // If it is a predicted player, and we should skip them, we skip this object.
+                if (isPredictedObject && skipPredictedObjects)
                     continue;
                 
                 SnapshotManager.ApplyState(objectId, state);

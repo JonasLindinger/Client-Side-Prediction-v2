@@ -2,11 +2,12 @@
 using CSP.Object;
 using CSP.Player;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace CSP.Items
 {
     [RequireComponent(typeof(Rigidbody))]
-    public abstract class PickUpItem : NetworkedObject
+    public abstract class PickUpItem : PredictedNetworkedObject
     {
         #if Client
         public static Dictionary<ulong, PickUpItem> PickUpAbleItems = new Dictionary<ulong, PickUpItem>();
@@ -20,7 +21,7 @@ namespace CSP.Items
         [SerializeField] private float dropForwardForce;
         [SerializeField] private float dropUpwardForce;
 
-        public bool Equipped { get; private set; }
+        public bool equipped;
         public PlayerInputNetworkBehaviour owner;
         
         #if Client
@@ -30,14 +31,13 @@ namespace CSP.Items
 
         public override void OnNetworkSpawn()
         {
-            // Todo: Make this a predicted object like the local player. Do that by adding a inherited class of NetworkedObject called PredictedNetworkedObject save local GameStates instead of PlayerStates. Also change the ApplyLocalState mathod in the NetworkClient to not just ignore the player. ignore all predicted objects (Type of PredictedNetworkedObject vs Networked Object).
             PickUpItems.Add(NetworkObjectId, this);
         }
 
         #if Client
         protected void Update()
         {
-            if (Equipped) return;
+            if (equipped) return;
             
             // Get the local Player and if there is non, we just return early.
             if (_player == null)
@@ -95,33 +95,33 @@ namespace CSP.Items
 
         public void TransferOwnerShip(PlayerInputNetworkBehaviour player, Transform gunContainer)
         {
-            if (Equipped)
+            if (equipped)
             {
                 player.OnDropItem((long) NetworkObjectId);
                 owner = player;
             }
             else
             {
-                Equipped = true;
+                equipped = true;
                 owner = player;
             }
         }
         
         public void PickUp(PlayerInputNetworkBehaviour player, Transform gunContainer, Camera playerCamera)
         {
-            Equipped = true;
+            equipped = true;
             owner = player;
         }
 
         public void Drop(Transform gunContainer, Camera playerCamera)
         {
-            Equipped = true;
+            equipped = true;
             owner = null;
         }
 
         public void DropFromOwner()
         {
-            if (!Equipped) return;
+            if (!equipped) return;
             if (owner == null) return;
             
             owner.OnDropItem((long) NetworkObjectId);

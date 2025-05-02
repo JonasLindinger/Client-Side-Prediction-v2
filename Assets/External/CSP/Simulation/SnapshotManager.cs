@@ -14,7 +14,7 @@ namespace CSP.Simulation
             
         public static TickSystem PhysicsTickSystem;
 
-        private static Dictionary<ulong, NetworkedObject> _networkedObjects  = new Dictionary<ulong, NetworkedObject>(); // NetworkObjectId | PredictionObject
+        public static Dictionary<ulong, NetworkedObject> NetworkedObjects  = new Dictionary<ulong, NetworkedObject>(); // NetworkObjectId | PredictionObject
         
         private static GameState[] _gameStates;
         
@@ -58,7 +58,7 @@ namespace CSP.Simulation
         /// <param name="networkedObject"></param>
         public static void RegisterNetworkedObject(ulong id, NetworkedObject networkedObject)
         {
-            _networkedObjects.Add(id, networkedObject);
+            NetworkedObjects.Add(id, networkedObject);
         }
         
         /// <summary>
@@ -84,7 +84,7 @@ namespace CSP.Simulation
             GameState currentGameState = new GameState();
             currentGameState.Tick = tick;
             
-            foreach (var kvp in _networkedObjects)
+            foreach (var kvp in NetworkedObjects)
             {
                 ulong networkId = kvp.Key;
                 NetworkedObject networkedObject = kvp.Value;
@@ -160,8 +160,8 @@ namespace CSP.Simulation
         /// <returns>Return's if the prediction was wrong</returns>
         public static void ApplyState(ulong networkId, IState state)
         {
-            if (!_networkedObjects.ContainsKey(networkId)) return;
-            NetworkedObject networkedObject = _networkedObjects[networkId];
+            if (!NetworkedObjects.ContainsKey(networkId)) return;
+            NetworkedObject networkedObject = NetworkedObjects[networkId];
 
             // Check for null reference
             if (networkedObject == null)
