@@ -112,12 +112,14 @@ namespace CSP.Items
         {
             equipped = true;
             owner = player;
+            Debug.Log("Picked Up");
         }
 
         public void Drop(Transform gunContainer, Camera playerCamera)
         {
             equipped = true;
             owner = null;
+            Debug.Log("Dropped");
         }
 
         public void DropFromOwner()

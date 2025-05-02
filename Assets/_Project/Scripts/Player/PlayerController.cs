@@ -126,7 +126,7 @@ namespace _Project.Scripts.Player
         private void DropItemAction(ulong itemIdToDrop)
         {
             if (_equippedItem == null) return; // No item to drop
-            if (_equippedItem.NetworkObjectId == itemIdToDrop)
+            if (_equippedItem.NetworkObjectId != itemIdToDrop)
             {
                 Debug.LogWarning("Something went wrong. We have a different item, so we can't drop the item that we should drop");
                 return; // We have a different item, so we can't drop
