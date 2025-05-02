@@ -134,6 +134,9 @@ namespace _Project.Scripts.Player
             
             _equippedItem.Drop(gunContainer, playerCamera);
             _equippedItem = null;
+            #if Client
+            _itemToDrop = null;
+            #endif
         }
 
         private void PickUpItemAction(ulong itemIdToPickUp, bool force)
@@ -169,6 +172,9 @@ namespace _Project.Scripts.Player
             
             _equippedItem = item;
             _equippedItem.PickUp(this, gunContainer, playerCamera);
+            #if Client
+            _itemToPickUp = null;
+            #endif
         }
         #endregion
         
@@ -318,8 +324,6 @@ namespace _Project.Scripts.Player
             // Do inventory stuff and reset the items to drop / pick up
             localPlayerData.ItemToDrop = _itemToDrop == null ? -1 : (long) _itemToDrop.NetworkObjectId;
             localPlayerData.ItemToPickUp = _itemToPickUp == null ? -1 : (long) _itemToPickUp.NetworkObjectId;
-            _itemToDrop = null;
-            _itemToPickUp = null;
             #endif
             
             return localPlayerData;
