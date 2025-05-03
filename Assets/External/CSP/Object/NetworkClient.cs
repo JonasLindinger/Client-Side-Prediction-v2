@@ -308,17 +308,12 @@ namespace CSP.Object
 
         private void ApplyStates(GameState serverGameState, bool skipPredictedObjects)
         {
-            Debug.LogWarning("Applying states");
             foreach (var kvp in serverGameState.States)
             {
                 ulong objectId = kvp.Key;
                 IState state = kvp.Value;
-                Debug.LogWarning("Applying state");
-                if (!SnapshotManager.NetworkedObjects.ContainsKey(objectId))
-                {
-                    Debug.LogWarning("We don't have data for this object");
-                    continue;
-                }
+                if (!SnapshotManager.NetworkedObjects.ContainsKey(objectId)) continue;
+                
                 NetworkedObject networkedObject = SnapshotManager.NetworkedObjects[objectId];
                 PredictedNetworkedObject predictedNetworkedObject = null;
                 try
@@ -332,13 +327,8 @@ namespace CSP.Object
                 
                 bool isPredictedObject = predictedNetworkedObject != null;
                 
-                if (isPredictedObject && !predictedNetworkedObject.canBeIgnored && skipPredictedObjects)
-                {
-                    Debug.LogWarning("Skipping");
-                    continue;
-                }
+                if (isPredictedObject && !predictedNetworkedObject.canBeIgnored && skipPredictedObjects) continue;
                 
-                Debug.LogWarning("Setting");
                 SnapshotManager.ApplyState(objectId, state);
             }
         }

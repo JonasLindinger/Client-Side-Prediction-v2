@@ -86,8 +86,6 @@ namespace CSP.Player
         public abstract void OnDespawn();
         public abstract void InputUpdate(PlayerInput playerInput);
         public abstract void OnTick(uint tick, ClientInputState input, bool isReconciliation);
-        public abstract void OnPickUpItem(long itemNetworkId);
-        public abstract void OnDropItem(long itemNetworkId);
         public abstract IData GetPlayerData();
     }
 }

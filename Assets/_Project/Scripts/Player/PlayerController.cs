@@ -118,16 +118,6 @@ namespace _Project.Scripts.Player
 
         #endregion
         #endif
-        
-        public override void OnPickUpItem(long itemNetworkId)
-        {
-            
-        }
-        
-        public override void OnDropItem(long itemNetworkId)
-        {
-            
-        }
 
         #region Handle Inventory
 
