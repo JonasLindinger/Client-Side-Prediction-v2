@@ -38,7 +38,7 @@ namespace _Project.Scripts.Player
         [SerializeField] private Transform gunContainer;
 
         private bool _grounded;
-        private bool _readyToJump = true;
+        private float _jumpCooldownTimer;
         
         private float _xRotation;
         private float _yRotation;
@@ -238,6 +238,9 @@ namespace _Project.Scripts.Player
 
         private void Move(ClientInputState input)
         {
+            if (_jumpCooldownTimer > 0)
+                _jumpCooldownTimer -= SnapshotManager.PhysicsTickSystem.TimeBetweenTicks;
+            
             // Apply rotation
             LocalPlayerData playerData = (LocalPlayerData) input.Data;
             orientation.rotation = Quaternion.Euler(0, playerData.PlayerRotation.y, 0);
@@ -277,7 +280,7 @@ namespace _Project.Scripts.Player
                 _rb.linearVelocity = new Vector3(limitedVel.x, _rb.linearVelocity.y, limitedVel.z);
             }
 
-            if (input.InputFlags["Jump"] && _grounded && _readyToJump)
+            if (input.InputFlags["Jump"] && _grounded && _jumpCooldownTimer <= 0)
             {
                 // Resetting Y velocity
                 _rb.linearVelocity = new Vector3(_rb.linearVelocity.x, 0, _rb.linearVelocity.z);
@@ -286,14 +289,8 @@ namespace _Project.Scripts.Player
                 _rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
 
                 // Applying Cooldown
-                _readyToJump = false;
-                Invoke(nameof(ResetJump), jumpCooldown);
+                _jumpCooldownTimer = jumpCooldown;
             }
-        }
-        
-        private void ResetJump()
-        {
-            _readyToJump = true;
         }
 
         #endregion
@@ -328,6 +325,7 @@ namespace _Project.Scripts.Player
                 Rotation = transform.eulerAngles,
                 Velocity = _rb.linearVelocity,
                 AngularVelocity = _rb.angularVelocity,
+                JumpCooldownTimer = _jumpCooldownTimer,
                 EquippedItem = equippedItem,
             };
         }
@@ -342,6 +340,7 @@ namespace _Project.Scripts.Player
             transform.eulerAngles = playerState.Rotation;
             _rb.linearVelocity = playerState.Velocity;
             _rb.angularVelocity = playerState.AngularVelocity;
+            _jumpCooldownTimer = playerState.JumpCooldownTimer;
 
             SetInventory(playerState);
         }
@@ -363,6 +362,8 @@ namespace _Project.Scripts.Player
                 return true;
             // If our AngularVelocity is of, we reconcile
             else if (Vector3.Distance(predictedState.AngularVelocity, serverState.AngularVelocity) >= 0.01f)
+                return true;
+            else if (!Mathf.Approximately(predictedState.JumpCooldownTimer, serverState.JumpCooldownTimer))
                 return true;
             else if (predictedState.EquippedItem != serverState.EquippedItem)
                 return true;
