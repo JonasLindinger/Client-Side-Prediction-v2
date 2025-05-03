@@ -18,6 +18,16 @@ namespace CSP.Items
             Debug.Log("Shooting");
         }
 
+        protected override void OnPickedUp()
+        {
+            Debug.Log("Picked Up");
+        }
+
+        protected override void OnDropped()
+        {
+            Debug.Log("Dropped");
+        }
+
         protected override void Highlight()
         {
             Debug.Log("Highlight");
@@ -38,7 +48,7 @@ namespace CSP.Items
                 Rotation = transform.eulerAngles,
                 Velocity = _rb.linearVelocity,
                 AngularVelocity = _rb.angularVelocity,
-                Equipped = equipped
+                Equipped = pickedUp
             };
             return state;
         }
@@ -50,7 +60,7 @@ namespace CSP.Items
             transform.eulerAngles = gunState.Rotation;
             _rb.linearVelocity = gunState.Velocity;
             _rb.angularVelocity = gunState.AngularVelocity;
-            equipped = gunState.Equipped;
+            pickedUp = gunState.Equipped;
         }
 
         public override bool DoWeNeedToReconcile(IState predictedStateData, IState serverStateData)

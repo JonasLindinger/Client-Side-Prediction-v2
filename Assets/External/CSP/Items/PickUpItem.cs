@@ -19,10 +19,12 @@ namespace CSP.Items
         [SerializeField] private float dropForwardForce;
         [SerializeField] private float dropUpwardForce;
 
-        [HideInInspector] public bool equipped;
-        [HideInInspector] public PlayerInputNetworkBehaviour owner;
+        public bool pickedUp;
+        public PlayerInputNetworkBehaviour owner;
         
         private Rigidbody _rigidbody;
+        private Transform _gunContainer;
+        private Camera _playerCamera;
         
         #if Client
         private Transform _player;
@@ -38,16 +40,31 @@ namespace CSP.Items
         #if Client
         protected void Update()
         {
-            if (equipped) return;
+            if (pickedUp)
+            {
+                if (PickUpAbleItems.ContainsKey(NetworkObjectId))
+                {
+                    PickUpAbleItems.Remove(NetworkObjectId);
+                    UnHighlight();
+                }
+                return;
+            }
             
             // Get the local Player and if there is non, we just return early.
             if (_player == null)
                 _player = PlayerInputNetworkBehaviour.LocalPlayer.transform;
-            
-            if (_player == null) return;
 
-            Vector3 distanceToPlayer = _player.position - transform.position;
-            if (distanceToPlayer.magnitude <= pickUpRange)
+            if (_player == null)
+            {
+                if (PickUpAbleItems.ContainsKey(NetworkObjectId))
+                {
+                    PickUpAbleItems.Remove(NetworkObjectId);
+                    UnHighlight();
+                }
+                return;
+            }
+
+            if (IsAbleToPickUp(_player))
             {
                 if (PickUpAbleItems.ContainsKey(NetworkObjectId))
                 {
@@ -84,6 +101,8 @@ namespace CSP.Items
 
         protected abstract void SetUp();
         protected abstract void Use();
+        protected abstract void OnPickedUp();
+        protected abstract void OnDropped();
         protected abstract void Highlight();
         protected abstract void UnHighlight();
         public abstract int GetItemType();
@@ -91,43 +110,29 @@ namespace CSP.Items
         public bool IsAbleToPickUp(Transform player)
         {
             Vector3 distanceToPlayer = player.position - transform.position;
-            return distanceToPlayer.magnitude <= pickUpRange;
-        }
-
-        public void TransferOwnerShip(PlayerInputNetworkBehaviour player, Transform gunContainer)
-        {
-            if (equipped)
-            {
-                player.OnDropItem((long) NetworkObjectId);
-                owner = player;
-            }
-            else
-            {
-                equipped = true;
-                owner = player;
-            }
+            return distanceToPlayer.magnitude <= pickUpRange && !pickedUp;
         }
         
         public void PickUp(PlayerInputNetworkBehaviour player, Transform gunContainer, Camera playerCamera)
         {
-            equipped = true;
             owner = player;
-            Debug.Log("Picked Up");
-        }
-
-        public void Drop(Transform gunContainer, Camera playerCamera)
-        {
-            equipped = true;
-            owner = null;
-            Debug.Log("Dropped");
-        }
-
-        public void DropFromOwner()
-        {
-            if (!equipped) return;
-            if (owner == null) return;
+            _gunContainer = gunContainer;
+            _playerCamera = playerCamera;
             
-            owner.OnDropItem((long) NetworkObjectId);
+            pickedUp = true;
+
+            OnPickedUp();
+        }
+
+        public void Drop()
+        {
+            owner = null;
+            _gunContainer = null;
+            _playerCamera = null;
+            
+            pickedUp = false;
+            
+            OnDropped();
         }
     }
 }

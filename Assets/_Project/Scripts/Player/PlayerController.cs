@@ -5,6 +5,7 @@ using CSP.Data;
 using CSP.Items;
 using CSP.Player;
 using CSP.Simulation;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
@@ -51,7 +52,7 @@ namespace _Project.Scripts.Player
         #if Client
         // "Client's Inventory actions"
         private PickUpItem _itemToPickUp;
-        private PickUpItem _itemToDrop;
+        private bool _dropItem;
         #endif
         
         public override void OnSpawn()
@@ -101,110 +102,120 @@ namespace _Project.Scripts.Player
 
         private void PickUp(PlayerInput playerInput)
         {
-            if (playerInput.actions["Pick Up"].ReadValue<float>() <= 0.4f) return; // We don't want to pick up, so we return early.
+            if (!(playerInput.actions["Pick Up"].ReadValue<float>() > 0.4f)) return;
+            if (_itemToPickUp != null) return;
             if (PickUpItem.PickUpAbleItems.Count == 0) return; // No item to pick Up
-            
             _itemToPickUp = PickUpItem.PickUpAbleItems.First().Value;
         }
 
         private void DropItem(PlayerInput playerInput)
         {
-            if (playerInput.actions["Drop"].ReadValue<float>() <= 0.4f) return; // We don't want to drop, so we return early.
-            if (_equippedItem == null) return; // No item to drop
-            
-            _itemToDrop = _equippedItem;
+            if (!(playerInput.actions["Drop"].ReadValue<float>() > 0.4f)) return;
+            if (_dropItem) return;
+
+            _dropItem = _equippedItem;
         }
 
         #endregion
         #endif
-
-        #region Actions
-        private void DropItemAction(ulong itemIdToDrop)
-        {
-            if (_equippedItem == null) return; // No item to drop
-            if (_equippedItem.NetworkObjectId != itemIdToDrop)
-            {
-                Debug.LogWarning("Something went wrong. We have a different item, so we can't drop the item that we should drop");
-                return; // We have a different item, so we can't drop
-            }
-            
-            _equippedItem.Drop(gunContainer, playerCamera);
-            _equippedItem = null;
-        }
-
-        private void PickUpItemAction(ulong itemIdToPickUp, bool force)
-        {
-            if (_equippedItem != null)
-            {
-                if (_equippedItem.NetworkObjectId == itemIdToPickUp) return; // We already equipped this item, so we don't do anything.
-                DropItemAction(_equippedItem.NetworkObjectId);  // Dropping old item if we need to.
-            }
-            
-            if (!PickUpItem.PickUpItems.ContainsKey(itemIdToPickUp))
-            {
-                Debug.LogWarning("Item to pick up not found!");
-                return; // Item doesn't exist?
-            }
-
-            PickUpItem item = PickUpItem.PickUpItems[itemIdToPickUp];
-            
-            item.TransferOwnerShip(this, gunContainer);
-            
-            if (force)
-            {
-                if (item.equipped && item.owner != this)
-                    item.DropFromOwner();
-            }
-            else 
-            {
-                if (!item.IsAbleToPickUp(transform)) return;
-            }
-            
-            _equippedItem = item;
-            _equippedItem.PickUp(this, gunContainer, playerCamera);
-        }
-        #endregion
         
         public override void OnPickUpItem(long itemNetworkId)
         {
-            PickUpItemAction((ulong) itemNetworkId, true);
+            
         }
         
         public override void OnDropItem(long itemNetworkId)
         {
-            DropItemAction((ulong) itemNetworkId);
+            
         }
 
         #region Handle Inventory
 
-        private void SetInventory(PlayerState playerState)
-        {
-            if (playerState.EquippedItem == -1) // We shouldn't have an item equipped
-                if (_equippedItem != null)
-                    DropItemAction(_equippedItem.NetworkObjectId);
-                else
-                {
-                    // Everything is fine.
-                }
-            else
-            {
-                PickUpItemAction((ulong) playerState.EquippedItem, true);
-            }
-        }
-
         private void CheckInventory(ClientInputState input)
         {
-            if (input.Data.GetDataType() != (int) LocalDataTypes.LocalPlayer) return;
-            LocalPlayerData playerData = (LocalPlayerData) input.Data;
-            if (playerData == null) return;
+            LocalPlayerData data = (LocalPlayerData) input.Data;
 
-            if (playerData.ItemToDrop != -1)
+            if (data.DropItem)
             {
-                DropItemAction((ulong) playerData.ItemToDrop);
+                if (_equippedItem == null) return;
+                _equippedItem.Drop();
+                _equippedItem = null;
             }
-            else if (playerData.ItemToPickUp != -1)
+            else if (data.ItemToPickUp != -1)
             {
-                PickUpItemAction((ulong) playerData.ItemToPickUp, false);
+                // Check if item exists
+                if (!PickUpItem.PickUpItems.ContainsKey((ulong) data.ItemToPickUp)) return;
+                
+                // Check if we have an item picked up. If we have, drop it.
+                if (_equippedItem != null) 
+                    _equippedItem.Drop();
+                
+                PickUpItem item = PickUpItem.PickUpItems[(ulong) data.ItemToPickUp];
+                
+                // If the item is out of range or the item is already picked up, return
+                if (!item.IsAbleToPickUp(transform)) return;
+                
+                item.PickUp(this, gunContainer, playerCamera);
+                _equippedItem = item;
+            }
+        }
+        
+        private void SetInventory(PlayerState playerState)
+        {
+            // We shouldn't have a weapon, and we don't have one
+            if (playerState.EquippedItem == -1 && _equippedItem == null) return;
+            
+            // We should have an item, and we have one. (is it the right one?)
+            else if (playerState.EquippedItem != -1 && _equippedItem != null)
+            {
+                // We have the correct item
+                if (playerState.EquippedItem == (long) _equippedItem.NetworkObjectId) return;
+                
+                // We don't have the correct item, so we drop the currect item
+                _equippedItem.Drop();
+                
+                // If our new weapon doesn't exist, return
+                if (!PickUpItem.PickUpItems.ContainsKey((ulong) playerState.EquippedItem))
+                {
+                    Debug.LogWarning("Item not found");
+                    return;
+                }
+                
+                PickUpItem item = PickUpItem.PickUpItems[(ulong) playerState.EquippedItem];
+
+                // If our new item is picked up, drop it.
+                if (item.pickedUp)
+                    item.Drop();
+                
+                item.PickUp(this, gunContainer, playerCamera);
+                _equippedItem = item;
+            }
+            
+            // We have an item, but we shouldn't have one.
+            else if (playerState.EquippedItem == -1)
+            {
+                _equippedItem.Drop();
+                _equippedItem = null;
+            }
+            
+            // We have no item, but we should have one.
+            else if (_equippedItem == null)
+            {
+                // If the weapon doesn't exist, return
+                if (!PickUpItem.PickUpItems.ContainsKey((ulong) playerState.EquippedItem))
+                {
+                    Debug.LogWarning("Item not found");
+                    return;
+                }
+                
+                PickUpItem item = PickUpItem.PickUpItems[(ulong) playerState.EquippedItem];
+                
+                // If this item is picked up, drop it.
+                if (item.pickedUp)
+                    item.Drop();
+                
+                item.PickUp(this, gunContainer, playerCamera);
+                _equippedItem = item;
             }
         }
 
@@ -307,11 +318,11 @@ namespace _Project.Scripts.Player
             localPlayerData.PlayerRotation = new Vector2(_xRotation, _yRotation);
             
             // Do inventory stuff and reset the items to drop / pick up
-            localPlayerData.ItemToDrop = _itemToDrop == null ? -1 : (long) _itemToDrop.NetworkObjectId;
             localPlayerData.ItemToPickUp = _itemToPickUp == null ? -1 : (long) _itemToPickUp.NetworkObjectId;
+            localPlayerData.DropItem = _dropItem;
 
             _itemToPickUp = null;
-            _itemToDrop = null;
+            _dropItem = false;
             #endif
             
             return localPlayerData;

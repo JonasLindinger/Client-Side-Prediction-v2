@@ -224,8 +224,7 @@ namespace CSP.Object
                 IState state = kvp.Value;
                 
                 if (!SnapshotManager.NetworkedObjects.ContainsKey(objectId)) continue;
-                if (state.GetStateType() == (int) StateTypes.Gun)
-                    Debug.Log("Found Gun 1");
+                
                 NetworkedObject networkedObject = SnapshotManager.NetworkedObjects[objectId];
                 PredictedNetworkedObject predictedNetworkedObject = null;
                 try
@@ -241,9 +240,6 @@ namespace CSP.Object
                 
                 if (predictedNetworkedObject == null) continue;
                 if (predictedNetworkedObject.canBeIgnored) continue;
-                
-                if (state.GetStateType() == (int) StateTypes.Gun)
-                    Debug.Log("Found Gun 2");
                 
                 bool canComparePredictedState = true;
 
@@ -264,9 +260,6 @@ namespace CSP.Object
                 {
                     canComparePredictedState = false;
                 }
-
-                if (state.GetStateType() == (int) StateTypes.Gun)
-                    Debug.Log("Found Gun 3: can compare: " + canComparePredictedState);
                 
                 if (canComparePredictedState)
                 {
@@ -277,9 +270,6 @@ namespace CSP.Object
                         predictedNetworkedObject.DoWeNeedToReconcile(predictedState, serverState);
                     
                     shouldReconcile = doWeNeedToReconcile ? doWeNeedToReconcile : shouldReconcile;
-                    
-                    if (state.GetStateType() == (int) StateTypes.Gun)
-                        Debug.Log("Found Gun 4: " + shouldReconcile);
                 }
                 else
                 {
@@ -287,8 +277,7 @@ namespace CSP.Object
                     SnapshotManager.ApplyState(objectId, serverState);
                 }
             }
-            
-            Debug.Log("Reconciling: " + shouldReconcile);
+
             if (shouldReconcile)
             {
                 // -- RECONCILIATION --
