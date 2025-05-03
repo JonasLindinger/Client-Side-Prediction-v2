@@ -50,10 +50,11 @@ namespace CSP.Items
                 AngularVelocity = _rb.angularVelocity,
                 Equipped = pickedUp
             };
+            
             return state;
         }
 
-        public override void ApplyState(IState state)
+        public override void ApplyState(uint tick, IState state)
         {
             Gun1State gunState = (Gun1State)state;
             transform.position = gunState.Position;
@@ -61,6 +62,9 @@ namespace CSP.Items
             _rb.linearVelocity = gunState.Velocity;
             _rb.angularVelocity = gunState.AngularVelocity;
             pickedUp = gunState.Equipped;
+            
+            rigidbody.isKinematic = pickedUp;
+            collider.isTrigger = pickedUp;
         }
 
         public override bool DoWeNeedToReconcile(IState predictedStateData, IState serverStateData)
@@ -70,19 +74,29 @@ namespace CSP.Items
             
             // If our position is of, we reconcile
             if (Vector3.Distance(predictedState.Position, serverState.Position) >= 0.001f)
+            {
                 return true;
+            }
             // If our rotation is off, we reconcile
             // We don't do that (at least for now)
             else if (Vector3.Distance(predictedState.Rotation, serverState.Rotation) >= 0.001f)
+            {
                 return true;
+            }
             // If our Velocity is of, we reconcile
             else if (Vector3.Distance(predictedState.Velocity, serverState.Velocity) >= 0.01f)
+            {
                 return true;
+            }
             // If our AngularVelocity is of, we reconcile
             else if (Vector3.Distance(predictedState.AngularVelocity, serverState.AngularVelocity) >= 0.01f)
+            {
                 return true;
+            }
             else if (predictedState.Equipped != serverState.Equipped)
+            {
                 return true;
+            }
 
             return false;
         }

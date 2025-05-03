@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7159519181897557561}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Decoration
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -44,7 +44,7 @@ GameObject:
   - component: {fileID: 342298502318741455}
   - component: {fileID: 2589210704625581808}
   - component: {fileID: 7902023018934433604}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -61,7 +61,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 0.25, z: 0.25}
+  m_LocalScale: {x: 0.25, y: 0.25, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7159519181897557561}
@@ -152,7 +152,7 @@ GameObject:
   - component: {fileID: 3123562273504097693}
   - component: {fileID: 3196938280939249708}
   - component: {fileID: 5763333542366925869}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Gun1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -241,9 +241,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   canBeIgnored: 0
-  boxCollider: {fileID: 7902023018934433604}
-  pickUpRange: 5
+  decoration: {fileID: 7159519181897557561}
+  collider: {fileID: 7902023018934433604}
+  pickUpRange: 4
   dropForwardForce: 2
-  dropUpwardForce: 3
-  equipped: 0
+  dropUpwardForce: 4
+  pickedUp: 0
   owner: {fileID: 0}

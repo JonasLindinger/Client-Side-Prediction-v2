@@ -151,14 +151,15 @@ namespace CSP.Simulation
 
             return clientInputState;
         }
-        
+
         /// <summary>
         /// Apply's the state on the object with the corresponding network Id
         /// </summary>
         /// <param name="networkId"></param>
+        /// <param name="tick"></param>
         /// <param name="state"></param>
         /// <returns>Return's if the prediction was wrong</returns>
-        public static void ApplyState(ulong networkId, IState state)
+        public static void ApplyState(ulong networkId, uint tick, IState state)
         {
             if (!NetworkedObjects.ContainsKey(networkId)) return;
             NetworkedObject networkedObject = NetworkedObjects[networkId];
@@ -170,7 +171,7 @@ namespace CSP.Simulation
                 return;
             }
             
-            networkedObject.ApplyState(state);
+            networkedObject.ApplyState(tick, state);
         }
         #elif Server
         public static GameState GetLatestGameState()

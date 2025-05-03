@@ -128,7 +128,7 @@ namespace _Project.Scripts.Player
             if (data.DropItem)
             {
                 if (_equippedItem == null) return;
-                _equippedItem.Drop();
+                _equippedItem.Drop(input.Tick);
                 _equippedItem = null;
             }
             else if (data.ItemToPickUp != -1)
@@ -138,19 +138,19 @@ namespace _Project.Scripts.Player
                 
                 // Check if we have an item picked up. If we have, drop it.
                 if (_equippedItem != null) 
-                    _equippedItem.Drop();
+                    _equippedItem.Drop(input.Tick);
                 
                 PickUpItem item = PickUpItem.PickUpItems[(ulong) data.ItemToPickUp];
                 
                 // If the item is out of range or the item is already picked up, return
                 if (!item.IsAbleToPickUp(transform)) return;
                 
-                item.PickUp(this, gunContainer, playerCamera);
+                item.PickUp(this, gunContainer, playerCamera.transform);
                 _equippedItem = item;
             }
         }
         
-        private void SetInventory(PlayerState playerState)
+        private void SetInventory(uint tick, PlayerState playerState)
         {
             // We shouldn't have a weapon, and we don't have one
             if (playerState.EquippedItem == -1 && _equippedItem == null) return;
@@ -162,7 +162,7 @@ namespace _Project.Scripts.Player
                 if (playerState.EquippedItem == (long) _equippedItem.NetworkObjectId) return;
                 
                 // We don't have the correct item, so we drop the currect item
-                _equippedItem.Drop();
+                _equippedItem.Drop(tick);
                 
                 // If our new weapon doesn't exist, return
                 if (!PickUpItem.PickUpItems.ContainsKey((ulong) playerState.EquippedItem))
@@ -175,16 +175,16 @@ namespace _Project.Scripts.Player
 
                 // If our new item is picked up, drop it.
                 if (item.pickedUp)
-                    item.Drop();
+                    item.Drop(tick);
                 
-                item.PickUp(this, gunContainer, playerCamera);
+                item.PickUp(this, gunContainer, playerCamera.transform);
                 _equippedItem = item;
             }
             
             // We have an item, but we shouldn't have one.
             else if (playerState.EquippedItem == -1)
             {
-                _equippedItem.Drop();
+                _equippedItem.Drop(tick);
                 _equippedItem = null;
             }
             
@@ -202,9 +202,9 @@ namespace _Project.Scripts.Player
                 
                 // If this item is picked up, drop it.
                 if (item.pickedUp)
-                    item.Drop();
+                    item.Drop(tick);
                 
-                item.PickUp(this, gunContainer, playerCamera);
+                item.PickUp(this, gunContainer, playerCamera.transform);
                 _equippedItem = item;
             }
         }
@@ -314,7 +314,7 @@ namespace _Project.Scripts.Player
             
             return localPlayerData;
         }
-        
+
         public override IState GetCurrentState()
         {
             long equippedItem = _equippedItem == null ? -1 : (long) _equippedItem.NetworkObjectId;
@@ -330,7 +330,7 @@ namespace _Project.Scripts.Player
             };
         }
 
-        public override void ApplyState(IState state)
+        public override void ApplyState(uint tick, IState state)
         {
             // Return early if state is not PlayerState
             if (!(state is PlayerState playerState))
@@ -342,7 +342,7 @@ namespace _Project.Scripts.Player
             _rb.angularVelocity = playerState.AngularVelocity;
             _jumpCooldownTimer = playerState.JumpCooldownTimer;
 
-            SetInventory(playerState);
+            SetInventory(tick, playerState);
         }
 
         public override bool DoWeNeedToReconcile(IState predictedStateData, IState serverStateData)
@@ -369,6 +369,11 @@ namespace _Project.Scripts.Player
                 return true;
 
             return false;
+        }
+        
+        public override Vector3 GetLinearVelocity()
+        {
+            return _rb.linearVelocity;
         }
 
         #endregion

@@ -16,6 +16,6 @@ namespace CSP.Object
         }
 
         public abstract IState GetCurrentState();
-        public abstract void ApplyState(IState state);
+        public abstract void ApplyState(uint tick, IState state);
     }
 }

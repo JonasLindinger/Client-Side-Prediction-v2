@@ -9,7 +9,7 @@ namespace CSP.Object
         
         void Register();
         IState GetCurrentState();
-        void ApplyState(IState state);
+        void ApplyState(uint tick, IState state);
         #endif
     }
 }

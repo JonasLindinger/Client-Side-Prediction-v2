@@ -87,5 +87,6 @@ namespace CSP.Player
         public abstract void InputUpdate(PlayerInput playerInput);
         public abstract void OnTick(uint tick, ClientInputState input, bool isReconciliation);
         public abstract IData GetPlayerData();
+        public abstract Vector3 GetLinearVelocity();
     }
 }

@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3589030204479923040}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Orientation
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -43,7 +43,7 @@ GameObject:
   - component: {fileID: 5837046189111954999}
   - component: {fileID: 1366754797741979418}
   - component: {fileID: 2123052165230369885}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Capsule
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -150,7 +150,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 73063190550412087}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Decoration
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -185,7 +185,7 @@ GameObject:
   - component: {fileID: 5184690341483381189}
   - component: {fileID: 6988373896172956183}
   - component: {fileID: 1002824986011529811}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Camera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -204,7 +204,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0.73, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 5324224425372097755}
   m_Father: {fileID: 7745943635381155271}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!20 &5184690341483381189
@@ -323,7 +324,7 @@ GameObject:
   - component: {fileID: 3518043298984401450}
   - component: {fileID: 3782119314389561819}
   - component: {fileID: 6910658358285188117}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: NetworkPlayer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -386,6 +387,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
+  canBeIgnored: 0
+  xSensitivity: 3
+  ySensitivity: 3
   walkSpeed: 7
   sprintSpeed: 12
   crouchSpeed: 3
@@ -393,12 +397,13 @@ MonoBehaviour:
   jumpForce: 8
   jumpCooldown: 0.25
   airMultipier: 0.4
-  playerCamera: {fileID: 5184690341483381189}
   orientation: {fileID: 3589030204479923040}
   whatIsGround:
     serializedVersion: 2
     m_Bits: 1
   playerHeight: 2
+  playerCamera: {fileID: 5184690341483381189}
+  gunContainer: {fileID: 5324224425372097755}
 --- !u!54 &3782119314389561819
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -423,9 +428,9 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!114 &6910658358285188117
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -456,3 +461,34 @@ MonoBehaviour:
   m_DefaultActionMap: Local
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
+--- !u!1 &8768284086923595813
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5324224425372097755}
+  m_Layer: 6
+  m_Name: gunContainer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5324224425372097755
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8768284086923595813}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.524, y: -0.441, z: 0.63}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3022591425898402699}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

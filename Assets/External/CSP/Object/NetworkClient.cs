@@ -274,7 +274,7 @@ namespace CSP.Object
                 else
                 {
                     // If we can't compare, just set it to be save.
-                    SnapshotManager.ApplyState(objectId, serverState);
+                    SnapshotManager.ApplyState(objectId, serverGameState.Tick, serverState);
                 }
             }
 
@@ -329,7 +329,7 @@ namespace CSP.Object
                 
                 if (isPredictedObject && !predictedNetworkedObject.canBeIgnored && skipPredictedObjects) continue;
                 
-                SnapshotManager.ApplyState(objectId, state);
+                SnapshotManager.ApplyState(objectId, serverGameState.Tick, state);
             }
         }
         #endif

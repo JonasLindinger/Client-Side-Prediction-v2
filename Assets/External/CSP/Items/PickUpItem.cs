@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using CSP.Object;
 using CSP.Player;
+using CSP.Simulation;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -13,18 +14,18 @@ namespace CSP.Items
         public static Dictionary<ulong, PickUpItem> PickUpAbleItems = new Dictionary<ulong, PickUpItem>();
         #endif
         public static Dictionary<ulong, PickUpItem> PickUpItems = new Dictionary<ulong, PickUpItem>();
-        
-        [SerializeField] private BoxCollider boxCollider;
+
+        [SerializeField] private Transform decoration;
+        public Collider collider;
         [SerializeField] private float pickUpRange;
         [SerializeField] private float dropForwardForce;
         [SerializeField] private float dropUpwardForce;
 
-        public bool pickedUp;
+        [HideInInspector] public bool pickedUp;
         public PlayerInputNetworkBehaviour owner;
         
-        private Rigidbody _rigidbody;
-        private Transform _gunContainer;
-        private Camera _playerCamera;
+        [HideInInspector] public Rigidbody rigidbody;
+        private Transform _playerCamera;
         
         #if Client
         private Transform _player;
@@ -33,7 +34,25 @@ namespace CSP.Items
 
         public override void OnNetworkSpawn()
         {
+            rigidbody = GetComponent<Rigidbody>();
+            
+            pickedUp = owner != null;
+            
             PickUpItems.Add(NetworkObjectId, this);
+
+            if (!pickedUp)
+            {
+                rigidbody.isKinematic = false;
+                collider.isTrigger = false;
+                OnDropped();
+            }
+            else
+            {
+                rigidbody.isKinematic = true;
+                collider.isTrigger = true;
+                OnPickedUp();
+            }
+            
             SetUp();
         }
 
@@ -113,26 +132,55 @@ namespace CSP.Items
             return distanceToPlayer.magnitude <= pickUpRange && !pickedUp;
         }
         
-        public void PickUp(PlayerInputNetworkBehaviour player, Transform gunContainer, Camera playerCamera)
+        public void PickUp(PlayerInputNetworkBehaviour player, Transform gunContainer, Transform playerCamera)
         {
             owner = player;
-            _gunContainer = gunContainer;
             _playerCamera = playerCamera;
             
             pickedUp = true;
 
+            // Make Rigidbody kinematic
+            rigidbody.isKinematic = true;
+            collider.isTrigger = true;
+            
+            // Make weapon a child of the gunContainer and move it to default position
+            decoration.SetParent(gunContainer);
+            decoration.localPosition = Vector3.zero;
+            decoration.localRotation = Quaternion.Euler(Vector3.zero);
+            
             OnPickedUp();
         }
 
-        public void Drop()
+        public void Drop(uint tick)
         {
-            owner = null;
-            _gunContainer = null;
-            _playerCamera = null;
-            
             pickedUp = false;
             
+            transform.position = decoration.position;
+            transform.rotation = decoration.rotation;
+            
+            decoration.SetParent(transform);
+            decoration.localPosition = Vector3.zero;
+            decoration.localRotation = Quaternion.Euler(Vector3.zero);
+            
+            rigidbody.isKinematic = false;
+
+            // Gun carry's momentum of the owner. So ideally the weaponVelocity is the rigidbody velocity of the player.
+            rigidbody.linearVelocity = owner.GetLinearVelocity();
+            
+            // Add Forces
+            rigidbody.AddForce(_playerCamera.forward * dropForwardForce, ForceMode.Impulse);
+            rigidbody.AddForce(_playerCamera.up * dropUpwardForce, ForceMode.Impulse);
+            
+            // Add "random" rotation
+            float random = tick % 2 == 0 ? 1 : -1;
+            rigidbody.AddTorque(new Vector3(random, random, random) * 10);
+            
+            collider.isTrigger = false;
+            
             OnDropped();
+            
+            owner = null;
+            _playerCamera = null;
         }
     }
 }
