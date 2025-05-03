@@ -33,7 +33,7 @@ MonoBehaviour:
     m_BuildProfile: {fileID: 11400000, guid: ac7315d1efabe1a4c98e91b4a6ecfa0a, type: 2}
     advancedConfiguration:
       m_StreamLogsToMainEditor: 1
-      m_LogsColor: {r: 0.3643, g: 0.581, b: 0.8679, a: 1}
+      m_LogsColor: {r: 0.16813965, g: 0.6603774, b: 0.08410467, a: 1}
       m_Arguments: -screen-fullscreen 0 -screen-width 1024 -screen-height 720
   - Name: Client 02
     <CorrespondingNodeId>k__BackingField: Client 02 - Run

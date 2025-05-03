@@ -222,8 +222,10 @@ namespace CSP.Object
             {
                 ulong objectId = kvp.Key;
                 IState state = kvp.Value;
-
-                if (!SnapshotManager.NetworkedObjects.ContainsKey(objectId)) return;
+                
+                if (!SnapshotManager.NetworkedObjects.ContainsKey(objectId)) continue;
+                if (state.GetStateType() == (int) StateTypes.Gun)
+                    Debug.Log("Found Gun 1");
                 NetworkedObject networkedObject = SnapshotManager.NetworkedObjects[objectId];
                 PredictedNetworkedObject predictedNetworkedObject = null;
                 try
@@ -237,8 +239,11 @@ namespace CSP.Object
                     continue;
                 }
                 
-                if (predictedNetworkedObject == null) return;
-                if (predictedNetworkedObject.canBeIgnored) return;
+                if (predictedNetworkedObject == null) continue;
+                if (predictedNetworkedObject.canBeIgnored) continue;
+                
+                if (state.GetStateType() == (int) StateTypes.Gun)
+                    Debug.Log("Found Gun 2");
                 
                 bool canComparePredictedState = true;
 
@@ -260,13 +265,21 @@ namespace CSP.Object
                     canComparePredictedState = false;
                 }
 
+                if (state.GetStateType() == (int) StateTypes.Gun)
+                    Debug.Log("Found Gun 3: can compare: " + canComparePredictedState);
+                
                 if (canComparePredictedState)
                 {
                     predictedStates.Add(predictedNetworkedObject, predictedState);
                     serverStates.Add(predictedNetworkedObject, serverState);
 
-                    if (predictedNetworkedObject.DoWeNeedToReconcile(predictedState, serverState))
-                        shouldReconcile = true;
+                    bool doWeNeedToReconcile =
+                        predictedNetworkedObject.DoWeNeedToReconcile(predictedState, serverState);
+                    
+                    shouldReconcile = doWeNeedToReconcile ? doWeNeedToReconcile : shouldReconcile;
+                    
+                    if (state.GetStateType() == (int) StateTypes.Gun)
+                        Debug.Log("Found Gun 4: " + shouldReconcile);
                 }
                 else
                 {
@@ -275,6 +288,7 @@ namespace CSP.Object
                 }
             }
             
+            Debug.Log("Reconciling: " + shouldReconcile);
             if (shouldReconcile)
             {
                 // -- RECONCILIATION --
