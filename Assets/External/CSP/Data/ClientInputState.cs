@@ -23,47 +23,54 @@ namespace CSP.Data
         
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
-            serializer.SerializeValue(ref Tick);
-
-            if (serializer.IsWriter)
+            try
             {
-                SerializeFlags();
-                SerializeDirectionals();
-                
-                serializer.SerializeValue(ref _inputFlagsByte);
-                serializer.SerializeValue(ref _directionalInputsByte);
-                
-                if (Data == null) return;
-                
-                // Serialize the data type
-                int dataType = Data.GetDataType();
-                serializer.SerializeValue(ref dataType);
-                
-                Data.NetworkSerialize(serializer);
+                serializer.SerializeValue(ref Tick);
+
+                if (serializer.IsWriter)
+                {
+                    SerializeFlags();
+                    SerializeDirectionals();
+
+                    serializer.SerializeValue(ref _inputFlagsByte);
+                    serializer.SerializeValue(ref _directionalInputsByte);
+
+                    if (Data == null) return;
+
+                    // Serialize the data type
+                    int dataType = Data.GetDataType();
+                    serializer.SerializeValue(ref dataType);
+
+                    Data.NetworkSerialize(serializer);
+                }
+                else
+                {
+                    serializer.SerializeValue(ref _inputFlagsByte);
+                    serializer.SerializeValue(ref _directionalInputsByte);
+
+                    DeserializeFlags();
+                    DeserializeDirectionals();
+
+                    try
+                    {
+                        int dataType = 0;
+                        serializer.SerializeValue(ref dataType); // Read the data type
+
+                        IData data = DataFactory.Create(dataType);
+                        if (data == null)
+                            return;
+                        data.NetworkSerialize(serializer);
+                        Data = data;
+                    }
+                    catch (Exception e)
+                    {
+                        // Ignore
+                    }
+                }
             }
-            else
+            catch (Exception e)
             {
-                serializer.SerializeValue(ref _inputFlagsByte);
-                serializer.SerializeValue(ref _directionalInputsByte);
-                
-                DeserializeFlags();
-                DeserializeDirectionals();
-
-                try
-                {
-                    int dataType = 0;
-                    serializer.SerializeValue(ref dataType); // Read the data type
-
-                    IData data = DataFactory.Create(dataType);
-                    if (data == null)
-                        return;
-                    data.NetworkSerialize(serializer);
-                    Data = data;
-                }
-                catch (Exception e)
-                {
-                    // Ignore
-                }
+                // Ignore i guess
             }
         }
         
