@@ -266,8 +266,12 @@ namespace CSP.Object
                     predictedStates.Add(predictedNetworkedObject, predictedState);
                     serverStates.Add(predictedNetworkedObject, serverState);
 
-                    bool doWeNeedToReconcile =
-                        predictedNetworkedObject.DoWeNeedToReconcile(predictedState, serverState);
+                    ReconciliationType reconciliationType = predictedNetworkedObject.DoWeNeedToReconcile(predictedState, serverState);
+
+                    bool doWeNeedToReconcile = reconciliationType == ReconciliationType.Everything;
+                    
+                    if (reconciliationType == ReconciliationType.SingleObject)
+                        SnapshotManager.ApplyState(objectId, serverGameState.Tick, serverState);
                     
                     shouldReconcile = doWeNeedToReconcile ? doWeNeedToReconcile : shouldReconcile;
                 }

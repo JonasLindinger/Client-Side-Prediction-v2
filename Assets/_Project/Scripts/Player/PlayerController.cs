@@ -349,30 +349,30 @@ namespace _Project.Scripts.Player
             SetInventory(tick, playerState);
         }
 
-        public override bool DoWeNeedToReconcile(IState predictedStateData, IState serverStateData)
+        public override ReconciliationType DoWeNeedToReconcile(IState predictedStateData, IState serverStateData)
         {
             PlayerState predictedState = (PlayerState) predictedStateData;
             PlayerState serverState = (PlayerState) serverStateData;
             
             // If our position is of, we reconcile
             if (Vector3.Distance(predictedState.Position, serverState.Position) >= 0.001f)
-                return true;
+                return ReconciliationType.Everything;
             // If our rotation is off, we reconcile
             // We don't do that (at least for now)
             else if (Vector3.Distance(predictedState.Rotation, serverState.Rotation) >= 0.001f)
-                return true;
+                return ReconciliationType.Everything;
             // If our Velocity is of, we reconcile
             else if (Vector3.Distance(predictedState.Velocity, serverState.Velocity) >= 0.01f)
-                return true;
+                return ReconciliationType.Everything;
             // If our AngularVelocity is of, we reconcile
             else if (Vector3.Distance(predictedState.AngularVelocity, serverState.AngularVelocity) >= 0.01f)
-                return true;
+                return ReconciliationType.Everything;
             else if (!Mathf.Approximately(predictedState.JumpCooldownTimer, serverState.JumpCooldownTimer))
-                return true;
+                return ReconciliationType.Everything;
             else if (predictedState.EquippedItem != serverState.EquippedItem)
-                return true;
+                return ReconciliationType.Everything;
 
-            return false;
+            return ReconciliationType.None;
         }
         
         public override Vector3 GetLinearVelocity()
