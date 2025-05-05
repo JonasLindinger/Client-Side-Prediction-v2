@@ -76,23 +76,22 @@ namespace CSP.Items
                 return ReconciliationType.Everything;
             }
             
-            
             // This can be ignored, because it isn't connected with other objects.
-            else if (Vector3.Distance(predictedState.Velocity, serverState.Velocity) >= 0.01f)
+            else if (Vector3.Distance(predictedState.Velocity, serverState.Velocity) >= 0.1f)
             {
-                return ReconciliationType.SingleObject;
+                return ReconciliationType.Everything;
             }
-            else if (Vector3.Distance(predictedState.AngularVelocity, serverState.AngularVelocity) >= 0.01f)
+            else if (Vector3.Distance(predictedState.AngularVelocity, serverState.AngularVelocity) >= 0.1f)
             {
-                return ReconciliationType.SingleObject;
+                return ReconciliationType.Everything;
             }
-            else  if (Vector3.Distance(predictedState.Position, serverState.Position) >= 0.001f)
+            else  if (Vector3.Distance(predictedState.Position, serverState.Position) >= 0.1f)
             {
-                return ReconciliationType.SingleObject;
+                return ReconciliationType.Everything;
             }
-            else if (Vector3.Distance(predictedState.Rotation, serverState.Rotation) >= 0.001f)
+            else if (Quaternion.Angle(Quaternion.Euler(predictedState.Rotation), Quaternion.Euler(serverState.Rotation)) >= 0.1f)
             {
-                return ReconciliationType.SingleObject;
+                return ReconciliationType.Everything;
             }
 
             return ReconciliationType.None;

@@ -11,7 +11,7 @@ namespace _Project.Scripts.Network
         public Vector3 Velocity;
         public Vector3 AngularVelocity;
         public float JumpCooldownTimer;
-        public long EquippedItem;
+        public short EquippedItem;
         
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {

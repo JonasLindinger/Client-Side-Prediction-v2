@@ -29,6 +29,8 @@ namespace CSP.Items
         private Transform _gunContainer;
         
         private GameObject _pickedUpPrefabInstance;
+
+        private float _mass;
         
         #if Client
         private Transform _player;
@@ -138,6 +140,9 @@ namespace CSP.Items
         
         public void PickUp(PlayerInputNetworkBehaviour player, Transform gunContainer, Transform playerCamera)
         {
+            _mass = rb.mass;
+            rb.mass = 0;
+            
             owner = player;
             _playerCamera = playerCamera;
             _gunContainer = gunContainer;
@@ -160,16 +165,24 @@ namespace CSP.Items
 
         public void Drop(uint tick)
         {
+            if (!pickedUp) return;
+            if (owner == null) return;
+            
+            rb.mass = _mass;
             owner.ApplyLatestCameraState();
             
             RigidbodyInterpolation interpolation = rb.interpolation;
             rb.interpolation = RigidbodyInterpolation.None;
             
-            foreach (Transform child in transform)
-                child.gameObject.SetActive(true);
-            
             rb.isKinematic = false;
             collider.isTrigger = false;
+            
+            rb.MovePosition(_pickedUpPrefabInstance.transform.position);
+            rb.MoveRotation(_pickedUpPrefabInstance.transform.rotation);
+            Physics.SyncTransforms();
+            
+            foreach (Transform child in transform)
+                child.gameObject.SetActive(true);
             
             rb.linearVelocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
@@ -184,10 +197,6 @@ namespace CSP.Items
             // Add "random" rotation
             float random = tick % 2 == 0 ? 1 : -1;
             rb.AddTorque(new Vector3(random, random, random) * 2);
-            
-            rb.MovePosition(_pickedUpPrefabInstance.transform.position);
-            rb.MoveRotation(_pickedUpPrefabInstance.transform.rotation);
-            Physics.SyncTransforms();
             
             rb.interpolation = interpolation;
             

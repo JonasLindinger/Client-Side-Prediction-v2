@@ -7,7 +7,7 @@ namespace _Project.Scripts.Network
     public class LocalPlayerData : IData
     {
         public Vector2 PlayerRotation;
-        public long ItemToPickUp;
+        public short ItemToPickUp;
         public bool DropItem;
         
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter

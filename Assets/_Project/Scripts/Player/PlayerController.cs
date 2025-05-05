@@ -309,7 +309,7 @@ namespace _Project.Scripts.Player
             localPlayerData.PlayerRotation = new Vector2(_xRotation, _yRotation);
             
             // Do inventory stuff and reset the items to drop / pick up
-            localPlayerData.ItemToPickUp = _itemToPickUp == null ? -1 : (long) _itemToPickUp.NetworkObjectId;
+            localPlayerData.ItemToPickUp = (short) (_itemToPickUp == null ? -1 : (long) _itemToPickUp.NetworkObjectId);
             localPlayerData.DropItem = _dropItem;
 
             _itemToPickUp = null;
@@ -321,7 +321,7 @@ namespace _Project.Scripts.Player
 
         public override IState GetCurrentState()
         {
-            long equippedItem = _equippedItem == null ? -1 : (long) _equippedItem.NetworkObjectId;
+            short equippedItem = (short) (_equippedItem == null ? -1 : (long) _equippedItem.NetworkObjectId);
             
             return new PlayerState()
             {
@@ -355,17 +355,17 @@ namespace _Project.Scripts.Player
             PlayerState serverState = (PlayerState) serverStateData;
             
             // If our position is of, we reconcile
-            if (Vector3.Distance(predictedState.Position, serverState.Position) >= 0.001f)
+            if (Vector3.Distance(predictedState.Position, serverState.Position) >= 0.1f)
                 return ReconciliationType.Everything;
             // If our rotation is off, we reconcile
             // We don't do that (at least for now)
-            else if (Vector3.Distance(predictedState.Rotation, serverState.Rotation) >= 0.001f)
+            else if (Vector3.Distance(predictedState.Rotation, serverState.Rotation) >= 0.1f)
                 return ReconciliationType.Everything;
             // If our Velocity is of, we reconcile
-            else if (Vector3.Distance(predictedState.Velocity, serverState.Velocity) >= 0.01f)
+            else if (Quaternion.Angle(Quaternion.Euler(predictedState.Rotation), Quaternion.Euler(serverState.Rotation)) >= 0.1f)
                 return ReconciliationType.Everything;
             // If our AngularVelocity is of, we reconcile
-            else if (Vector3.Distance(predictedState.AngularVelocity, serverState.AngularVelocity) >= 0.01f)
+            else if (Vector3.Distance(predictedState.AngularVelocity, serverState.AngularVelocity) >= 0.1f)
                 return ReconciliationType.Everything;
             else if (!Mathf.Approximately(predictedState.JumpCooldownTimer, serverState.JumpCooldownTimer))
                 return ReconciliationType.Everything;
