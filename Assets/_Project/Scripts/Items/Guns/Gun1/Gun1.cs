@@ -6,11 +6,9 @@ namespace CSP.Items
 {
     public class Gun1 : PickUpItem
     {
-        private Rigidbody _rb;
-        
         protected override void SetUp()
         {
-            _rb = GetComponent<Rigidbody>();
+            
         }
 
         protected override void Use()
@@ -46,8 +44,8 @@ namespace CSP.Items
             {
                 Position = transform.position,
                 Rotation = transform.eulerAngles,
-                Velocity = _rb.linearVelocity,
-                AngularVelocity = _rb.angularVelocity,
+                Velocity = rb.linearVelocity,
+                AngularVelocity = rb.angularVelocity,
                 Equipped = pickedUp
             };
             
@@ -59,12 +57,9 @@ namespace CSP.Items
             Gun1State gunState = (Gun1State)state;
             transform.position = gunState.Position;
             transform.eulerAngles = gunState.Rotation;
-            _rb.linearVelocity = gunState.Velocity;
-            _rb.angularVelocity = gunState.AngularVelocity;
+            rb.linearVelocity = gunState.Velocity;
+            rb.angularVelocity = gunState.AngularVelocity;
             pickedUp = gunState.Equipped;
-            
-            rigidbody.isKinematic = pickedUp;
-            collider.isTrigger = pickedUp;
         }
 
         public override bool DoWeNeedToReconcile(IState predictedStateData, IState serverStateData)

@@ -42,6 +42,8 @@ namespace _Project.Scripts.Player
         
         private float _xRotation;
         private float _yRotation;
+
+        private Vector2 _latestOrientation;
         
         private Rigidbody _rb;
         private AudioListener _audioListener;
@@ -243,7 +245,9 @@ namespace _Project.Scripts.Player
             
             // Apply rotation
             LocalPlayerData playerData = (LocalPlayerData) input.Data;
-            orientation.rotation = Quaternion.Euler(0, playerData.PlayerRotation.y, 0);
+            _latestOrientation = playerData.PlayerRotation;
+
+            ApplyLatestCameraState();
             
             // Applying movement
             // Setting the drag
@@ -374,6 +378,13 @@ namespace _Project.Scripts.Player
         public override Vector3 GetLinearVelocity()
         {
             return _rb.linearVelocity;
+        }
+
+        public override void ApplyLatestCameraState()
+        {
+            orientation.rotation = Quaternion.Euler(0, _latestOrientation.y, 0);
+            if (IsOwner) return;
+            playerCamera.transform.rotation = Quaternion.Euler(_latestOrientation.x, _latestOrientation.y, 0);
         }
 
         #endregion

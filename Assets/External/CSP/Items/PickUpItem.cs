@@ -15,7 +15,7 @@ namespace CSP.Items
         #endif
         public static Dictionary<ulong, PickUpItem> PickUpItems = new Dictionary<ulong, PickUpItem>();
 
-        [SerializeField] private Transform decoration;
+        [SerializeField] private GameObject pickedUpPrefab;
         public Collider collider;
         [SerializeField] private float pickUpRange;
         [SerializeField] private float dropForwardForce;
@@ -24,8 +24,11 @@ namespace CSP.Items
         [HideInInspector] public bool pickedUp;
         public PlayerInputNetworkBehaviour owner;
         
-        [HideInInspector] public Rigidbody rigidbody;
+        [HideInInspector] public Rigidbody rb;
         private Transform _playerCamera;
+        private Transform _gunContainer;
+        
+        private GameObject _pickedUpPrefabInstance;
         
         #if Client
         private Transform _player;
@@ -34,7 +37,7 @@ namespace CSP.Items
 
         public override void OnNetworkSpawn()
         {
-            rigidbody = GetComponent<Rigidbody>();
+            rb = GetComponent<Rigidbody>();
             
             pickedUp = owner != null;
             
@@ -42,13 +45,14 @@ namespace CSP.Items
 
             if (!pickedUp)
             {
-                rigidbody.isKinematic = false;
+                rb.isKinematic = false;
                 collider.isTrigger = false;
+                
                 OnDropped();
             }
             else
             {
-                rigidbody.isKinematic = true;
+                rb.isKinematic = true;
                 collider.isTrigger = true;
                 OnPickedUp();
             }
@@ -136,51 +140,66 @@ namespace CSP.Items
         {
             owner = player;
             _playerCamera = playerCamera;
+            _gunContainer = gunContainer;
             
             pickedUp = true;
 
             // Make Rigidbody kinematic
-            rigidbody.isKinematic = true;
+            rb.isKinematic = true;
             collider.isTrigger = true;
+
+            foreach (Transform child in transform)
+                child.gameObject.SetActive(false);
             
-            // Make weapon a child of the gunContainer and move it to default position
-            decoration.SetParent(gunContainer);
-            decoration.localPosition = Vector3.zero;
-            decoration.localRotation = Quaternion.Euler(Vector3.zero);
+            _pickedUpPrefabInstance = Instantiate(pickedUpPrefab, Vector3.zero, Quaternion.identity, _gunContainer);
+            _pickedUpPrefabInstance.transform.localPosition = Vector3.zero;
+            _pickedUpPrefabInstance.transform.localRotation = Quaternion.identity;
             
             OnPickedUp();
         }
 
         public void Drop(uint tick)
         {
-            pickedUp = false;
+            owner.ApplyLatestCameraState();
             
-            transform.position = decoration.position;
-            transform.rotation = decoration.rotation;
+            RigidbodyInterpolation interpolation = rb.interpolation;
+            rb.interpolation = RigidbodyInterpolation.None;
             
-            decoration.SetParent(transform);
-            decoration.localPosition = Vector3.zero;
-            decoration.localRotation = Quaternion.Euler(Vector3.zero);
+            foreach (Transform child in transform)
+                child.gameObject.SetActive(true);
             
-            rigidbody.isKinematic = false;
-
+            rb.isKinematic = false;
+            collider.isTrigger = false;
+            
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+            
             // Gun carry's momentum of the owner. So ideally the weaponVelocity is the rigidbody velocity of the player.
-            rigidbody.linearVelocity = owner.GetLinearVelocity();
+            rb.linearVelocity = owner.GetLinearVelocity();
             
             // Add Forces
-            rigidbody.AddForce(_playerCamera.forward * dropForwardForce, ForceMode.Impulse);
-            rigidbody.AddForce(_playerCamera.up * dropUpwardForce, ForceMode.Impulse);
+            rb.AddForce(_playerCamera.forward * dropForwardForce, ForceMode.Impulse);
+            rb.AddForce(_playerCamera.up * dropUpwardForce, ForceMode.Impulse);
             
             // Add "random" rotation
             float random = tick % 2 == 0 ? 1 : -1;
-            rigidbody.AddTorque(new Vector3(random, random, random) * 10);
+            rb.AddTorque(new Vector3(random, random, random) * 2);
             
-            collider.isTrigger = false;
+            rb.MovePosition(_pickedUpPrefabInstance.transform.position);
+            rb.MoveRotation(_pickedUpPrefabInstance.transform.rotation);
+            Physics.SyncTransforms();
+            
+            rb.interpolation = interpolation;
+            
+            Destroy(_pickedUpPrefabInstance);
+            _pickedUpPrefabInstance = null;
             
             OnDropped();
             
             owner = null;
+            pickedUp = false;
             _playerCamera = null;
+            _gunContainer = null;
         }
     }
 }
