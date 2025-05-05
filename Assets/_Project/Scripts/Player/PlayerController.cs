@@ -347,6 +347,8 @@ namespace _Project.Scripts.Player
             _jumpCooldownTimer = playerState.JumpCooldownTimer;
 
             SetInventory(tick, playerState);
+            // Todo: Add yaw & pitch syncronisation on the non owner object
+            // ApplyLatestCameraState();
         }
 
         public override ReconciliationType DoWeNeedToReconcile(IState predictedStateData, IState serverStateData)
