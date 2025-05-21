@@ -11,7 +11,7 @@ namespace _Project.Scripts.Network
             // Initializing states / data
             LocalPlayerData localPlayerData = new LocalPlayerData();
             PlayerState playerState = new PlayerState();
-            Gun1State gun1State = new Gun1State();
+            GunState gunState = new GunState();
             GameState gameState = new GameState();
             
             Destroy(this);

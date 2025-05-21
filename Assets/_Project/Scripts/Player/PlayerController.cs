@@ -105,8 +105,7 @@ namespace _Project.Scripts.Player
         {
             if (_equippedItem == null) return;
             
-            if (input.InputFlags["Use"])
-                _equippedItem.Trigger();
+            _equippedItem.Trigger(input.InputFlags["Use"]);
         }
         
         #if Client

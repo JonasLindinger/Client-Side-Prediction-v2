@@ -222,6 +222,10 @@ MonoBehaviour:
   pickedUp: 0
   owner: {fileID: 0}
   rb: {fileID: 0}
+  hold: 1
+  magazineSize: 7
+  magazineAmount: 3
+  fireRate: 0.1
 --- !u!54 &998856942716405201
 Rigidbody:
   m_ObjectHideFlags: 0

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using CSP.Data;
 using CSP.Input;
+using CSP.Items;
 using CSP.Object;
 using CSP.Player;
 using UnityEngine;
@@ -119,6 +120,7 @@ namespace CSP.Simulation
             #endif
             
             // 3. Update all Players (Server moves everyone, Client predicts his own player)
+            PickUpItem.UpdatePickUpItems(tick, false);
             PlayerInputNetworkBehaviour.UpdatePlayersWithAuthority(tick, false);
         }
 
@@ -131,6 +133,7 @@ namespace CSP.Simulation
             TakeSnapshot(tick);
             
             // 3. Update all Players (Server moves everyone, Client predicts his own player)
+            PickUpItem.UpdatePickUpItems(tick, true);
             PlayerInputNetworkBehaviour.UpdatePlayersWithAuthority(tick, true);
         }
         

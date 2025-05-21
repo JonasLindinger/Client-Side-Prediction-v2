@@ -4,6 +4,7 @@ using _Project.Scripts.Network;
 using CSP.Connection;
 using CSP.Data;
 using CSP.Input;
+using CSP.Items;
 using CSP.Player;
 using CSP.ScriptableObjects;
 using CSP.Simulation;
@@ -308,6 +309,7 @@ namespace CSP.Object
                 SnapshotManager.TakeSnapshot(serverGameState.Tick);
                 
                 // Collect Input
+                PickUpItem.UpdatePickUpItems(serverGameState.Tick, true);
                 PlayerInputNetworkBehaviour.UpdatePlayersWithAuthority(serverGameState.Tick, true);
                 
                 // Check if the amount of ticks that we have to recalculate is too big, so that it potentially crashes the game or is bad player experience.

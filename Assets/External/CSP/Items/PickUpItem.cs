@@ -119,20 +119,31 @@ namespace CSP.Items
         }
         #endif
         
-        public void Trigger()
+        public void Trigger(bool isUsing)
         {
-            if (!_usable) return;
-            Use();
+            Use(_usable && isUsing);
         }
 
         protected abstract void SetUp();
-        protected abstract void Use();
+        protected abstract void Use(bool isUsing);
+        protected abstract void OnTick();
         protected abstract void OnPickedUp();
         protected abstract void OnDropped();
         protected abstract void Highlight();
         protected abstract void UnHighlight();
         public abstract int GetItemType();
 
+        public static void UpdatePickUpItems(uint tick, bool isReconciliation)
+        {
+            foreach (var kvp in PickUpItems)
+            {
+                ulong objectId = kvp.Key;
+                PickUpItem item = kvp.Value;
+                
+                item.OnTick();
+            }
+        }
+        
         public bool IsAbleToPickUp(Transform player)
         {
             Vector3 distanceToPlayer = player.position - transform.position;

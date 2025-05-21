@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   physicsTickRate: 128
   networkTickRate: 64
-  inputBufferOnTheServer: 15
-  tickOffsetBuffer: 8
+  inputBufferOnTheServer: 30
+  tickOffsetBuffer: 15
   inputBufferSize: 1024
   stateBufferSize: 1024
   defaultIp: 127.0.0.1

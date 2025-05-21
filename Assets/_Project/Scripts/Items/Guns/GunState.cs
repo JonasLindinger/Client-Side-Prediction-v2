@@ -5,13 +5,16 @@ using UnityEngine;
 
 namespace CSP.Items
 {
-    public class Gun1State : IState
+    public class GunState : IState
     {
         public Vector3 Position;
         public Vector3 Rotation;
         public Vector3 Velocity;
         public Vector3 AngularVelocity;
         public bool Equipped;
+        public int CurrentBullets;
+        public int MagazinesLeft;
+        public float FireRateTimer;
         
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
@@ -20,9 +23,12 @@ namespace CSP.Items
             serializer.SerializeValue(ref Velocity);
             serializer.SerializeValue(ref AngularVelocity);
             serializer.SerializeValue(ref Equipped);
+            serializer.SerializeValue(ref CurrentBullets);
+            serializer.SerializeValue(ref MagazinesLeft);
+            serializer.SerializeValue(ref FireRateTimer);
         }
 
-        static Gun1State() => StateFactory.Register((int) StateTypes.Gun,() => new Gun1State());
+        static GunState() => StateFactory.Register((int) StateTypes.Gun,() => new GunState());
         
         public int GetStateType() => (int) StateTypes.Gun;
     }
