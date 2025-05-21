@@ -312,7 +312,7 @@ namespace CSP.Object
                 
                 // Check if the amount of ticks that we have to recalculate is too big, so that it potentially crashes the game or is bad player experience.
                 uint ticksToRecalculate = SnapshotManager.CurrentTick - serverGameState.Tick + 1;
-                if (ticksToRecalculate > 20)
+                if (ticksToRecalculate > 40)
                 {
                     // Do nothing and leave the client in the past, because we will reconcile correct later.
                     // t ~ 1 second because of the OnSyncRPC method
