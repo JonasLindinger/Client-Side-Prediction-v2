@@ -169,7 +169,10 @@ namespace CSP.Items
             if (owner == null) return;
             
             rb.mass = _mass;
-            owner.ApplyLatestCameraState();
+            if (owner.IsOwner || owner.IsServer)
+            {
+                owner.ApplyLatestCameraState();
+            }
             
             RigidbodyInterpolation interpolation = rb.interpolation;
             rb.interpolation = RigidbodyInterpolation.None;
@@ -184,11 +187,9 @@ namespace CSP.Items
             foreach (Transform child in transform)
                 child.gameObject.SetActive(true);
             
-            rb.linearVelocity = Vector3.zero;
-            rb.angularVelocity = Vector3.zero;
-            
             // Gun carry's momentum of the owner. So ideally the weaponVelocity is the rigidbody velocity of the player.
             rb.linearVelocity = owner.GetLinearVelocity();
+            rb.angularVelocity = Vector3.zero;
             
             // Add Forces
             rb.AddForce(_playerCamera.forward * dropForwardForce, ForceMode.Impulse);

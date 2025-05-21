@@ -14,6 +14,10 @@ namespace _Project.Scripts.Items
         {
             PickUpItem item = Instantiate(itemPrefab, itemSpawnPoint.position, itemSpawnPoint.rotation);
             item.NetworkObject.Spawn();
+            item = Instantiate(itemPrefab, itemSpawnPoint.position, itemSpawnPoint.rotation);
+            item.NetworkObject.Spawn();
+            item = Instantiate(itemPrefab, itemSpawnPoint.position, itemSpawnPoint.rotation);
+            item.NetworkObject.Spawn();
         }
         #endif
     }

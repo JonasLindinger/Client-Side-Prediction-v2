@@ -317,21 +317,24 @@ namespace CSP.Object
                 ulong objectId = kvp.Key;
                 IState state = kvp.Value;
                 if (!SnapshotManager.NetworkedObjects.ContainsKey(objectId)) continue;
-                
-                NetworkedObject networkedObject = SnapshotManager.NetworkedObjects[objectId];
-                PredictedNetworkedObject predictedNetworkedObject = null;
-                try
+
+                if (skipPredictedObjects)
                 {
-                    predictedNetworkedObject = networkedObject as PredictedNetworkedObject;
-                }
-                catch (Exception e)
-                {
-                    // not a predicted object.
-                }
+                    NetworkedObject networkedObject = SnapshotManager.NetworkedObjects[objectId];
+                    PredictedNetworkedObject predictedNetworkedObject = null;
+                    try
+                    {
+                        predictedNetworkedObject = networkedObject as PredictedNetworkedObject;
+                    }
+                    catch (Exception e)
+                    {
+                        // not a predicted object.
+                    }
                 
-                bool isPredictedObject = predictedNetworkedObject != null;
+                    bool isPredictedObject = predictedNetworkedObject != null;
                 
-                if (isPredictedObject && !predictedNetworkedObject.canBeIgnored && skipPredictedObjects) continue;
+                    if (isPredictedObject && !predictedNetworkedObject.canBeIgnored) continue;
+                }
                 
                 SnapshotManager.ApplyState(objectId, serverGameState.Tick, state);
             }

@@ -52,6 +52,7 @@ namespace CSP.Player
         protected void Update()
         {
             #if Client
+            if (!IsOwner) return;
             InputUpdate(_playerInput);
             #endif
         }

@@ -7,7 +7,7 @@ namespace _Project.Scripts.Network
     public class PlayerState : IState
     {
         public Vector3 Position;
-        public Vector3 Rotation;
+        public Vector2 Rotation;
         public Vector3 Velocity;
         public Vector3 AngularVelocity;
         public float JumpCooldownTimer;

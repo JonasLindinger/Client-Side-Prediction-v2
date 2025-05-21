@@ -69,29 +69,34 @@ namespace CSP.Items
             Gun1State predictedState = (Gun1State) predictedStateData;
             Gun1State serverState = (Gun1State) serverStateData;
             
-            
-            // Can't be ignored, because the player is engaged.
             if (predictedState.Equipped != serverState.Equipped)
             {
+                Debug.LogWarning("Reconciliation Gun: Equipped");
                 return ReconciliationType.Everything;
             }
-            
-            // This can be ignored, because it isn't connected with other objects.
-            else if (Vector3.Distance(predictedState.Velocity, serverState.Velocity) >= 0.1f)
+
+            if (!serverState.Equipped)
             {
-                return ReconciliationType.Everything;
-            }
-            else if (Vector3.Distance(predictedState.AngularVelocity, serverState.AngularVelocity) >= 0.1f)
-            {
-                return ReconciliationType.Everything;
-            }
-            else  if (Vector3.Distance(predictedState.Position, serverState.Position) >= 0.1f)
-            {
-                return ReconciliationType.Everything;
-            }
-            else if (Quaternion.Angle(Quaternion.Euler(predictedState.Rotation), Quaternion.Euler(serverState.Rotation)) >= 0.1f)
-            {
-                return ReconciliationType.Everything;
+                if (Vector3.Distance(predictedState.Velocity, serverState.Velocity) >= 0.1f)
+                {
+                    Debug.LogWarning("Reconciliation Gun: Velocity");
+                    return ReconciliationType.Everything;
+                }
+                else if (Vector3.Distance(predictedState.AngularVelocity, serverState.AngularVelocity) >= 0.1f)
+                {
+                    Debug.LogWarning("Reconciliation Gun: Angular Velocity");
+                    return ReconciliationType.Everything;
+                }
+                else  if (Vector3.Distance(predictedState.Position, serverState.Position) >= 0.1f)
+                {
+                    Debug.LogWarning("Reconciliation Gun: Position");
+                    return ReconciliationType.Everything;
+                }
+                else if (Quaternion.Angle(Quaternion.Euler(predictedState.Rotation), Quaternion.Euler(serverState.Rotation)) >= 0.1f)
+                {
+                    Debug.LogWarning("Reconciliation Gun: Rotation");
+                    return ReconciliationType.Everything;
+                }
             }
 
             return ReconciliationType.None;

@@ -32,6 +32,7 @@ namespace _Project.Scripts.Player
         [Space(10)]
         [Header("References")]
         [SerializeField] private Transform orientation;
+        [SerializeField] private Transform decoration;
         [SerializeField] private LayerMask whatIsGround;
         [SerializeField] private float playerHeight;
         [SerializeField] private Camera playerCamera;
@@ -231,6 +232,7 @@ namespace _Project.Scripts.Player
             
             playerCamera.transform.rotation = Quaternion.Euler(_xRotation, _yRotation, 0);
             orientation.rotation = Quaternion.Euler(0, _yRotation, 0);
+            decoration.rotation = Quaternion.Euler(0, _yRotation, 0);
         }
         #endif
         
@@ -242,9 +244,8 @@ namespace _Project.Scripts.Player
         {
             if (_jumpCooldownTimer > 0)
                 _jumpCooldownTimer -= SnapshotManager.PhysicsTickSystem.TimeBetweenTicks;
-            
-            // Apply rotation
-            LocalPlayerData playerData = (LocalPlayerData) input.Data;
+
+            LocalPlayerData playerData = (LocalPlayerData)input.Data;
             _latestOrientation = playerData.PlayerRotation;
 
             ApplyLatestCameraState();
@@ -326,7 +327,7 @@ namespace _Project.Scripts.Player
             return new PlayerState()
             {
                 Position = transform.position,
-                Rotation = transform.eulerAngles,
+                Rotation = new Vector2(playerCamera.transform.eulerAngles.x, orientation.eulerAngles.y),
                 Velocity = _rb.linearVelocity,
                 AngularVelocity = _rb.angularVelocity,
                 JumpCooldownTimer = _jumpCooldownTimer,
@@ -340,15 +341,15 @@ namespace _Project.Scripts.Player
             if (!(state is PlayerState playerState))
                 return;
 
-            transform.position = playerState.Position;
-            transform.eulerAngles = playerState.Rotation;
+            _rb.position = playerState.Position;
+            Physics.SyncTransforms();
+            _latestOrientation = playerState.Rotation;
             _rb.linearVelocity = playerState.Velocity;
             _rb.angularVelocity = playerState.AngularVelocity;
             _jumpCooldownTimer = playerState.JumpCooldownTimer;
-
+            
             SetInventory(tick, playerState);
-            // Todo: Add yaw & pitch syncronisation on the non owner object
-            // ApplyLatestCameraState();
+            ApplyLatestCameraState();
         }
 
         public override ReconciliationType DoWeNeedToReconcile(IState predictedStateData, IState serverStateData)
@@ -356,23 +357,38 @@ namespace _Project.Scripts.Player
             PlayerState predictedState = (PlayerState) predictedStateData;
             PlayerState serverState = (PlayerState) serverStateData;
             
-            // If our position is of, we reconcile
             if (Vector3.Distance(predictedState.Position, serverState.Position) >= 0.1f)
+            {
+                Debug.LogWarning("Reconciliation Player: Position");
                 return ReconciliationType.Everything;
-            // If our rotation is off, we reconcile
-            // We don't do that (at least for now)
-            else if (Vector3.Distance(predictedState.Rotation, serverState.Rotation) >= 0.1f)
+            }
+            /* DON'T SYNC ROTATION (BUGGY AND USELESS)
+            else if (Vector2.Distance(predictedState.Rotation, serverState.Rotation) >= 2f)
+            {
+                Debug.LogWarning("Reconciliation Player: Rotation");
                 return ReconciliationType.Everything;
-            // If our Velocity is of, we reconcile
-            else if (Quaternion.Angle(Quaternion.Euler(predictedState.Rotation), Quaternion.Euler(serverState.Rotation)) >= 0.1f)
+            }
+            */
+            else if (Vector3.Distance(predictedState.Velocity, serverState.Velocity) >= 0.1f)
+            {                
+                Debug.LogWarning("Reconciliation Player: Velocity");
                 return ReconciliationType.Everything;
-            // If our AngularVelocity is of, we reconcile
+            }
             else if (Vector3.Distance(predictedState.AngularVelocity, serverState.AngularVelocity) >= 0.1f)
+            {                
+                Debug.LogWarning("Reconciliation Player: Angular Velocity");
                 return ReconciliationType.Everything;
+            }
             else if (!Mathf.Approximately(predictedState.JumpCooldownTimer, serverState.JumpCooldownTimer))
+            {                
+                Debug.LogWarning("Reconciliation Player: JumpCooldownTimer");
                 return ReconciliationType.Everything;
+            }
             else if (predictedState.EquippedItem != serverState.EquippedItem)
+            {                
+                Debug.LogWarning("Reconciliation Player: EquippedItem");
                 return ReconciliationType.Everything;
+            }
 
             return ReconciliationType.None;
         }
@@ -384,6 +400,7 @@ namespace _Project.Scripts.Player
 
         public override void ApplyLatestCameraState()
         {
+            decoration.rotation = Quaternion.Euler(0, _latestOrientation.y, 0);
             orientation.rotation = Quaternion.Euler(0, _latestOrientation.y, 0);
             if (IsOwner) return;
             playerCamera.transform.rotation = Quaternion.Euler(_latestOrientation.x, _latestOrientation.y, 0);
