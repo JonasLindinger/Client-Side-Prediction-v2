@@ -17,7 +17,10 @@ namespace CSP.Object
     {
         #if Client
         public static NetworkClient LocalClient;
-
+        
+        private static Dictionary<ulong, int> _reconciliationRecords = new Dictionary<ulong, int>(); // NetworkObjectId | ReconciliationRecord
+        private static uint _tickToWaitToCheckForReconciliation;
+        
         private uint _latestReceivedGameStateTick;
         #elif Server
         /// <summary>
@@ -218,6 +221,13 @@ namespace CSP.Object
             ApplyStates(serverGameState, true);
             SnapshotManager.SaveGameState(serverGameState);
             
+            // Check Reconciliation
+            if (_tickToWaitToCheckForReconciliation > serverGameState.Tick)
+            {
+                // We are still waiting for the reconciliation
+                return;
+            }
+            
             foreach (var kvp in serverGameState.States)
             {
                 ulong objectId = kvp.Key;
@@ -266,14 +276,23 @@ namespace CSP.Object
                     predictedStates.Add(predictedNetworkedObject, predictedState);
                     serverStates.Add(predictedNetworkedObject, serverState);
 
-                    ReconciliationType reconciliationType = predictedNetworkedObject.DoWeNeedToReconcile(predictedState, serverState);
+                    bool reconciliationType = predictedNetworkedObject.DoWeNeedToReconcile(predictedState, serverState);
 
-                    bool doWeNeedToReconcile = reconciliationType == ReconciliationType.Everything;
-                    
-                    if (reconciliationType == ReconciliationType.SingleObject)
-                        SnapshotManager.ApplyState(objectId, serverGameState.Tick, serverState);
-                    
-                    shouldReconcile = doWeNeedToReconcile ? doWeNeedToReconcile : shouldReconcile;
+                    if (reconciliationType)
+                    {
+                        _tickToWaitToCheckForReconciliation = serverGameState.Tick + 1;
+                        
+                        _reconciliationRecords.TryAdd(objectId, 0);
+                        
+                        _reconciliationRecords[objectId] += 1;
+
+                        if (_reconciliationRecords[objectId] >= 3)
+                        {
+                            // Give the object some space to reconcile
+                            _reconciliationRecords[objectId] = -3;
+                            shouldReconcile = true;
+                        }
+                    }
                 }
                 else
                 {
