@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace CSP.Items
 {
-    public class Gun1 : PickUpItem
+    public class Gun1 : Gun
     {
         protected override void SetUp()
         {
@@ -35,9 +35,7 @@ namespace CSP.Items
         {
             
         }
-
-        public override int GetItemType() => (int) ItemType.Gun;
-
+        
         public override IState GetCurrentState()
         {
             Gun1State state = new Gun1State
