@@ -18,22 +18,22 @@ namespace CSP.Items
 
         protected override void OnPickedUp()
         {
-            Debug.Log("Picked Up");
+            
         }
 
         protected override void OnDropped()
         {
-            Debug.Log("Dropped");
+            
         }
 
         protected override void Highlight()
         {
-            Debug.Log("Highlight");
+            
         }
 
         protected override void UnHighlight()
         {
-            Debug.Log("UnHighlight");
+            
         }
 
         public override int GetItemType() => (int) ItemType.Gun;

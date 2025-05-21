@@ -95,10 +95,19 @@ namespace _Project.Scripts.Player
         public override void OnTick(uint tick, ClientInputState input, bool isReconciliation)
         {
             CheckInventory(input);
+            CheckCurrentItem(input);
             Move(input);
         }
 
         #region PickUpStuff
+
+        private void CheckCurrentItem(ClientInputState input)
+        {
+            if (_equippedItem == null) return;
+            
+            if (input.InputFlags["Use"])
+                _equippedItem.Trigger();
+        }
         
         #if Client
         #region Local Actions
@@ -369,7 +378,7 @@ namespace _Project.Scripts.Player
                 return true;
             }
             */
-            else if (Vector3.Distance(predictedState.Velocity, serverState.Velocity) >= 0.1f)
+            else if (Vector3.Distance(predictedState.Velocity, serverState.Velocity) >= 3f)
             {                
                 Debug.LogWarning("Reconciliation Player: Velocity");
                 return true;

@@ -42,6 +42,7 @@ namespace CSP.Items
             rb = GetComponent<Rigidbody>();
             
             pickedUp = owner != null;
+            _usable = pickedUp;
             
             PickUpItems.Add(NetworkObjectId, this);
 
@@ -160,6 +161,7 @@ namespace CSP.Items
             _pickedUpPrefabInstance.transform.localPosition = Vector3.zero;
             _pickedUpPrefabInstance.transform.localRotation = Quaternion.identity;
             
+            _usable = true;
             OnPickedUp();
         }
 
@@ -203,7 +205,8 @@ namespace CSP.Items
             
             Destroy(_pickedUpPrefabInstance);
             _pickedUpPrefabInstance = null;
-            
+
+            _usable = false;
             OnDropped();
             
             owner = null;

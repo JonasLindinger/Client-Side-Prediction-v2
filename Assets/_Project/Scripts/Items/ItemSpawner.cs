@@ -16,8 +16,6 @@ namespace _Project.Scripts.Items
             item.NetworkObject.Spawn();
             item = Instantiate(itemPrefab, itemSpawnPoint.position, itemSpawnPoint.rotation);
             item.NetworkObject.Spawn();
-            item = Instantiate(itemPrefab, itemSpawnPoint.position, itemSpawnPoint.rotation);
-            item.NetworkObject.Spawn();
         }
         #endif
     }
