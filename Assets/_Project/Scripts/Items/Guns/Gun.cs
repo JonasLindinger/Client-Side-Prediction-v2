@@ -112,7 +112,7 @@ namespace _Project.Scripts.Items.Guns
             rb.angularVelocity = gunState.AngularVelocity;
         }
 
-        public override bool DoWeNeedToReconcile(IState predictedStateData, IState serverStateData)
+        public override ReconciliationMethod DoWeNeedToReconcile(IState predictedStateData, IState serverStateData)
         {
             GunState predictedState = (GunState) predictedStateData;
             GunState serverState = (GunState) serverStateData;
@@ -120,49 +120,52 @@ namespace _Project.Scripts.Items.Guns
             if (predictedState.Equipped != serverState.Equipped)
             {
                 Debug.LogWarning("Reconciliation Gun: Equipped");
-                return true;
+                return ReconciliationMethod.World;
             }
+            
+            // These values can be reconciled using the single reconciliation method
             else if (predictedState.CurrentBullets != serverState.CurrentBullets)
             {
                 Debug.LogWarning("Reconciliation Gun: CurrentBullets");
-                return true;
+                return ReconciliationMethod.Single;
             }
             else if (predictedState.MagazinesLeft != serverState.MagazinesLeft)
             {
                 Debug.LogWarning("Reconciliation Gun: MagazinesLeft");
-                return true;
+                return ReconciliationMethod.Single;
             }
             else if (!Mathf.Approximately(predictedState.FireRateTimer, serverState.FireRateTimer))
             {
                 Debug.LogWarning("Reconciliation Gun: FireRateTimer");
-                return true;
+                return ReconciliationMethod.Single;
             }
 
+            // If gun is not equipped, it is absolutely safe to use the single reconciliation method
             if (!serverState.Equipped)
             {
                 if (Vector3.Distance(predictedState.Velocity, serverState.Velocity) >= 0.1f)
                 {
                     Debug.LogWarning("Reconciliation Gun: Velocity");
-                    return true;
+                    return ReconciliationMethod.Single;
                 }
                 else if (Vector3.Distance(predictedState.AngularVelocity, serverState.AngularVelocity) >= 0.1f)
                 {
                     Debug.LogWarning("Reconciliation Gun: Angular Velocity");
-                    return true;
+                    return ReconciliationMethod.Single;
                 }
                 else  if (Vector3.Distance(predictedState.Position, serverState.Position) >= 0.1f)
                 {
                     Debug.LogWarning("Reconciliation Gun: Position");
-                    return true;
+                    return ReconciliationMethod.Single;
                 }
                 else if (Quaternion.Angle(Quaternion.Euler(predictedState.Rotation), Quaternion.Euler(serverState.Rotation)) >= 0.1f)
                 {
                     Debug.LogWarning("Reconciliation Gun: Rotation");
-                    return true;
+                    return ReconciliationMethod.Single;
                 }
             }
 
-            return false;
+            return ReconciliationMethod.None;
         }
     }
 }

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d77d48a4673e4c82af55d5e42347bb0c, type: 3}
   m_Name: Network Settings
   m_EditorClassIdentifier: 
-  physicsTickRate: 128
+  physicsTickRate: 64
   networkTickRate: 64
   inputBufferOnTheServer: 30
   tickOffsetBuffer: 15

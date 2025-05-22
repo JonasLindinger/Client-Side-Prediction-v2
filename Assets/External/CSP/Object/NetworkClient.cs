@@ -277,7 +277,8 @@ namespace CSP.Object
                     predictedStates.Add(predictedNetworkedObject, predictedState);
                     serverStates.Add(predictedNetworkedObject, serverState);
 
-                    bool reconciliationType = predictedNetworkedObject.DoWeNeedToReconcile(predictedState, serverState);
+                    ReconciliationMethod reconciliationMethod = predictedNetworkedObject.DoWeNeedToReconcile(predictedState, serverState);
+                    bool reconciliationType = reconciliationMethod == ReconciliationMethod.World;
 
                     if (reconciliationType)
                     {
@@ -294,6 +295,8 @@ namespace CSP.Object
                             shouldReconcile = true;
                         }
                     }
+                    else if (reconciliationMethod == ReconciliationMethod.Single)
+                        SnapshotManager.ApplyState(objectId, serverGameState.Tick, state);
                 }
                 else
                 {

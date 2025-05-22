@@ -360,7 +360,7 @@ namespace _Project.Scripts.Player
             ApplyLatestCameraState();
         }
 
-        public override bool DoWeNeedToReconcile(IState predictedStateData, IState serverStateData)
+        public override ReconciliationMethod DoWeNeedToReconcile(IState predictedStateData, IState serverStateData)
         {
             PlayerState predictedState = (PlayerState) predictedStateData;
             PlayerState serverState = (PlayerState) serverStateData;
@@ -368,37 +368,37 @@ namespace _Project.Scripts.Player
             if (Vector3.Distance(predictedState.Position, serverState.Position) >= 0.1f)
             {
                 Debug.LogWarning("Reconciliation Player: Position");
-                return true;
+                return ReconciliationMethod.World;
             }
             /* DON'T SYNC ROTATION (BUGGY AND USELESS)
             else if (Vector2.Distance(predictedState.Rotation, serverState.Rotation) >= 2f)
             {
                 Debug.LogWarning("Reconciliation Player: Rotation");
-                return true;
+                return ReconciliationMethod.World;
             }
             */
             else if (Vector3.Distance(predictedState.Velocity, serverState.Velocity) >= 3f)
             {                
                 Debug.LogWarning("Reconciliation Player: Velocity");
-                return true;
+                return ReconciliationMethod.World;
             }
             else if (Vector3.Distance(predictedState.AngularVelocity, serverState.AngularVelocity) >= 0.1f)
             {                
                 Debug.LogWarning("Reconciliation Player: Angular Velocity");
-                return true;
+                return ReconciliationMethod.World;
             }
             else if (!Mathf.Approximately(predictedState.JumpCooldownTimer, serverState.JumpCooldownTimer))
             {                
                 Debug.LogWarning("Reconciliation Player: JumpCooldownTimer");
-                return true;
+                return ReconciliationMethod.World;
             }
             else if (predictedState.EquippedItem != serverState.EquippedItem)
             {                
                 Debug.LogWarning("Reconciliation Player: EquippedItem");
-                return true;
+                return ReconciliationMethod.World;
             }
 
-            return false;
+            return ReconciliationMethod.None;
         }
         
         public override Vector3 GetLinearVelocity()
