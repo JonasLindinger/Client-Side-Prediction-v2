@@ -65,7 +65,7 @@ namespace _Project.Scripts.Player
         
         public override void OnSpawn()
         {
-            gameObject.layer = IsOwner ? localPlayerMask : otherplayerMask;
+            SetGameLayerRecursive(gameObject, IsOwner ? localPlayerMask : otherplayerMask);
             
             _rb = GetComponent<Rigidbody>();
             _rb.freezeRotation = true;
@@ -446,6 +446,19 @@ namespace _Project.Scripts.Player
             else
             {
                 // Do nothing
+            }
+        }
+        
+        private static void SetGameLayerRecursive(GameObject go, int layer)
+        {
+            go.layer = layer;
+            foreach (Transform child in go.transform)
+            {
+                child.gameObject.layer = layer;
+
+                Transform hasChildren = child.GetComponentInChildren<Transform>();
+                if (hasChildren != null)
+                    SetGameLayerRecursive(child.gameObject, layer);
             }
         }
     }
