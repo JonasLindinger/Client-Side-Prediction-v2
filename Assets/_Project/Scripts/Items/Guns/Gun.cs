@@ -48,7 +48,7 @@ namespace _Project.Scripts.Items.Guns
         
         public virtual void Shoot()
         {
-            Debug.Log("Shooting");
+            throw new System.NotImplementedException();
         }
 
         protected override void OnTick()

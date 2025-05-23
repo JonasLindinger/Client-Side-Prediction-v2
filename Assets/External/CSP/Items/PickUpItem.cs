@@ -25,7 +25,7 @@ namespace CSP.Items
         public PlayerInputNetworkBehaviour owner;
         
         [HideInInspector] public Rigidbody rb;
-        private Transform _playerCamera;
+        public Transform playerCamera;
         private Transform _gunContainer;
         
         private GameObject _pickedUpPrefabInstance;
@@ -156,7 +156,7 @@ namespace CSP.Items
             rb.mass = 0;
             
             owner = player;
-            _playerCamera = playerCamera;
+            this.playerCamera = playerCamera;
             _gunContainer = gunContainer;
             
             pickedUp = true;
@@ -205,8 +205,8 @@ namespace CSP.Items
             rb.angularVelocity = Vector3.zero;
             
             // Add Forces
-            rb.AddForce(_playerCamera.forward * dropForwardForce, ForceMode.Impulse);
-            rb.AddForce(_playerCamera.up * dropUpwardForce, ForceMode.Impulse);
+            rb.AddForce(playerCamera.forward * dropForwardForce, ForceMode.Impulse);
+            rb.AddForce(playerCamera.up * dropUpwardForce, ForceMode.Impulse);
             
             // Add "random" rotation
             float random = tick % 2 == 0 ? 1 : -1;
@@ -222,7 +222,7 @@ namespace CSP.Items
             
             owner = null;
             pickedUp = false;
-            _playerCamera = null;
+            playerCamera = null;
             _gunContainer = null;
         }
     }

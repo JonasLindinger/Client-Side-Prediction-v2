@@ -3,6 +3,7 @@ using _Project.Scripts.Items;
 using _Project.Scripts.Network;
 using CSP.Data;
 using CSP.Items;
+using CSP.Object;
 using CSP.Player;
 using CSP.Simulation;
 using Unity.VisualScripting;
@@ -14,7 +15,7 @@ using IState = CSP.Simulation.IState;
 namespace _Project.Scripts.Player
 {
     [RequireComponent(typeof(Rigidbody))]
-    public class PlayerController : PlayerInputNetworkBehaviour
+    public class PlayerController : PlayerInputNetworkBehaviour, IDamageable
     {
         [Header("Mouse Settings")]
         [SerializeField] private float xSensitivity = 3;
@@ -37,6 +38,8 @@ namespace _Project.Scripts.Player
         [SerializeField] private float playerHeight;
         [SerializeField] private Camera playerCamera;
         [SerializeField] private Transform gunContainer;
+        
+        private int _health = 100;
 
         private bool _grounded;
         private float _jumpCooldownTimer;
@@ -340,6 +343,7 @@ namespace _Project.Scripts.Player
                 AngularVelocity = _rb.angularVelocity,
                 JumpCooldownTimer = _jumpCooldownTimer,
                 EquippedItem = equippedItem,
+                Health = _health,
             };
         }
 
@@ -355,6 +359,7 @@ namespace _Project.Scripts.Player
             _rb.linearVelocity = playerState.Velocity;
             _rb.angularVelocity = playerState.AngularVelocity;
             _jumpCooldownTimer = playerState.JumpCooldownTimer;
+            _health = playerState.Health;
             
             SetInventory(tick, playerState);
             ApplyLatestCameraState();
@@ -397,6 +402,11 @@ namespace _Project.Scripts.Player
                 Debug.LogWarning("Reconciliation Player: EquippedItem");
                 return ReconciliationMethod.World;
             }
+            else if (predictedState.Health != serverState.Health)
+            {
+                Debug.LogWarning("Reconciliation Player: Health");
+                return ReconciliationMethod.World;
+            }
 
             return ReconciliationMethod.None;
         }
@@ -415,5 +425,24 @@ namespace _Project.Scripts.Player
         }
 
         #endregion
+
+        public void TakeDamage(int damage)
+        {
+            Debug.Log("-" + damage);
+            
+            // Subtract damage from health and clamp it to be >= 0
+            _health = damage > _health ? 0 : _health - damage;
+
+            if (_health == 0)
+            {
+                // TODO: Handle death
+                // Todo: Do animation
+                Debug.Log("Player is dead");
+            }
+            else
+            {
+                // Do nothing
+            }
+        }
     }
 }

@@ -222,10 +222,40 @@ MonoBehaviour:
   pickedUp: 0
   owner: {fileID: 0}
   rb: {fileID: 0}
+  playerCamera: {fileID: 0}
   hold: 1
   magazineSize: 7
   magazineAmount: 3
   fireRate: 0.1
+  damageFalloff:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 100.388245
+      value: -4.941494
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  damage: 40
+  distance: 100
+  hitMask:
+    serializedVersion: 2
+    m_Bits: 65
 --- !u!54 &998856942716405201
 Rigidbody:
   m_ObjectHideFlags: 0
