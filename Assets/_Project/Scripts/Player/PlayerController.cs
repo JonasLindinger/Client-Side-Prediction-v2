@@ -34,6 +34,8 @@ namespace _Project.Scripts.Player
         [Header("References")]
         [SerializeField] private Transform orientation;
         [SerializeField] private Transform decoration;
+        [SerializeField] private int localPlayerMask;
+        [SerializeField] private int otherplayerMask;
         [SerializeField] private LayerMask whatIsGround;
         [SerializeField] private float playerHeight;
         [SerializeField] private Camera playerCamera;
@@ -63,6 +65,8 @@ namespace _Project.Scripts.Player
         
         public override void OnSpawn()
         {
+            gameObject.layer = IsOwner ? localPlayerMask : otherplayerMask;
+            
             _rb = GetComponent<Rigidbody>();
             _rb.freezeRotation = true;
             _rb.interpolation = RigidbodyInterpolation.Interpolate;
@@ -98,17 +102,17 @@ namespace _Project.Scripts.Player
         public override void OnTick(uint tick, ClientInputState input, bool isReconciliation)
         {
             CheckInventory(input);
-            CheckCurrentItem(input);
+            CheckCurrentItem(input, input.LatestReceivedServerGameStateTick);
             Move(input);
         }
 
         #region PickUpStuff
 
-        private void CheckCurrentItem(ClientInputState input)
+        private void CheckCurrentItem(ClientInputState input, uint latestReceivedServerGameStateTick)
         {
             if (_equippedItem == null) return;
             
-            _equippedItem.Trigger(input.InputFlags["Use"]);
+            _equippedItem.Trigger(input.InputFlags["Use"], latestReceivedServerGameStateTick);
         }
         
         #if Client

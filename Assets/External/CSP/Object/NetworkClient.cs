@@ -17,6 +17,7 @@ namespace CSP.Object
     public class NetworkClient : NetworkBehaviour
     {
         #if Client
+        public static uint LatestReceivedServerGameStateTick;
         public static NetworkClient LocalClient;
         
         private static Dictionary<ulong, int> _reconciliationRecords = new Dictionary<ulong, int>(); // NetworkObjectId | ReconciliationRecord
@@ -162,9 +163,12 @@ namespace CSP.Object
             #if Client
             if (latestGameState == null) 
                 return;
+            
             if (latestGameState.Tick <= _latestReceivedGameStateTick)
                 _latestReceivedGameStateTick = latestGameState.Tick;
 
+            LatestReceivedServerGameStateTick = latestGameState.Tick;
+            
             if (latestGameState.States == null)
                 return;
 

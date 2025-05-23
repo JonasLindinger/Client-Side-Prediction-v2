@@ -24,7 +24,7 @@ namespace _Project.Scripts.Items.Guns
             _magazinesLeft = magazineAmount;
         }
 
-        protected override void Use(bool isUsing)
+        protected override void Use(bool isUsing, uint latestReceivedServerGameStateTick)
         {
             // Todo: Check if we have bullets left 
             // Todo: Add reloading
@@ -32,21 +32,21 @@ namespace _Project.Scripts.Items.Guns
             if (isUsing)
             {
                 if ((hold && _fireRateTimer <= 0) || (!hold && !_wasShooting && _fireRateTimer <= 0))
-                    InitiateShooting();
+                    InitiateShooting(latestReceivedServerGameStateTick);
             }
             
             _wasShooting = isUsing;
         }
 
-        private void InitiateShooting()
+        private void InitiateShooting(uint latestReceivedServerGameStateTick)
         {
             _fireRateTimer = fireRate;
             _currentBullets--;
             
-            Shoot();
+            Shoot(latestReceivedServerGameStateTick);
         }
         
-        public virtual void Shoot()
+        public virtual void Shoot(uint latestReceivedServerGameStateTick)
         {
             throw new System.NotImplementedException();
         }

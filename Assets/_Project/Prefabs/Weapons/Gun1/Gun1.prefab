@@ -255,7 +255,7 @@ MonoBehaviour:
   distance: 100
   hitMask:
     serializedVersion: 2
-    m_Bits: 65
+    m_Bits: 257
 --- !u!54 &998856942716405201
 Rigidbody:
   m_ObjectHideFlags: 0

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using CSP.Data;
+using CSP.Object;
 using Singletons;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -55,6 +56,7 @@ namespace CSP.Input
             }
         }
 
+        #if Client
         public ClientInputState GetClientInputState(uint tick)
         {
             // Update boolean's
@@ -74,6 +76,7 @@ namespace CSP.Input
             ClientInputState clientInputState = new ClientInputState()
             {
                 InputFlags = _inputFlags,
+                LatestReceivedServerGameStateTick = NetworkClient.LatestReceivedServerGameStateTick,
                 DirectionalInputs = _directionalInputs,
                 Tick = tick,
             };
@@ -82,6 +85,7 @@ namespace CSP.Input
             
             return clientInputState;
         }
+        #endif
         
         public ClientInputState[] GetLastInputStates(int amount)
         {

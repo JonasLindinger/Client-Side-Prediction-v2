@@ -10,6 +10,7 @@ namespace CSP.Data
     public class ClientInputState : INetworkSerializable
     {
         public uint Tick;
+        public uint LatestReceivedServerGameStateTick;
         public IData Data;
         
         private bool[] _inputFlags;
@@ -26,6 +27,7 @@ namespace CSP.Data
             try
             {
                 serializer.SerializeValue(ref Tick);
+                serializer.SerializeValue(ref LatestReceivedServerGameStateTick);
 
                 if (serializer.IsWriter)
                 {

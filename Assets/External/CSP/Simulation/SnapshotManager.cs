@@ -31,10 +31,12 @@ namespace CSP.Simulation
         {
             Physics.simulationMode = SimulationMode.Script;
             
-            _gameStates = new GameState[NetworkRunner.NetworkSettings.stateBufferSize];
+            if (_gameStates == null)
+                _gameStates = new GameState[NetworkRunner.NetworkSettings.stateBufferSize];
             
             #if Client
-            _inputStates = new ClientInputState[NetworkRunner.NetworkSettings.inputBufferSize];
+            if (_inputStates == null)
+                _inputStates = new ClientInputState[NetworkRunner.NetworkSettings.inputBufferSize];
             #endif
             
             PhysicsTickSystem = new TickSystem(tickRate, startingTickOffset);
@@ -154,6 +156,7 @@ namespace CSP.Simulation
 
             return clientInputState;
         }
+        #endif
 
         /// <summary>
         /// Apply's the state on the object with the corresponding network Id
@@ -176,7 +179,8 @@ namespace CSP.Simulation
             
             networkedObject.ApplyState(tick, state);
         }
-        #elif Server
+        
+        #if Server
         public static GameState GetLatestGameState()
         {
             return _gameStates[(int)_latestGameStateTick % _gameStates.Length];
@@ -192,5 +196,38 @@ namespace CSP.Simulation
         {
             _gameStates[(int) gameState.Tick % _gameStates.Length] = gameState;
         }
+
+        #if Server
+        public static void ApplyGameState(uint tick)
+        {
+            GameState gameState = _gameStates[(int)tick % _gameStates.Length];
+            
+            if (gameState == null)
+            {
+                Debug.LogWarning("Something went wrong!");
+                return;
+            }
+            else if (gameState.Tick != tick) 
+            {
+                Debug.LogWarning("Something went wrong!");
+                return;
+            }
+            else
+                ApplyGameState(gameState);
+        }
+
+        public static void ApplyGameState(GameState gameState)
+        {
+            foreach (var kvp in gameState.States)
+            {
+                ulong objectId = kvp.Key;
+                IState state = kvp.Value;
+
+                ApplyState(objectId, gameState.Tick, state);
+            }
+            
+            Physics.SyncTransforms();
+        }
+        #endif
     }
 }
