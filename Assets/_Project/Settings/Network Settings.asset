@@ -16,6 +16,7 @@ MonoBehaviour:
   networkTickRate: 64
   inputBufferOnTheServer: 14
   tickOffsetBuffer: 7
+  maxColliderRollbackOffset: 20
   inputBufferSize: 1024
   stateBufferSize: 1024
   defaultIp: 127.0.0.1

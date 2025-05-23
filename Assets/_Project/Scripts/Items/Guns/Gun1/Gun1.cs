@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using CSP;
 using CSP.Object;
 using CSP.Simulation;
 using UnityEngine;
@@ -24,9 +25,17 @@ namespace _Project.Scripts.Items.Guns.Gun1
         
         public override void Shoot(uint latestReceivedServerGameStateTick)
         {
+            bool shouldDoColliderRollback =
+                Mathf.Abs(SnapshotManager.CurrentTick - latestReceivedServerGameStateTick) <=
+                NetworkRunner.NetworkSettings.maxColliderRollbackOffset;
+            
+            if (!shouldDoColliderRollback)
+                Debug.LogWarning("No Collider Rollback because of a too big offset!");
+            
             #if Server
-            GameState currentGameState = SnapshotManager.GetCurrentState(SnapshotManager.CurrentTick);
-            SnapshotManager.ApplyGameState(latestReceivedServerGameStateTick);
+            GameState currentGameState = SnapshotManager.GetCurrentState(SnapshotManager.CurrentTick);;
+            if (shouldDoColliderRollback) 
+                SnapshotManager.ApplyGameState(latestReceivedServerGameStateTick);
             #endif
             
             Debug.Log("Shooting with Gun1");
@@ -34,7 +43,8 @@ namespace _Project.Scripts.Items.Guns.Gun1
             if (Physics.Raycast(playerCamera.position, playerCamera.forward, out var hit, distance, hitMask))
             {
                 #if Server
-                SnapshotManager.ApplyGameState(currentGameState);
+                if (shouldDoColliderRollback) 
+                    SnapshotManager.ApplyGameState(currentGameState);
                 #endif
 
                 // Hit
@@ -53,7 +63,8 @@ namespace _Project.Scripts.Items.Guns.Gun1
             {
                 #if Server
                 // Miss
-                SnapshotManager.ApplyGameState(currentGameState);
+                if (shouldDoColliderRollback) 
+                    SnapshotManager.ApplyGameState(currentGameState);
                 #endif
             }
         }
