@@ -227,6 +227,8 @@ MonoBehaviour:
   magazineSize: 7
   magazineAmount: 3
   fireRate: 0.1
+  localPlayerMask: 6
+  otherplayerMask: 8
   damageFalloff:
     serializedVersion: 2
     m_Curve:

@@ -119,13 +119,13 @@ namespace CSP.Items
         }
         #endif
         
-        public void Trigger(bool isUsing, uint latestReceivedServerGameStateTick)
+        public void Trigger(uint tick, bool isUsing, uint latestReceivedServerGameStateTick)
         {
-            Use(_usable && isUsing, latestReceivedServerGameStateTick);
+            Use(tick, _usable && isUsing, latestReceivedServerGameStateTick);
         }
 
         protected abstract void SetUp();
-        protected abstract void Use(bool isUsing, uint latestReceivedServerGameStateTick);
+        protected abstract void Use(uint tick, bool isUsing, uint latestReceivedServerGameStateTick);
         protected abstract void OnTick();
         protected abstract void OnPickedUp();
         protected abstract void OnDropped();

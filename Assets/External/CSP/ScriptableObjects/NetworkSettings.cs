@@ -11,6 +11,7 @@ namespace CSP.ScriptableObjects
         public uint inputBufferOnTheServer = 8;
         public uint tickOffsetBuffer = 5;
         public int maxColliderRollbackOffset = 20;
+        public int predictionUpdateTickDifference = 128;
         [Space(10)] 
         [Header("Buffer")] 
         public uint inputBufferSize = 1024;

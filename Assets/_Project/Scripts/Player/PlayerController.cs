@@ -363,6 +363,8 @@ namespace _Project.Scripts.Player
             if (!(state is PlayerState playerState))
                 return;
 
+            #region Handle death prediction
+
             // We predicted death
             if (_health <= 0)
             {
@@ -395,6 +397,8 @@ namespace _Project.Scripts.Player
                 if (isDead)
                     Debug.Log("Player is dead");
             }
+            
+            #endregion
             
             _rb.position = playerState.Position;
             Physics.SyncTransforms();

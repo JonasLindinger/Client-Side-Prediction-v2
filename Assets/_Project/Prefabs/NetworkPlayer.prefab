@@ -376,6 +376,7 @@ MonoBehaviour:
   airMultipier: 0.4
   orientation: {fileID: 3589030204479923040}
   decoration: {fileID: 73063190550412087}
+  collider: {fileID: 2168023117273013194}
   localPlayerMask: 6
   otherplayerMask: 8
   whatIsGround:

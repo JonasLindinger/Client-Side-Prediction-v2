@@ -281,7 +281,8 @@ namespace CSP.Object
                     predictedStates.Add(predictedNetworkedObject, predictedState);
                     serverStates.Add(predictedNetworkedObject, serverState);
 
-                    ReconciliationMethod reconciliationMethod = predictedNetworkedObject.DoWeNeedToReconcile(predictedState, serverState);
+                    ReconciliationMethod reconciliationMethod = 
+                        predictedNetworkedObject.DoWeNeedToReconcile(serverGameState.Tick, predictedState, serverState);
                     bool reconciliationType = reconciliationMethod == ReconciliationMethod.World;
 
                     if (reconciliationType)

@@ -6,6 +6,6 @@ namespace CSP.Object
     public abstract class PredictedNetworkedObject : NetworkedObject
     {
         [HideInInspector] public bool canBeIgnored;
-        public abstract ReconciliationMethod DoWeNeedToReconcile(IState predictedStateData, IState serverStateData);
+        public abstract ReconciliationMethod DoWeNeedToReconcile(uint tick, IState predictedStateData, IState serverStateData);
     }
 }
