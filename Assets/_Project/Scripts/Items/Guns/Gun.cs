@@ -28,7 +28,7 @@ namespace _Project.Scripts.Items.Guns
             _magazinesLeft = magazineAmount;
         }
 
-        protected override void Use(bool isUsing, uint latestReceivedServerGameStateTick)
+        protected override void Use(uint tick, bool isUsing, uint latestReceivedServerGameStateTick)
         {
             // Todo: Check if we have bullets left 
             // Todo: Add reloading
@@ -36,13 +36,13 @@ namespace _Project.Scripts.Items.Guns
             if (isUsing)
             {
                 if ((hold && _fireRateTimer <= 0) || (!hold && !_wasShooting && _fireRateTimer <= 0))
-                    InitiateShooting(latestReceivedServerGameStateTick);
+                    InitiateShooting(tick, latestReceivedServerGameStateTick);
             }
             
             _wasShooting = isUsing;
         }
 
-        private void InitiateShooting(uint latestReceivedServerGameStateTick)
+        private void InitiateShooting(uint tick, uint latestReceivedServerGameStateTick)
         {
             _fireRateTimer = fireRate;
             _currentBullets--;
@@ -75,7 +75,7 @@ namespace _Project.Scripts.Items.Guns
             SetGameLayerRecursive(owner.gameObject, otherplayerMask);
             
             if (result.damageable != null) 
-                result.damageable.TakeDamage(result.damage);
+                result.damageable.TakeDamage(tick, result.damage);
         }
         
         public virtual (IDamageable damageable, int damage) Shoot()
@@ -157,7 +157,7 @@ namespace _Project.Scripts.Items.Guns
             rb.angularVelocity = gunState.AngularVelocity;
         }
 
-        public override ReconciliationMethod DoWeNeedToReconcile(IState predictedStateData, IState serverStateData)
+        public override ReconciliationMethod DoWeNeedToReconcile(uint tick, IState predictedStateData, IState serverStateData)
         {
             GunState predictedState = (GunState) predictedStateData;
             GunState serverState = (GunState) serverStateData;

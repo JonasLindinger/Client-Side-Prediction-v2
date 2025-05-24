@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using _Project.Scripts.Items;
 using _Project.Scripts.Network;
+using CSP;
 using CSP.Data;
 using CSP.Items;
 using CSP.Object;
@@ -34,12 +35,16 @@ namespace _Project.Scripts.Player
         [Header("References")]
         [SerializeField] private Transform orientation;
         [SerializeField] private Transform decoration;
+        [SerializeField] private Transform collider;
         [SerializeField] private int localPlayerMask;
         [SerializeField] private int otherplayerMask;
         [SerializeField] private LayerMask whatIsGround;
         [SerializeField] private float playerHeight;
         [SerializeField] private Camera playerCamera;
         [SerializeField] private Transform gunContainer;
+
+        // Prediction Update Tick 
+        private uint _predictedDeathTick = 0;
         
         private int _health = 100;
 
@@ -101,18 +106,19 @@ namespace _Project.Scripts.Player
 
         public override void OnTick(uint tick, ClientInputState input, bool isReconciliation)
         {
+            if (_health <= 0) return;
             CheckInventory(input);
-            CheckCurrentItem(input, input.LatestReceivedServerGameStateTick);
+            CheckCurrentItem(tick, input, input.LatestReceivedServerGameStateTick);
             Move(input);
         }
 
         #region PickUpStuff
 
-        private void CheckCurrentItem(ClientInputState input, uint latestReceivedServerGameStateTick)
+        private void CheckCurrentItem(uint tick, ClientInputState input, uint latestReceivedServerGameStateTick)
         {
             if (_equippedItem == null) return;
             
-            _equippedItem.Trigger(input.InputFlags["Use"], latestReceivedServerGameStateTick);
+            _equippedItem.Trigger(tick, input.InputFlags["Use"], latestReceivedServerGameStateTick);
         }
         
         #if Client
@@ -357,19 +363,51 @@ namespace _Project.Scripts.Player
             if (!(state is PlayerState playerState))
                 return;
 
+            // We predicted death
+            if (_health <= 0)
+            {
+                // Our prediction is old
+                if (tick > _predictedDeathTick && (tick - _predictedDeathTick) > NetworkRunner.NetworkSettings.predictionUpdateTickDifference)
+                {
+                    // Player isn't dead anymore
+                    if (_health != playerState.Health)
+                    {
+                        _health = playerState.Health;
+                    
+                        decoration.gameObject.SetActive(true);
+                        collider.gameObject.SetActive(true);
+                        _rb.isKinematic = false;
+                        
+                        Debug.Log("Player is not longer dead or we predicted wrong. Respawning...");
+                    }
+                }
+            }
+            else
+            {
+                _health = playerState.Health;
+                
+                bool isDead = _health <= 0;
+            
+                decoration.gameObject.SetActive(!isDead);
+                collider.gameObject.SetActive(!isDead);
+                _rb.isKinematic = isDead;
+                
+                if (isDead)
+                    Debug.Log("Player is dead");
+            }
+            
             _rb.position = playerState.Position;
             Physics.SyncTransforms();
             _latestOrientation = playerState.Rotation;
             _rb.linearVelocity = playerState.Velocity;
             _rb.angularVelocity = playerState.AngularVelocity;
             _jumpCooldownTimer = playerState.JumpCooldownTimer;
-            _health = playerState.Health;
             
             SetInventory(tick, playerState);
             ApplyLatestCameraState();
         }
 
-        public override ReconciliationMethod DoWeNeedToReconcile(IState predictedStateData, IState serverStateData)
+        public override ReconciliationMethod DoWeNeedToReconcile(uint tick, IState predictedStateData, IState serverStateData)
         {
             PlayerState predictedState = (PlayerState) predictedStateData;
             PlayerState serverState = (PlayerState) serverStateData;
@@ -430,7 +468,7 @@ namespace _Project.Scripts.Player
 
         #endregion
 
-        public void TakeDamage(int damage)
+        public void TakeDamage(uint tick, int damage)
         {
             Debug.Log("-" + damage);
             
@@ -439,9 +477,15 @@ namespace _Project.Scripts.Player
             
             if (_health == 0)
             {
-                // TODO: Handle death
-                // Todo: Do animation
+                // Dead
+                decoration.gameObject.SetActive(false);
+                collider.gameObject.SetActive(false);
+                _rb.isKinematic = true;
+
+                _predictedDeathTick = tick;
+
                 Debug.Log("Player is dead");
+                // Todo: Respawn logic
             }
             else
             {
