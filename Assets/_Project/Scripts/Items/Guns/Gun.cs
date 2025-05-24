@@ -82,7 +82,20 @@ namespace _Project.Scripts.Items.Guns
         {
             throw new System.NotImplementedException();
         }
+        
+        private static void SetGameLayerRecursive(GameObject go, int layer)
+        {
+            go.layer = layer;
+            foreach (Transform child in go.transform)
+            {
+                child.gameObject.layer = layer;
 
+                Transform hasChildren = child.GetComponentInChildren<Transform>();
+                if (hasChildren != null)
+                    SetGameLayerRecursive(child.gameObject, layer);
+            }
+        }
+        
         protected override void OnTick()
         {
             if (_fireRateTimer > 0)
@@ -198,19 +211,6 @@ namespace _Project.Scripts.Items.Guns
             }
 
             return ReconciliationMethod.None;
-        }
-        
-        private static void SetGameLayerRecursive(GameObject go, int layer)
-        {
-            go.layer = layer;
-            foreach (Transform child in go.transform)
-            {
-                child.gameObject.layer = layer;
-
-                Transform hasChildren = child.GetComponentInChildren<Transform>();
-                if (hasChildren != null)
-                    SetGameLayerRecursive(child.gameObject, layer);
-            }
         }
     }
 }
