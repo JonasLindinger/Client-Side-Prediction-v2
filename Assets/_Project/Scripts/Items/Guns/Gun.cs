@@ -1,4 +1,6 @@
-﻿using CSP.Items;
+﻿using CSP;
+using CSP.Items;
+using CSP.Object;
 using CSP.Simulation;
 using UnityEngine;
 
@@ -11,6 +13,8 @@ namespace _Project.Scripts.Items.Guns
         [SerializeField] private int magazineSize = 7;
         [SerializeField] private int magazineAmount = 3;
         [SerializeField] private float fireRate = 0.1f;
+        [SerializeField] private int localPlayerMask;
+        [SerializeField] private int otherplayerMask;
         
         private int _currentBullets;
         private int _magazinesLeft;
@@ -42,11 +46,39 @@ namespace _Project.Scripts.Items.Guns
         {
             _fireRateTimer = fireRate;
             _currentBullets--;
+
+            SetGameLayerRecursive(owner.gameObject, localPlayerMask);
             
-            Shoot(latestReceivedServerGameStateTick);
+            // Do Reconciliation
+            bool shouldDoColliderRollback =
+                Mathf.Abs(SnapshotManager.CurrentTick - latestReceivedServerGameStateTick) <=
+                NetworkRunner.NetworkSettings.maxColliderRollbackOffset;
+            
+            if (!shouldDoColliderRollback)
+                Debug.LogWarning("No Collider Rollback because of a too big offset!");
+            
+            #if Server
+            GameState currentGameState = SnapshotManager.GetCurrentState(SnapshotManager.CurrentTick);;
+            if (shouldDoColliderRollback) 
+                SnapshotManager.ApplyGameState(latestReceivedServerGameStateTick);
+            #endif
+            
+            // Initiate the shooting
+            var result = Shoot();
+            
+            // Continue the game
+            #if Server
+            if (shouldDoColliderRollback) 
+                SnapshotManager.ApplyGameState(currentGameState);
+            #endif
+            
+            SetGameLayerRecursive(owner.gameObject, otherplayerMask);
+            
+            if (result.damageable != null) 
+                result.damageable.TakeDamage(result.damage);
         }
         
-        public virtual void Shoot(uint latestReceivedServerGameStateTick)
+        public virtual (IDamageable damageable, int damage) Shoot()
         {
             throw new System.NotImplementedException();
         }
@@ -166,6 +198,19 @@ namespace _Project.Scripts.Items.Guns
             }
 
             return ReconciliationMethod.None;
+        }
+        
+        private static void SetGameLayerRecursive(GameObject go, int layer)
+        {
+            go.layer = layer;
+            foreach (Transform child in go.transform)
+            {
+                child.gameObject.layer = layer;
+
+                Transform hasChildren = child.GetComponentInChildren<Transform>();
+                if (hasChildren != null)
+                    SetGameLayerRecursive(child.gameObject, layer);
+            }
         }
     }
 }

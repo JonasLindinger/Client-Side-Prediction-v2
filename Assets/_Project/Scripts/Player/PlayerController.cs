@@ -436,7 +436,7 @@ namespace _Project.Scripts.Player
             
             // Subtract damage from health and clamp it to be >= 0
             _health = damage > _health ? 0 : _health - damage;
-
+            
             if (_health == 0)
             {
                 // TODO: Handle death
