@@ -375,12 +375,8 @@ namespace _Project.Scripts.Player
                     if (_health != playerState.Health)
                     {
                         _health = playerState.Health;
-                    
-                        decoration.gameObject.SetActive(true);
-                        collider.gameObject.SetActive(true);
-                        _rb.isKinematic = false;
-                        
-                        Debug.Log("Player is not longer dead or we predicted wrong. Respawning...");
+
+                        ReSpawn();
                     }
                 }
             }
@@ -390,12 +386,8 @@ namespace _Project.Scripts.Player
                 
                 bool isDead = _health <= 0;
             
-                decoration.gameObject.SetActive(!isDead);
-                collider.gameObject.SetActive(!isDead);
-                _rb.isKinematic = isDead;
-                
                 if (isDead)
-                    Debug.Log("Player is dead");
+                    Die();
             }
             
             #endregion
@@ -482,13 +474,9 @@ namespace _Project.Scripts.Player
             if (_health == 0)
             {
                 // Dead
-                decoration.gameObject.SetActive(false);
-                collider.gameObject.SetActive(false);
-                _rb.isKinematic = true;
-
+                Die();
                 _predictedDeathTick = tick;
-
-                Debug.Log("Player is dead");
+                
                 // Todo: Respawn logic
             }
             else
@@ -508,6 +496,45 @@ namespace _Project.Scripts.Player
                 if (hasChildren != null)
                     SetGameLayerRecursive(child.gameObject, layer);
             }
+        }
+
+        public void Die()
+        {
+            // Todo: Do real camera stuff
+            playerCamera.enabled = false;
+            _audioListener.enabled = false;
+            
+            decoration.gameObject.SetActive(false);
+            collider.gameObject.SetActive(false);
+            _rb.isKinematic = true;
+
+            Debug.Log("Player is dead");
+            
+            #if Server
+            Invoke(nameof(InitiateRespawn), 5);
+            #endif
+        }
+
+        private void InitiateRespawn()
+        {
+            _health = 100;
+            
+            ReSpawn();
+        }
+        
+        public void ReSpawn()
+        {
+            if (IsOwner)
+            {
+                playerCamera.enabled = true;
+                _audioListener.enabled = true;
+            }
+            
+            decoration.gameObject.SetActive(true);
+            collider.gameObject.SetActive(true);
+            _rb.isKinematic = false;
+            
+            Debug.Log("Player respawned");
         }
     }
 }
