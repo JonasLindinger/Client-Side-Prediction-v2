@@ -369,7 +369,7 @@ namespace _Project.Scripts.Player
             if (_health <= 0)
             {
                 // Our prediction is old
-                if (tick > _predictedDeathTick && (tick - _predictedDeathTick) > NetworkRunner.NetworkSettings.predictionUpdateTickDifference)
+                if (tick > _predictedDeathTick)
                 {
                     // Player isn't dead anymore
                     if (_health != playerState.Health)
@@ -511,6 +511,7 @@ namespace _Project.Scripts.Player
             Debug.Log("Player is dead");
             
             #if Server
+            // Auto Respawn after 5 seconds
             Invoke(nameof(InitiateRespawn), 5);
             #endif
         }
