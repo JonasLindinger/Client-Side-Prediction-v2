@@ -1,5 +1,7 @@
 # 🚀 Client-Side Prediction v2
 
+> AI GENERATED README based on a long text of detailed instructions written by me.
+
 A **modular**, **easy-to-use**, and **high-performance** Client-Side Prediction (CSP) system built for **Unity’s Netcode for GameObjects**.
 
 Supports:
@@ -109,3 +111,4 @@ Inspired by:
 
 > *"I might be young and self-taught, but building this system taught me more than any tutorial ever could."*  
 > — **Jonas Lindinger**
+
