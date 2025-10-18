@@ -1,20 +1,111 @@
-﻿# Client-Side-Prediction-v2
+# 🚀 Client-Side Prediction v2
 
-Works with ** direct accessing the position. **
-Works with ** Rigidbodys **  which the demo is for.
-Should work with ** Character Controllers ** (not tested).
+A **modular**, **easy-to-use**, and **high-performance** Client-Side Prediction (CSP) system built for **Unity’s Netcode for GameObjects**.
 
-** How to use. ** 
-You can find under Assets/_Project my demo for testing. But what you realy want is under Assets/External the CSP (Client Side Prediction) folder. This contains "blueprints" and is the foundation of this Project.
-Copy this into your Project along side the SceneManagement(optional), and Singletons(must have) folders and take a look at the demo and understand how to code with my system. : ) It's a smaller project, so I currently have no real instructiuon on how to use it. But a more detailed instruction might follow... 
+Supports:
+- ✅ **Direct position access**
+- ✅ **Rigidbody-based movement** (used in the demo)
+- ⚙️ **Character Controllers** *(not tested, but should work)*
 
-** If your having issues, just post it and I hope I can help. **
+---
 
-Client-Side Prediction which is very modular and has easy input transformation and usage.
-Uses Unity's Netcode for GameObjects NetworkManager and Transport Layer. It should be possible to just change the system into other Network Solutions.
-The system is heavily inspired by other guys (Youtube and especially from the GDC Vault talks) making videos on Client Side Prediction.
-There is no Video actually coding Client Side Prediction for Unity's Netcode for GameObjects so I figured it out on my own with theoretical Talks/Videos mentioned above.
-Everything (Code) I found on Youtube was either not secure or not complete CLient Side Prediction. 
-This is "Client Side Prediction Level 4". I split Client-Side Prediction up into Levels to understand it easier. I even wrote ** 33 Pages on Client Side Prediciton "Levels" **  and how they work for my school to get a grade and it was the best thing, I could have ever done. I learned so much about Networking and how to programm complex time accurate things and how to not pause a Project. ALthough it took me about 2 Years to code this CLient Side Prediction. When I started, I didn't even use GitHub. If your interested in my 33 Pages of Client Side Prediciton, just leave a Ticket(Issue) or contact me otherwise..? It is in German!!! So you either have to be a german or translate it, but I don't know how well it works. 
+## 📂 Project Structure
 
-With Level 4 I mean, that it has an Input sending CLient, that actually Predicts the local Player position and not just waits for the Server to respond. The Server buffers the CLient's inputs and uses it at a constant rate, so that spamming the Server won't help you in any kind. The Server uses the Client#s input to determen your correct position and send it to you and every other player. The players check if they predicted correct and If they didn't predict correct, they don't just apply the position, they Reconciliate every Tick,. so that the Client is "infront of the Server". You WIll know what I mean with that by watching GDCVault. In general the Client is always infront of the Server and the Tick Systems are synced across every Player and the Server, so that it is even possible to use a Ball like in Rocket League which is networked or use Collider Rollback, because every action is maked wit ha Tick Number as a Time Stamp. To Sync the Tick System I use something called "Upstream Throtteling", where the Client skips small ticks or calculates extra Ticks. GameStates and Inputs are send unreliable  which is realy fast, but comes at the risk of losing packages, which is fixed with an input Buffer. By the way, the last 1024 GameStates and Inputs are stored in a Circular Buffer but this can be shrinked down or extended with a Scriptable Object I made. Also the input Buffer Size between the Server getting inputs and using inputs can be changed and The amount of Inputs that get send is modular too. The Client not only sends the current Input. It sends the current Input and the last 7 Inputs to fill up the Buffer, If Inputs are lost, due to an unreliable RPC whic his faster, but again can lose packages. "Level 5" is the highest with not only supporting Players, but also supporting other Objects that are networked like a ball in Rocket League. This should be realy easy ti be implemented and I will probably code it one day. I coded it once, but the code was a mess, so I will make it clean and upload it. By clean I mean not a complete mess. My code in general is everything but clean, if I say so my self. But I am youg and inexperienced and have never learned how to code from a profesional. All my knowledge is from Youtube, GDCVault, Documentations and how corse coding itself.
+You’ll find everything neatly organized:
+Assets/
+├── _Project/ # Demo scene (for testing)
+└── External/
+├── CSP/ # 🔹 The core Client-Side Prediction system
+├── SceneManagement/ # (optional)
+└── Singletons/ # ⚠️ Required for CSP to function
+
+
+> 💡 **Tip:**  
+> Copy the `CSP`, `SceneManagement` (optional), and `Singletons` (required) folders into your own project.  
+> Then, check out the demo under `_Project` to understand how the system works.
+
+---
+
+## 🧠 About This Project
+
+This system implements **Client-Side Prediction Level 4**, meaning:
+
+- The **client** sends inputs to the **server** while also **predicting its own movement**.
+- The **server** processes inputs at a fixed rate — spamming won’t give unfair advantages.
+- The **server** sends back the authoritative position.
+- The **client** checks prediction accuracy and, if necessary, **reconciles past states**.
+- Everything runs on **synced ticks** between all clients and the server, allowing features like:
+  - 🏐 Networked physics objects (e.g. a Rocket League-style ball)
+  - ⏪ Collider rollback
+  - ⏱️ Tick-based time stamping
+
+### 🧩 Technical Highlights
+
+- **Upstream Throttling** keeps tick systems in sync by skipping or adding extra ticks when needed.  
+- **Unreliable RPCs** for fast communication (with input buffering to handle packet loss).  
+- **Circular Buffers** store the last `1024` game states and inputs (configurable via ScriptableObject).  
+- **Configurable input batching**: the client can send the current input plus the last 7 inputs to fill server buffers.  
+
+---
+
+## 📘 Development Story
+
+> “When I started this project, I didn’t even use GitHub.”
+
+This system is the result of **two years** of research, iteration, and passion for networking.
+
+I studied **GDC Vault talks**, **YouTube resources**, and a lot of **theoretical networking principles** to build a fully working, **secure** and **complete** Client-Side Prediction system for Unity.
+
+There’s no real coding tutorial out there for **Unity Netcode for GameObjects CSP**,  
+so I decided to make one — **from scratch**.
+
+I even wrote **33 pages** on the different “Levels” of Client-Side Prediction as a school project (in **German** 🇩🇪).  
+That document earned me a top grade and gave me a deep understanding of how to design **accurate**, **time-consistent**, and **modular** network systems.
+
+If you’re interested in those 33 pages, feel free to open an **Issue** or contact me —  
+but keep in mind, it’s in German (you might need a translator 😄).
+
+---
+
+## 🔮 Future Plans
+
+- 🧱 **Level 5 Support** — Predicting and reconciling other networked objects (e.g., physics balls)  
+- 🧹 **Cleaner Codebase** — Refactoring old systems for readability and maintainability  
+- 🎥 **Tutorial Video** — Once the system is stable enough, I may release a coding breakdown  
+
+---
+
+## 🤝 Contribution & Support
+
+If you run into issues or have questions:
+- Open an **Issue** here on GitHub
+- Or contact me directly
+
+I’ll do my best to help you out. 💬
+
+---
+
+## 🧾 Credits
+
+Inspired by:
+- GDC Vault networking talks  
+- YouTube creators explaining CSP theory  
+- Countless hours of experimentation and debugging 😅  
+
+---
+
+## 💡 Summary
+
+| Feature | Description |
+|----------|--------------|
+| 🎮 Prediction Level | **Level 4** (fully predicted client) |
+| 🔁 Tick Sync | Global tick system for all clients and server |
+| 🧱 Input Buffer | Last 1024 states & inputs (configurable) |
+| ⚡ Network Transport | Unity Netcode for GameObjects |
+| 🧩 Modularity | Easy to integrate and extend |
+| 🔒 Security | Input spam prevention & tick-based validation |
+
+---
+
+> *"I might be young and self-taught, but building this system taught me more than any tutorial ever could."*  
+> — **Jonas Lindinger**
