@@ -109,6 +109,3 @@ Inspired by:
 
 ---
 
-> *"I might be young and self-taught, but building this system taught me more than any tutorial ever could."*  
-> — **Jonas Lindinger**
-
