@@ -11,18 +11,7 @@ Supports:
 
 ---
 
-## 📂 Project Structure
-
-You’ll find everything neatly organized:
-Assets/
-├── _Project/ # Demo scene (for testing)
-└── External/
-├── CSP/ # 🔹 The core Client-Side Prediction system
-├── SceneManagement/ # (optional)
-└── Singletons/ # ⚠️ Required for CSP to function
-
-
-> 💡 **Tip:**  
+> 💡 **Info:**  
 > Copy the `CSP`, `SceneManagement` (optional), and `Singletons` (required) folders into your own project.  
 > Then, check out the demo under `_Project` to understand how the system works.
 
