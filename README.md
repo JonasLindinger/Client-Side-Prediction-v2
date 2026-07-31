@@ -15,11 +15,11 @@ Supports:
 
 You’ll find everything neatly organized:
 Assets/
-├── _Project/ # Demo scene (for testing)\n
-└── External/\n
-├── CSP/ # 🔹 The core Client-Side Prediction system\n
-├── SceneManagement/ # (optional)\n
-└── Singletons/ # ⚠️ Required for CSP to function\n
+├── _Project/ # Demo scene (for testing)
+└── External/
+├── CSP/ # 🔹 The core Client-Side Prediction system
+├── SceneManagement/ # (optional)
+└── Singletons/ # ⚠️ Required for CSP to function
 
 
 > 💡 **Tip:**  
